@@ -11,4 +11,5 @@ stamp*
 config.log
 libtool
 config.status
-
+messages.log
+kprof.kdevses
