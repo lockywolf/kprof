@@ -61,8 +61,15 @@ class KProfWidget : public QWidget
 	Q_OBJECT
 
 public:
+	enum	ProfilerEnumeration							// text results file format that we support
+	{
+		FORMAT_GPROF,					// GNU gprof
+		FORMAT_FNCCHECK,			// Function Check
+		FORMAT_POSE						// PalmOS Emulator
+	} ;
+
 	static QFont*			sListFont;	// font used to draw list entries
-	static int				sLastFileFormat;	// format of the last opened file
+	static ProfilerEnumeration	sLastFileFormat;	// format of the last opened file
 	static bool				sDiffMode;	// true if performing a diff. Used by CProfileViewItem
 
 protected:
@@ -95,12 +102,6 @@ protected:
 	
 
 public:
-	enum								// text results file format that we support
-	{
-		FORMAT_GPROF,					// GNU gprof
-		FORMAT_FNCCHECK,				// Function Check
-		FORMAT_POSE						// PalmOS Emulator
-	};
 
 	enum colID							// column IDs
 	{
@@ -194,7 +195,7 @@ signals:
 	void addRecentFile (const KURL&);
 
 private:
-	void openFile (const QString &filename, int format, bool compare = false);
+	void openFile (const QString &filename, ProfilerEnumeration format, bool compare = false);
 	void prepareProfileView (KListView *view, bool rootIsDecorated);
 	void postProcessProfile (bool compare);
 	void prepareHtmlPart(KHTMLPart* part);
