@@ -1,3 +1,6 @@
+2002-06-08 Colin Desmond <cdesmond@users.sourceforge.net>
+	* Ported to KDE 3.0 for v1.3.1
+
 2001-08-18 Alexander Rawass <alexannika@users.sourceforge.net>
 	* added basic support for libqtreemap
 	* two QTreeMapWindows are opened, the profiles shown
