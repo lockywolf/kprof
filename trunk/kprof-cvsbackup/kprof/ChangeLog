@@ -1,3 +1,10 @@
+2001-04-04 Florent Pillet <fpillet@users.sourceforge.net>
+	* Restructured code for parsing various profile sources
+	* Each profiler now has custom columns which display
+	  information specific to this profiler
+	* Improved documentation
+	* Improved Function Check support
+
 2001-02-25 Florent Pillet <fpillet@users.sourceforge.net>
 	* PalmOS Emulator Profile Results are now supported
 
