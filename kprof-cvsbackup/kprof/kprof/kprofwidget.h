@@ -48,6 +48,9 @@ class QFont;
 class QFile;
 class CProfileViewItem;
 
+class QListViewTreeMapWindow;
+class QTreeMapOptions;
+
 class KProfWidget : public QWidget
 {
 	Q_OBJECT
@@ -223,6 +226,12 @@ private:
 
 	QString getClassName (const QString& name);
 	QString removeTemplates (const QString& name);
+
+	// for the treemap views
+
+	QListViewTreeMapWindow *obj_treemap;
+	QListViewTreeMapWindow *hier_treemap;
+	QTreeMapOptions *treemap_options;
 };
 
 #endif
