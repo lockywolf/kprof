@@ -46,7 +46,14 @@ DotCallGraph::DotCallGraph (QFile& file, bool currentSelectionOnly,
 		if (className.length () && (!imageMap))
 			className += "\\n";
 
-		stream << i << " [label=\"" << className << "::" <<  mProfile[i]->method;
+		if(mProfile[i]->method != "")
+		{
+			stream << i << " [label=\"" << className << "::" <<  mProfile[i]->method;
+		}
+		else
+		{
+        	stream << i << "[label=\"" << className;
+		}
 		if (mProfile[i]->multipleSignatures)
 			stream << "\\n" << mProfile[i]->arguments;
 		stream << "\"";
