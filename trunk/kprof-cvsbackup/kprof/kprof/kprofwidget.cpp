@@ -130,22 +130,22 @@ KProfWidget::KProfWidget (QWidget *parent, const char *name)
 	prepareProfileView (mFlat, false);
 
 	connect (mFlat, SIGNAL (rightButtonPressed (QListViewItem*, const QPoint&, int)),
-			 this, SLOT (profileEntryRightClick (QListViewItem*, const QPoint&, int)));
-    connect (flatFilter, SIGNAL (textChanged (const QString &)),
-			 this, SLOT (flatProfileFilterChanged (const QString &)));
+		 this, SLOT (profileEntryRightClick (QListViewItem*, const QPoint&, int)));
+    	connect (flatFilter, SIGNAL (textChanged (const QString &)),
+		 this, SLOT (flatProfileFilterChanged (const QString &)));
 	connect (mFlat, SIGNAL (selectionChanged (QListViewItem *)),
-			 this, SLOT (selectionChanged (QListViewItem *)));
+		 this, SLOT (selectionChanged (QListViewItem *)));
 
-    flatLayout->addWidget (mFlat);
+	flatLayout->addWidget (mFlat);
 
 	// create hierarchical profile list
 	mHier = new KListView (this, "hierarchicalProfile");
 	CHECK_PTR (mHier);
 	prepareProfileView (mHier, true);
 	connect (mHier, SIGNAL (rightButtonPressed (QListViewItem*, const QPoint&, int)),
-			 this, SLOT (profileEntryRightClick (QListViewItem*, const QPoint&, int)));
+		 this, SLOT (profileEntryRightClick (QListViewItem*, const QPoint&, int)));
 	connect (mHier, SIGNAL (selectionChanged (QListViewItem *)),
-			 this, SLOT (selectionChanged (QListViewItem *)));
+		 this, SLOT (selectionChanged (QListViewItem *)));
 
 	// create object profile list
 	mObjs = new KListView (this, "objectProfile");
@@ -204,6 +204,7 @@ KProfWidget::KProfWidget (QWidget *parent, const char *name)
 	topLayout->addWidget (mTabs);
 	connect (mTabs, SIGNAL (tabSelected (int)), this, SLOT (tabSelected (int)));
 
+	mConfigure = new CConfigure(this);
 
 	//Now that the interface has been set up, parse the command line
 	//arguments
@@ -275,7 +276,7 @@ void KProfWidget::toggleTemplateAbbrev ()
 	if (mProfile.count ())
 	{
 		postProcessProfile (false);	// regenerate simplified names
-		mFlat->clear ();						// rebuild lists to make sure refresh is done
+		mFlat->clear ();		// rebuild lists to make sure refresh is done
 		mHier->clear ();
 		mObjs->clear ();
 		
@@ -296,7 +297,7 @@ void KProfWidget::toggleTemplateAbbrev ()
 void KProfWidget::selectListFont ()
 {
 	BEGIN;
-  assert(sListFont);
+	assert(sListFont);
 	int i = KFontDialog::getFont (*sListFont);
 	if (i == KFontDialog::Accepted) {
 		mFlat->setFont (*sListFont);
@@ -306,6 +307,12 @@ void KProfWidget::selectListFont ()
 	END;
 }
 
+void KProfWidget::configure()
+{
+	BEGIN;
+	mConfigure->chooseGraphHighColour();
+	END;
+}
 
 
 void KProfWidget::prepareProfileView (KListView *view, bool rootIsDecorated)
@@ -1287,12 +1294,11 @@ void KProfWidget::generateCallGraph ()
 
 	if (dialog.mSaveFile->isChecked() )
 	{
-
-			QString dotfile = KFileDialog::getSaveFileName (
-				QString::null,
-				dialog.mGraphViz->isChecked () ? i18n("*.dot|GraphViz files") : i18n("*.vcg|VCG files"),
-				this,
-				i18n ("Save call-graph as..."));
+		QString dotfile = KFileDialog::getSaveFileName (
+			QString::null,
+			dialog.mGraphViz->isChecked () ? i18n("*.dot|GraphViz files") : i18n("*.vcg|VCG files"),
+			this,
+			i18n ("Save call-graph as..."));
 	
 			if (dotfile.isEmpty ())
 			{
@@ -1342,7 +1348,7 @@ void KProfWidget::generateCallGraph ()
 
 			// graph generation
 			if (dialog.mGraphViz->isChecked ())
-				DotCallGraph dotCallGraph(file, currentSelectionOnly, false, mProfile, processName);
+				DotCallGraph dotCallGraph(file, currentSelectionOnly, false, mProfile, processName, mConfigure->highColour());
 			else
 				VCGCallGraph vcgCallGraph(file, currentSelectionOnly, mProfile);
 
@@ -1359,7 +1365,7 @@ void KProfWidget::generateCallGraph ()
 			}
 			else
 			{
-            	file.setName(".vcg_temp");
+				file.setName(".vcg_temp");
 			}
 
 			file.open(IO_ReadWrite);
@@ -1373,7 +1379,7 @@ void KProfWidget::generateCallGraph ()
 			// graph generation
 			if (dialog.mGraphViz->isChecked ())
 			{
-				DotCallGraph dotCallGraph(file, currentSelectionOnly, true, mProfile, processName);
+				DotCallGraph dotCallGraph(file, currentSelectionOnly, true, mProfile, processName, mConfigure->highColour());
 			}
 			else
 			{
@@ -1400,11 +1406,11 @@ void KProfWidget::generateCallGraph ()
 				displayApplication.start();
 
 				QFile mapFile;
-				QTextStream t (&mGraphVizStdout, IO_ReadOnly);
+				QTextStream text (&mGraphVizStdout, IO_ReadOnly);
 				
 				mapFile.setName("./.kprof.html");
 				mapFile.open(IO_ReadWrite);
-				ClientSideMap(t, mapFile, processName);
+				ClientSideMap(text, mapFile, processName);
 			}
 			else
 			{
@@ -1596,7 +1602,7 @@ void KProfWidget::prepareHtmlPart(KHTMLPart* part)
 
 	file->open(IO_ReadWrite);
 
-	DotCallGraph dotCallGraph(*file, true, true, mProfile, processName);
+	DotCallGraph dotCallGraph(*file, true, true, mProfile, processName, mConfigure->highColour());
 	file->close ();
 
 	KProcess graphApplication;
@@ -1647,7 +1653,7 @@ void KProfWidget::prepareHtmlPart(KHTMLPart* part)
 	file = 0;
 
 	QFile mapFile;
-	QTextStream t (&mGraphVizStdout, IO_ReadOnly);
+	QTextStream text (&mGraphVizStdout, IO_ReadOnly);
 	mapFile.setName(processName + "kprof.html");
 
 	if(mapFile.exists())
@@ -1656,7 +1662,7 @@ void KProfWidget::prepareHtmlPart(KHTMLPart* part)
 	}
 
 	mapFile.open(IO_ReadWrite);
-	ClientSideMap(t, mapFile, processName);
+	ClientSideMap(text, mapFile, processName);
 
 	mapFile.close();
 	part->openURL(KURL("file://" + processName + "kprof.html"));
