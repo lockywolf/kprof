@@ -53,6 +53,7 @@
 #include <khtml_part.h>
 #include <khtmlview.h>
 #include <kglobalsettings.h>
+#include <kcmdlineargs.h>
 
 #include "config.h"
 
@@ -67,6 +68,8 @@
 #include "parseprofile_gprof.h"
 #include "parseprofile_fnccheck.h"
 #include "parseprofile_pose.h"
+#include "kproffile.h"
+#include "parseArguments.h"
 
 #include "Log.h"
 
@@ -85,7 +88,7 @@ using namespace std;
  *
  */
 QFont*	KProfWidget::sListFont = NULL;
-int		  KProfWidget::sLastFileFormat = FORMAT_GPROF;
+KProfWidget::ProfilerEnumeration  KProfWidget::sLastFileFormat = FORMAT_GPROF;
 bool	  KProfWidget::sDiffMode = false;
 
 
@@ -146,11 +149,11 @@ KProfWidget::KProfWidget (QWidget *parent, const char *name)
 			 this, SLOT (selectionChanged (QListViewItem *)));
 
 	//create the HTML viewer for the graphical call tree
-	mCallTreeHtmlPart = new KHTMLPart(mTabs,  "graph_part");//,mTabs);
+	mCallTreeHtmlPart = new KHTMLPart(mTabs,  "graph_part");
 	CHECK_PTR(mCallTreeHtmlPart);
 	
 	//Create the HTML viewer for the method details
-	mMethodHtmlPart = new KHTMLPart(mTabs, "method_part");//,mTabs);
+	mMethodHtmlPart = new KHTMLPart(mTabs, "method_part");
 	CHECK_PTR(mMethodHtmlPart);
 
 	//KParts::BrowserExtension* ext = mCallTreeHtmlPart->browserExtension();
@@ -184,9 +187,32 @@ KProfWidget::KProfWidget (QWidget *parent, const char *name)
 	QWhatsThis::add (mObjs,
 		i18n (	"This is the <I>object view</I>.\n\n"
 				"It displays C++ methods grouped by object name."));
+	QWhatsThis::add(mCallTreeHtmlPart->view(),
+		i18n(	"This is a graphical representation of the call tree. Click on methods"
+					"to display them on the methods tab."));
+	QWhatsThis::add(mMethodHtmlPart->view(),
+		i18n(	"This is a clickable view of the method selected in the Graph view"));
 
 	topLayout->addWidget (mTabs);
 	connect (mTabs, SIGNAL (tabSelected (int)), this, SLOT (tabSelected (int)));
+
+
+	//Now that the interface has been set up, parse the command line
+	//arguments
+
+	RUN("process command line args");
+	KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
+	QString fileName = "";
+	ProfilerEnumeration prof = FORMAT_GPROF;	
+	bool argsToUse = parseArguments(args, fileName, prof);
+	args->clear();
+
+	//If the file name has been set in the command line arguments
+	//then open the file with the chosen profiler.
+	if (argsToUse && (fileName != ""))
+	{
+		 openFile(fileName, prof, false);
+	}
 
 	END;
 }
@@ -211,6 +237,15 @@ KProfWidget::~KProfWidget ()
 	{	
 	delete mMethodHtmlPart;
 	mMethodHtmlPart = NULL;
+	}
+
+	//In order to tidy up the /tmp directory
+	//we need to iterate through the mProfile
+	//list and delete each object so it in turn
+	//will delete the file associated with it.
+	while(mProfile.count())
+	{
+
 	}
 
 	END;
@@ -443,23 +478,26 @@ void KProfWidget::loadSettings ()
   //Load old Font-Settings
 	QString FontName = config.readEntry ("FontName", "");
 	int     FontSize = config.readNumEntry ("FontSize", 0);
+
 	if (!FontName.isEmpty() && FontSize > 0)
 	{
-    DBG1("stored Font was=%s",FontName.ascii());
-    sListFont->setFamily(FontName);
-    sListFont->setPointSize(FontSize);
-	}else{
-    DBG1("set Font to menuFont=%s",KGlobalSettings::menuFont().rawName().ascii());
-    *sListFont=KGlobalSettings::menuFont();
-  }
+		DBG1("stored Font was=%s",FontName.ascii());
+		sListFont->setFamily(FontName);
+		sListFont->setPointSize(FontSize);
+	}
+	else
+	{
+		DBG1("set Font to menuFont=%s",KGlobalSettings::menuFont().rawName().ascii());
+		*sListFont=KGlobalSettings::menuFont();
+	}
+
 	mFlat->setFont (*sListFont);
 	mHier->setFont (*sListFont);
 	mObjs->setFont (*sListFont);
-
 	
   //Load last FileFormat settings
-	sLastFileFormat = config.readNumEntry ("LastFileFormat", FORMAT_GPROF);
-  DBG1("LastFileFormat was=%d",sLastFileFormat);
+//	sLastFileFormat = config.readNumEntry ("LastFileFormat", 1);
+//	DBG1("LastFileFormat was=%d",sLastFileFormat);
 
 
 	//Finish
@@ -482,7 +520,7 @@ void KProfWidget::openRecentFile (const KURL& url)
 	else if (protocol == "file-pose")
 		openFile (filename, FORMAT_POSE, false);
 	else
-		openFile (filename, -1);
+		openFile (filename, (KProfWidget::ProfilerEnumeration)-1);
 
 	END;
 }
@@ -566,7 +604,7 @@ void KProfWidget::openResultsFile ()
 	END;
 }
 
-void KProfWidget::openFile (const QString &filename, int format, bool compare)
+void KProfWidget::openFile (const QString &filename, ProfilerEnumeration format, bool compare)
 {
 	BEGIN;
 
@@ -1347,10 +1385,13 @@ void KProfWidget::generateCallGraph ()
 			KProcess graphApplication;
 			KProcess displayApplication;
 
+			QString graphApplicationName = "";
+
 			if (dialog.mGraphViz->isChecked ())
 			{
+				graphApplicationName = "dot";
 				graphApplication << "dot" << file.name() << "-Timap" ;
-				displayApplication << "dot" << file.name() << "-Tgif" << "-o" << ".graphViz.gif";
+				displayApplication << "dot" << file.name() << "-Tjpg" << "-o" << ".graphViz.jpg";
 
 				connect (&graphApplication, SIGNAL (receivedStdout (KProcess*, char*, int)), this, SLOT (graphVizStdout (KProcess*, char*, int)));
 				connect (&graphApplication, SIGNAL (receivedStderr (KProcess*, char*, int)), this, SLOT (graphVizStderr (KProcess*, char*, int)));
@@ -1362,24 +1403,25 @@ void KProfWidget::generateCallGraph ()
 				QTextStream t (&mGraphVizStdout, IO_ReadOnly);
 				mapFile.setName("./.kprof.html");
 				mapFile.open(IO_ReadWrite);
-				 ClientSideMap(t, mapFile);
+				ClientSideMap(t, mapFile);
 			}
 			else
 			{
+				graphApplicationName = "xvcg";
 				graphApplication << "xvcg" << file.name() ;
 				graphApplication.start();
 			}
 		
 			if (!graphApplication.normalExit () || graphApplication.exitStatus ())
 			{
-				QString text = i18n ("Could not display the data.\n");
+				QString text = graphApplicationName + i18n (" could not display the data.\n");
 				if (graphApplication.normalExit () && graphApplication.exitStatus ())
 				{
 					QString s;
 					s.sprintf (i18n ("Error %d was returned.\n"), graphApplication.exitStatus ());
 					text += s;
 				}
-				KMessageBox::error (this, text, i18n ("xvcg exited with error(s)"));
+				KMessageBox::error (this, text, i18n ("Exited with error(s)"));
 				END;
 				return;
 			}
@@ -1404,10 +1446,6 @@ void KProfWidget::markForOutput (CProfileInfo *p)
 
 	END;
 }
-
-
-
-
 
 QString KProfWidget::getClassName (const QString &name)
 {
@@ -1546,24 +1584,25 @@ void KProfWidget::prepareHtmlPart(KHTMLPart* part)
 {
 	BEGIN;
 	//Generate a temporary file
-	QFile file;
+	//QFile file;
+	KProfFile* file = new KProfFile();
 
-	file.setName("/tmp/graphViz_temp");
-	if (file.exists())
+	file->setName("/tmp/graphViz_temp");
+	if (file->exists())
 	{
-		file.remove();
+		file->remove();
 	}
 
-	file.open(IO_ReadWrite);
+	file->open(IO_ReadWrite);
 
-	DotCallGraph dotCallGraph(file, true, true, mProfile);
-	file.close ();
+	DotCallGraph dotCallGraph(*file, true, true, mProfile);
+	file->close ();
 
 	KProcess graphApplication;
 	KProcess displayApplication;
 
-	graphApplication << "dot" << file.name() << "-Timap" ;
-	displayApplication << "dot" << file.name() << "-Tjpg" << "-o" << "/tmp/graphViz.jpg";
+	graphApplication << "dot" << file->name() << "-Timap" ;
+	displayApplication << "dot" << file->name() << "-Tjpg" << "-o" << "/tmp/graphViz.jpg";
 
 	connect (&graphApplication, SIGNAL (receivedStdout (KProcess*, char*, int)), this, SLOT (graphVizStdout (KProcess*, char*, int)));
 	connect (&graphApplication, SIGNAL (receivedStderr (KProcess*, char*, int)), this, SLOT (graphVizStderr (KProcess*, char*, int)));
@@ -1574,7 +1613,35 @@ void KProfWidget::prepareHtmlPart(KHTMLPart* part)
 	graphApplication.start(KProcess::Block, KProcess::AllOutput);
 	displayApplication.start(KProcess::Block, KProcess::AllOutput);
 
-	file.close();
+	if (!graphApplication.normalExit () || graphApplication.exitStatus ())
+	{
+		QString text = i18n ("dot could not display the data.\n");
+		if (graphApplication.normalExit () && graphApplication.exitStatus ())
+		{
+			QString s;
+			s.sprintf (i18n ("Error %d was returned.\n"), graphApplication.exitStatus ());
+			text += s;
+		}
+		KMessageBox::error (this, text, i18n ("Exited with error(s)"));
+		END;
+		return;
+	}
+	if (!displayApplication.normalExit () || displayApplication.exitStatus ())
+	{
+		QString text = i18n (" dot could not display the data.\n");
+		if (displayApplication.normalExit () && displayApplication.exitStatus ())
+		{
+			QString s;
+			s.sprintf (i18n ("Error %d was returned.\n"), displayApplication.exitStatus ());
+			text += s;
+		}
+		KMessageBox::error (this, text, i18n ("Exited with error(s)"));
+		END;
+		return;
+	}
+	file->close();
+	delete file;
+	file = 0;
 
 	QFile mapFile;
 	QTextStream t (&mGraphVizStdout, IO_ReadOnly);
@@ -1586,7 +1653,7 @@ void KProfWidget::prepareHtmlPart(KHTMLPart* part)
 	}
 
 	mapFile.open(IO_ReadWrite);
-	 ClientSideMap(t, mapFile);
+	ClientSideMap(t, mapFile);
 
 	mapFile.close();
 	part->openURL(KURL("file:///tmp/kprof.html"));
