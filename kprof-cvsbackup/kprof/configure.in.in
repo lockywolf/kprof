@@ -1,6 +1,6 @@
 #MIN_CONFIG
 
-AM_INIT_AUTOMAKE(kprof, 1.0.2)
+AM_INIT_AUTOMAKE(kprof, 1.2)
 
 dnl These are common macros that you might or might not want to use
 

@@ -35,15 +35,15 @@
 
 #include "kprof.h"
 
-static const char *description = I18N_NOOP("Execution profiling results analysis utility");
-static const char *version = "v1.1";
+static const char *description = I18N_NOOP("Execution profile results analysis utility");
+static const char *version = "v1.2";
 
 int main(int argc, char **argv)
 {
 	KAboutData aboutData(
 			"kprof", I18N_NOOP("KProf"),
 			version, description, KAboutData::License_GPL,
-			"(c) 2000, Florent Pillet",
+			"(c) 2000-2001, Florent Pillet",
 			NULL,
 			"http://kprof.sourceforge.net/",
 			"fpillet@users.sourceforge.net");
