@@ -30,6 +30,9 @@
 #define __CPROFILEINFO_H__
 
 #include <qvector.h>
+#include <qstring.h>
+#include <qarray.h>
+#include <qfile.h>
 
 
 /*
@@ -52,6 +55,7 @@ public:
 	QArray<CProfileInfo *> callers;		// list of functions that this one calls
 	CProfileInfo* previous;				// when comparing, points to the previous profile result for this entry
 
+	void dumpHtml();
 	// members are arranged by descending size to save memory
 	float		cumPercent;				// cumulative percentage (+children) of CPU usage
 	float		cumSeconds;				// cumulative seconds (+children) of CPU usage
@@ -85,24 +89,8 @@ public:
 	} custom;
 
 public:
-	CProfileInfo ()
-		:	previous (NULL),
-			cumPercent (0.0),
-			cumSeconds (0.0),
-			selfSeconds (0.0),
-			totalMsPerCall (0.0),
-			calls (0),
-			ind (0),
-			recursive (false),
-			multipleSignatures (false),
-			deleted (false)
-		{
-			memset (&custom, 0, sizeof (custom));
-		}
-
-	~CProfileInfo()
-		{
-		}
+	CProfileInfo ();
+	~CProfileInfo();
 };
 
 #endif
