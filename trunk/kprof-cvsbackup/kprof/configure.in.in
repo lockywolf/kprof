@@ -2,20 +2,15 @@
 
 AM_INIT_AUTOMAKE(kprof,1.3.2)
 
-ac_ldflags_safe="$LDFLAGS"
-ac_libs_safe="$LIBS"
-LIBS="-lXext -lX11 $X_LDFLAGS"
-
 dnl +------------------+
 dnl |Check for QTreeMap|
 dnl +------------------+
 
-LIBQTREEMAP=""
 AC_CHECK_LIB(qtreemap, main, [LIBQTREEMAP="-lqtreemap"])
-if test "x$LIBQTREEMAP" != "x"; then
+AC_SUBST(LIBQTREEMAP)
+if test "$LIBQTREEMAP" != ""; then
   AC_DEFINE(HAVE_LIBQTREEMAP,1,[Define if you have libqtreemap installed])
 fi
 
-LIBS="$ac_libs_safe"
-LDFLAGS="$ac_ldflags_safe"
-AC_SUBST(LIBXSS)
+dnl LDFLAGS="$ac_save_ldflags"
+

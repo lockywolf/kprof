@@ -1,8 +1,8 @@
 ####### kdevelop will overwrite this part!!! (begin)##########
 
-SUBDIRS = po doc kprof 
+SUBDIRS = kprof po doc 
 
-EXTRA_DIST = AUTHORS COPYING ChangeLog INSTALL README TODO kprof.lsm 
+EXTRA_DIST = kprof.kdevprj admin AUTHORS COPYING ChangeLog INSTALL README TODO kprof.lsm 
 
 ####### kdevelop will overwrite this part!!! (end)############
 
