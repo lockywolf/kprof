@@ -209,7 +209,7 @@ INCLUDES = $(all_includes)
 kprof_LDFLAGS = $(KDE_RPATH) $(all_libraries)
 
 # libraries to link against
-kprof_LDADD = $(LIB_KFILE)
+kprof_LDADD = $(LIB_KFILE) $(LIB_KHTML)
 
 # sources 
 #>- kprof_SOURCES = main.cpp kprof.cpp kprofwidget.cpp cprofileviewitem.cpp call-graph.ui
@@ -273,7 +273,7 @@ DIST_COMMON =  Makefile.am Makefile.in
 
 #>- DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
 #>+ 4
-KDE_DIST=lo32-app-kprof.png kprof.desktop call-graph.ui kprofui.rc lo16-app-kprof.png 
+KDE_DIST=lo32-app-kprof.png kprof.desktop call-graph.ui kprof_meta_unload.cpp kprofui.rc call-graph.h lo16-app-kprof.png 
 
 DISTFILES= $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST) $(KDE_DIST)
 
@@ -727,8 +727,12 @@ kprofwidget.moc: $(srcdir)/kprofwidget.h
 	$(MOC) $(srcdir)/kprofwidget.h -o kprofwidget.moc
 
 #>+ 3
+call-graph.moc: $(srcdir)/call-graph.h
+	$(MOC) $(srcdir)/call-graph.h -o call-graph.moc
+
+#>+ 3
 clean-metasources:
-	-rm -f  kprof.moc kprofwidget.moc
+	-rm -f  kprof.moc kprofwidget.moc call-graph.moc
 
 #>+ 4
 clean-ui:
@@ -740,14 +744,14 @@ docs-am:
 
 #>+ 10
 install-kde-icons:
-	$(mkinstalldirs) $(DESTDIR)$(kde_icondir)/locolor/16x16/apps
-	$(INSTALL_DATA) $(srcdir)/lo16-app-kprof.png $(DESTDIR)$(kde_icondir)/locolor/16x16/apps/kprof.png
 	$(mkinstalldirs) $(DESTDIR)$(kde_icondir)/locolor/32x32/apps
 	$(INSTALL_DATA) $(srcdir)/lo32-app-kprof.png $(DESTDIR)$(kde_icondir)/locolor/32x32/apps/kprof.png
+	$(mkinstalldirs) $(DESTDIR)$(kde_icondir)/locolor/16x16/apps
+	$(INSTALL_DATA) $(srcdir)/lo16-app-kprof.png $(DESTDIR)$(kde_icondir)/locolor/16x16/apps/kprof.png
 
 uninstall-kde-icons:
-	-rm -f $(DESTDIR)$(kde_icondir)/locolor/16x16/apps/kprof.png
 	-rm -f $(DESTDIR)$(kde_icondir)/locolor/32x32/apps/kprof.png
+	-rm -f $(DESTDIR)$(kde_icondir)/locolor/16x16/apps/kprof.png
 
 #>+ 5
 force-reedit:
@@ -756,11 +760,11 @@ force-reedit:
 
 
 #>+ 10
-kprof_meta_unload.cpp:  kprof.moc kprofwidget.moc call-graph.moc
+kprof_meta_unload.cpp:  kprof.moc kprofwidget.moc call-graph.moc call-graph.moc
 	@echo 'creating kprof_meta_unload.cpp'
 	-rm -f kprof_meta_unload.cpp
 	@echo 'static const char * _metalist_kprof[] = {' > kprof_meta_unload.cpp
-	cat  kprof.moc kprofwidget.moc call-graph.moc | grep 'char.*className' | sed -e 's/.*[^A-Za-z0-9_:]\([A-Za-z0-9_:]*\)::className.*$$/\"\1\",/' | sort | uniq >> kprof_meta_unload.cpp
+	cat  kprof.moc kprofwidget.moc call-graph.moc call-graph.moc | grep 'char.*className' | sed -e 's/.*[^A-Za-z0-9_:]\([A-Za-z0-9_:]*\)::className.*$$/\"\1\",/' | sort | uniq >> kprof_meta_unload.cpp
 	@echo '0};' >> kprof_meta_unload.cpp
 	@echo '#include <kunload.h>' >> kprof_meta_unload.cpp
 	@echo '_UNLOAD(kprof)' >> kprof_meta_unload.cpp
@@ -771,7 +775,7 @@ clean-moc-classes:
 	-rm -f  kprof_meta_unload.cpp
 
 #>+ 11
-kprof.all_cpp.cpp: $(srcdir)/Makefile.in $(srcdir)/main.cpp $(srcdir)/kprof.cpp $(srcdir)/kprofwidget.cpp $(srcdir)/cprofileviewitem.cpp call-graph.cpp kprof_meta_unload.cpp   call-graph.moc kprof.moc kprofwidget.moc 
+kprof.all_cpp.cpp: $(srcdir)/Makefile.in $(srcdir)/main.cpp $(srcdir)/kprof.cpp $(srcdir)/kprofwidget.cpp $(srcdir)/cprofileviewitem.cpp $(srcdir)/call-graph.cpp $(srcdir)/kprof_meta_unload.cpp   call-graph.moc kprof.moc kprofwidget.moc call-graph.moc 
 	@echo 'creating kprof.all_cpp.cpp ...'; \
 	rm -f kprof.all_cpp.files kprof.all_cpp.final; \
 	echo "#define KDE_USE_FINAL 1" >> kprof.all_cpp.final; \
@@ -800,7 +804,8 @@ cvs-clean:
 kde-rpo-clean:
 	-rm -f *.rpo
 
-#>+ 5
+#>+ 6
+$(srcdir)/call-graph.cpp: call-graph.moc 
 $(srcdir)/kprof.cpp: kprof.moc call-graph.h 
 $(srcdir)/cprofileviewitem.cpp: call-graph.h 
 $(srcdir)/main.cpp: call-graph.h 
