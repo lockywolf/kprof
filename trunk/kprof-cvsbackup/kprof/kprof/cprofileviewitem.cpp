@@ -115,10 +115,10 @@ QString CProfileViewItem::text (int column) const
 			return formatFloat (mProfile->selfSeconds, 3);
 
    		case KProfWidget::col_totalPerCall:
-			return formatFloat (mProfile->totalTsPerCall, 3);
+			return formatFloat (mProfile->totalMsPerCall, 3);
 
    		case KProfWidget::col_selfPerCall:
-			return formatFloat (mProfile->selfTsPerCall, 3);
+			return formatFloat (mProfile->selfMsPerCall, 3);
 
 		case KProfWidget::col_selfCycles:
 			return QString::number (mProfile->selfCycles);
@@ -169,11 +169,11 @@ QString CProfileViewItem::key (int column, bool) const
 			break;
 
 		case KProfWidget::col_totalPerCall:
-			s.sprintf ("%014ld", (long) (mProfile->totalTsPerCall * 100.0));
+			s.sprintf ("%014ld", (long) (mProfile->totalMsPerCall * 100.0));
 			break;
 
    		case KProfWidget::col_selfPerCall:
-			s.sprintf ("%014ld", (long) (mProfile->selfTsPerCall * 100.0));
+			s.sprintf ("%014ld", (long) (mProfile->selfMsPerCall * 100.0));
 			break;
 
 		case KProfWidget::col_selfCycles:
