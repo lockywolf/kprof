@@ -1,4 +1,5 @@
-KProf 1.2 README file
+KProf 1.3 README file
+Release date: June 12th, 2001.
 
 SUMMARY
 -------
@@ -92,6 +93,14 @@ Here are the possible ways to use KProf:
   of the emulator (compiled with --enable-palm-profile when you
   ./configure'd it). The file is named "Profile Results.txt".
 
+EXTENDED FEATURES
+-----------------
+KProf offers a number of tools to help you profile your code. It
+can optionally hide the contents of template-functions for
+readability, display a subset of the complete list when you type
+part of a function name in the entry field on top of the "flat"
+list, print your results, diff two result files, etc. Please read
+the online manual to learn more about these features.
 
 Feel free to send bugs and patches to fpillet@users.sourceforge.net
 
