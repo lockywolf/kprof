@@ -2,7 +2,7 @@
 
 # this has all of the subdirectories that make will recurse into.  if
 # there are none, comment this out
-SUBDIRS = . pics doc
+SUBDIRS = . doc
 
 # the program to be generated
 bin_PROGRAMS = kprof
