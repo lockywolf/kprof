@@ -28,7 +28,6 @@
 
 #include <cstdlib>
 #include <cstring>
-#include <iostream>
 
 #include <qhbuttongroup.h>
 #include <kfontdialog.h>
@@ -38,6 +37,7 @@
 #include <qvector.h>
 #include <qlabel.h>
 #include <qwhatsthis.h>
+#include <qfile.h>
 
 #include <kapp.h>
 #include <kdebug.h>
@@ -68,8 +68,6 @@
 #include "parseprofile_gprof.h"
 #include "parseprofile_fnccheck.h"
 #include "parseprofile_pose.h"
-
-#include <iostream.h>
 
 using namespace std;
 
@@ -605,7 +603,7 @@ void KProfWidget::openFile (const QString &filename, int format, bool compare)
 				text += mGProfStdout;
 			}
 			KMessageBox::error (this, text, i18n ("gprof exited with error(s)"));
-			return;
+			//return;
 		}
 
 		mFlat->clear ();
@@ -739,7 +737,13 @@ void KProfWidget::openFile (const QString &filename, int format, bool compare)
 
 void KProfWidget::gprofStdout (KProcess *, char *buffer, int buflen)
 {
-	mGProfStdout += QString::fromLocal8Bit (buffer, buflen);
+	char* newbuf = new char[buflen];
+	strncpy(newbuf, buffer, buflen);
+	newbuf[buflen] = '\0';
+
+	mGProfStdout += QString::fromLocal8Bit (newbuf, buflen);
+
+	delete [] newbuf;
 }
 
 
@@ -765,14 +769,12 @@ void KProfWidget::graphVizStderr (KProcess*, char* buffer, int buflen)
 void KProfWidget::graphVizDispStdout (KProcess*, char* buffer, int buflen)
 {
 	mGraphVizDispStdout += QString::fromLocal8Bit(buffer, buflen);
-	cout << mGraphVizDispStdout << endl;
 }
 
 //Handle the standard errors from the GraphViz command
 void KProfWidget::graphVizDispStderr (KProcess*, char* buffer, int buflen)
 {
 	mGraphVizDispStderr += QString::fromLocal8Bit(buffer, buflen);
-	cout << mGraphVizDispStderr << endl;
 }
 
 
