@@ -26,6 +26,7 @@
  *  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
+#include <qfontdialog.h>
 #include <qlayout.h>
 #include <qradiobutton.h>
 #include <qvector.h>
@@ -48,6 +49,8 @@
 #include "cprofileviewitem.h"
 #include "call-graph.h"
 
+QFont* KProfWidget::sListFont = NULL;
+
 KProfWidget::KProfWidget (QWidget *parent, const char *name)
 	:	QWidget (parent, name),
 		mTabs (NULL),
@@ -57,6 +60,8 @@ KProfWidget::KProfWidget (QWidget *parent, const char *name)
 		mCurPage (0),
 		mAbbrevTemplates (false)
 {
+	sListFont = new QFont;
+
 	QVBoxLayout *topLayout = new QVBoxLayout (this, 0, 0);
 
 	mTabs = new KTabCtl (this, "tabs");
@@ -130,6 +135,7 @@ KProfWidget::KProfWidget (QWidget *parent, const char *name)
 
 KProfWidget::~KProfWidget ()
 {
+	delete sListFont;
 }
 
 void KProfWidget::tabSelected (int page)
@@ -154,6 +160,19 @@ void KProfWidget::toggleTemplateAbbrev ()
 		fillFlatProfileList ();
 		fillHierProfileList ();
 		fillObjsProfileList ();
+	}
+}
+
+void KProfWidget::selectListFont ()
+{
+	bool ok = false;
+	QFont f = QFontDialog::getFont (&ok, *sListFont, this, "font selector");
+	if (ok) {
+		delete sListFont;
+		sListFont = new QFont (f);
+		mFlat->setFont (*sListFont);
+		mHier->setFont (*sListFont);
+		mObjs->setFont (*sListFont);
 	}
 }
 
@@ -186,6 +205,7 @@ void KProfWidget::applySettings ()
 	KConfig &config = *kapp->config ();
 	config.setGroup ("KProfiler");
 	config.writeEntry ("AbbreviateTemplates", mAbbrevTemplates);
+	config.writeEntry ("Font", sListFont->rawName ());
 
 	// TODO: save columns widhts here
 
@@ -201,6 +221,15 @@ void KProfWidget::loadSettings ()
 	KToggleAction *action = ((KProfTopLevel *) parent ())->getToggleTemplateAbbrevAction ();
 	if (action)
 		action->setChecked (mAbbrevTemplates);
+
+	QString s = config.readEntry ("Font", sListFont->rawName ());
+	if (s)
+	{
+		sListFont->setRawName (s);
+		mFlat->setFont (*sListFont);
+		mHier->setFont (*sListFont);
+		mObjs->setFont (*sListFont);
+	}
 
 	// TODO: reload columns widths here
 }

@@ -90,6 +90,7 @@ void KProfTopLevel::setupActions ()
 	KStdAction::showToolbar (this, SLOT(toggleToolBar()), actionCollection());
 
 	mToggleTemplateAbbrev = new KToggleAction (i18n ("Abbreviate C++ &Templates"), 0, mProf, SLOT (toggleTemplateAbbrev ()), actionCollection(), "toggle_template_abbreviations");
+	mSelectFont = new KAction (i18n ("Select Font..."), 0, mProf, SLOT (selectListFont ()), actionCollection(), "select_list_font");
 	mGenCallGraphAction = new KAction (i18n ("&Generate Call Graph..."), 0, mProf, SLOT (generateCallGraph ()), actionCollection(), "generate_call_graph");
 }
 

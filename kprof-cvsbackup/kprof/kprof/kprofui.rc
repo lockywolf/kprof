@@ -7,6 +7,7 @@
 		</Menu>
 		<Menu name="settings">
 			<Action name="toggle_template_abbreviations" />
+			<Action name="select_list_font" />
 		</Menu>
 	</MenuBar>
 </kpartgui>

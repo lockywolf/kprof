@@ -1,6 +1,8 @@
 2001-02-14 Florent Pillet <fpillet@users.sourceforge.net>
 	* added an option to turn C++ template abbreviation ON/OFF
 	  (see menu Settings->Abbreviate C++ Templates)
+	* added font selection. You can now choose the font used
+	  to display the profile results list
 	* merged a small parser simplification from
 	  Carsten Branitzki <csb@operamail.com>
 	* fixed saving/restoring the KProf window size
