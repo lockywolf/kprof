@@ -254,6 +254,8 @@ instructions for getting the up-to-date sources via CVS.
 <sect1 id="requirements">
 <title>Requirements</title>
 <para>
+KProf is a KDE 2 application. In order to use it, you need the KDE Libraries available for
+free from the <ulink url="http://www.kde.org/">KDE Web Site</ulink>.
 </para>
 </sect1>
 
@@ -261,25 +263,21 @@ instructions for getting the up-to-date sources via CVS.
 <title>Compilation and installation</title>
 
 <para>
-In order to compile and install KApp on your system, type the following in the base
-directory of the Icon Editor distribution:
+In order to compile and install KProf on your system, type the following in the base
+directory of the distribution:
 <screen width="40">
 <prompt>%</prompt> <userinput>./configure</userinput>
 <prompt>%</prompt> <userinput>make</userinput>
+<prompt>%</prompt> <userinput>su - root
 <prompt>%</prompt> <userinput>make install</userinput>
 </screen>
 </para>
 
-<para>Since KProf uses autoconf and automake you should have not trouble compiling it.
-Should you run into problems please report them to the KDE mailing lists.</para>
-
-</sect1>
-
-<sect1 id="configuration">
-<title>Configuration</title>
-
-<para>Don't forget to tell your system to start the <filename>dtd</filename>
-dicer-toaster daemon first, or KApp won't work !</para>
+<para>
+Since KProf uses autoconf and automake you should have not trouble compiling it.
+Should you run into problems please report them to the 
+<ulink url="http://sourceforge.net/bugs/?group_id=10250">KProf project page</ulink>.
+</para>
 
 </sect1>
 
