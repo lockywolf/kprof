@@ -56,7 +56,7 @@ public:
 	QArray<CProfileInfo *> callers;		// list of functions that this one calls
 	CProfileInfo* previous;				// when comparing, points to the previous profile result for this entry
 
-	void dumpHtml();
+	void dumpHtml(const QString& tempDir);
 	// members are arranged by descending size to save memory
 	float		cumPercent;				// cumulative percentage (+children) of CPU usage
 	float		cumSeconds;				// cumulative seconds (+children) of CPU usage

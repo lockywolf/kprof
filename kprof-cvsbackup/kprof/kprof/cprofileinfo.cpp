@@ -46,10 +46,10 @@ CProfileInfo::~CProfileInfo()
 
 //Dump information relevant to the class into a HTML file
 //for viewing in one of the tabbed panes.
-void CProfileInfo::dumpHtml()
+void CProfileInfo::dumpHtml(const QString& tempDir)
 {
 	//Open the temporary file used to store the HTML.
-	QString fileName = "/tmp/" + htmlName + "::" + method + ".html" ;
+	QString fileName = tempDir + htmlName + "::" + method + ".html" ;
 
 	dumpFile = new KProfFile();
 	dumpFile->setName(fileName);
@@ -114,12 +114,12 @@ void CProfileInfo::dumpHtml()
 			CProfileInfo *p = callers[i];
 			if(p->method == "")
 			{
-				stream << "<TD><A HREF=\"/tmp/"<< p->htmlName << "::" << p->method << ".html\"> "
+				stream << "<TD><A HREF= \"" << tempDir << p->htmlName << "::" << p->method << ".html\"> "
 							<< p->htmlName <<"</A></TD>" << endl;
 			}
 			else
 			{
-				stream << "<TD><A HREF=\"/tmp/"<< p->htmlName << "::" << p->method << ".html\"> "
+				stream << "<TD><A HREF= \""<< tempDir << p->htmlName << "::" << p->method << ".html\"> "
 							<< p->htmlName << "::" << p->method <<"</A></TD>" << endl;
 			}
 			stream << "<TD>" << p->cumPercent << "</TD>" ;
@@ -151,12 +151,12 @@ void CProfileInfo::dumpHtml()
 			CProfileInfo *p = called[i];
 			if (p->method == "")
 			{
-				stream << "<TD><A HREF=\"/tmp/"<< p->htmlName << "::" << p->method << ".html\"> "
+				stream << "<TD><A HREF= \"" << tempDir<< p->htmlName << "::" << p->method << ".html\"> "
 							<< p->htmlName << "</A></TD>" << endl;
 			}
 			else
 			{
-				stream << "<TD><A HREF=\"/tmp/"<< p->htmlName << "::" << p->method << ".html\"> "
+				stream << "<TD><A HREF= \"" << tempDir << p->htmlName << "::" << p->method << ".html\"> "
 							<< p->htmlName << "::" << p->method <<"</A></TD>" << endl;
 			}
 			stream << "<TD>" << p->cumPercent << "</TD>" ;
