@@ -133,9 +133,9 @@ QString CProfileViewItem::text (int column) const
 			else if (KProfWidget::sLastFileFormat == KProfWidget::FORMAT_POSE)
 			{
 				if (column == KProfWidget::col_selfCycles)
-					return QString::number (mProfile->selfCycles);
+					return QString::number (mProfile->custom.pose.selfCycles);
 				if (column == KProfWidget::col_cumCycles)
-					return QString::number (mProfile->cumCycles);
+					return QString::number (mProfile->custom.pose.cumCycles);
 			}
 			return "";
    }
@@ -200,7 +200,7 @@ QString CProfileViewItem::key (int column, bool) const
 				if (column == KProfWidget::col_selfCycles)
 					s.sprintf ("%014ld", mProfile->custom.pose.selfCycles);
 				else if (column == KProfWidget::col_cumCycles)
-					s.sprintf ("%014ld", mProfile->cumCycles);
+					s.sprintf ("%014ld", mProfile->custom.pose.cumCycles);
 			}
 			break;
 	}
