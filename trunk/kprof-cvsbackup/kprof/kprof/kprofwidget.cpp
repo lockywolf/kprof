@@ -28,6 +28,7 @@
 
 #include <cstdlib>
 #include <cstring>
+#include <assert.h>
 
 #include <qhbuttongroup.h>
 #include <kfontdialog.h>
