@@ -51,11 +51,12 @@ public:
 	QArray<CProfileInfo *> called;		// list of functions called by this one
 	QArray<CProfileInfo *> callers;		// list of functions that this one calls
 
-	float		cumPercent;
-	float		cumSeconds;
-	float		selfSeconds;
-	float		selfTsPerCall;
-	float		totalTsPerCall;
+	// members are arranged by descending size to save memory
+	float		cumPercent;				// cumulative percentage (+children) of CPU usage
+	float		cumSeconds;				// cumulative seconds (+children) of CPU usage
+	float		selfSeconds;			// function's own CPU usage
+	float		selfTsPerCall;			// function's own CPU usage PER CALL (average)
+	float		totalTsPerCall;			// cumulative (+children) CPU usage (average)
 	long		calls;					// number of times this one was called
 	long		selfCycles;				// number of cycles for this entry (when appropriate)
 	long		cumCycles;				// cumulative cycles (self + kids)

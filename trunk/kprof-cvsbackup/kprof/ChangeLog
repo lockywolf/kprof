@@ -1,3 +1,10 @@
+2001-02-25 Florent Pillet <fpillet@users.sourceforge.net>
+	* PalmOS Emulator Profile Results are now supported
+
+2001-02-23 Ben Burton <benb@acm.org>
+	* Debian packaging
+	* Fixed the kprof.desktop file to add the KProf icon in the menus
+
 2001-02-16 Florent Pillet <fpillet@users.sourceforge.net>
 	* added Function Check output parser
 	* fixed display of values < 1.0 (was using scientific notation)

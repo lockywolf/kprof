@@ -66,24 +66,26 @@ protected:
 #ifndef QT_NO_PRINTER
 	QPrinter				mPrinter;	// printer object
 #endif
-	int						mCurPage;	// id of the current page (used to know which to print)
+	int					mCurPage;		// id of the current page (used to know which to print)
+	QString				mGProfStdout;	// stdout from gprof command
+	QString				mGProfStderr;	// stderr from gprof command
+	QString				mFlatFilter;	// filter string for flat profile view
+	QFont				mListFont;		// font used to draw the text
+	bool				mAbbrevTemplates; // if true, templates are "abbreviates" (i.e. become <...>)
 
-	QString					mGProfStdout;	// stdout from gprof command
-	QString					mGProfStderr;	// stderr from gprof command
-	QString					mFlatFilter; // filter string for flat profile view
-
-	QFont					mListFont;	// font used to draw the text
-
-	bool					mAbbrevTemplates;	// if true, templates are "abbreviates" (i.e. become <...>)
-
-	// this structure is used while parsing the call graph
-	typedef struct
+	typedef struct						// structure is used while parsing the call graph for gprof and Function Check
 	{
 		QString	name;
 		long	line;
 		bool	primary;
 		bool	recursive;
 	} SCallGraphEntry;
+
+	typedef struct					 	// structure holding call-graph data for PalmOS Emulator results
+	{
+		int		index;
+		int		parent;
+	} SPoseCallGraph;
 
 	enum								// states while parsing the gprof output
 	{
@@ -92,6 +94,13 @@ protected:
 		SEARCH_CALL_GRAPH,
 		PROCESS_CALL_GRAPH,
 		DISCARD_CALL_GRAPH_ENTRY
+	};
+
+	enum								// text results file format that we support
+	{
+		FORMAT_GPROF,					// GNU gprof
+		FORMAT_FNCCHECK,				// Function Check
+		FORMAT_POSE						// PalmOS Emulator
 	};
 
 public:
