@@ -70,8 +70,6 @@ protected:
 	KListView*				mFlat;		// the flat profile list widget
 	KListView*				mHier;		// the hierarchical profile widget
 	KListView*				mObjs;		// the object profile widget
-	KHTMLView*			mGraphView;  //the graphical call tree view
-	KHTMLView*			mMethodView;  //the graphical method view
 
 	QVector<CProfileInfo>	mProfile;	// profile information read from file
 	QVector<CProfileInfo>	mPreviousProfile;	// when comparing, keep previous profile information here
@@ -199,7 +197,7 @@ private:
 	void openFile (const QString &filename, int format, bool compare = false);
 	void prepareProfileView (KListView *view, bool rootIsDecorated);
 	void postProcessProfile (bool compare);
-	void prepareHtmlView(KHTMLView* viewer);
+	void prepareHtmlPart(KHTMLPart* part);
 
 	void customizeColumns (KListView *view, int profiler);
 	
