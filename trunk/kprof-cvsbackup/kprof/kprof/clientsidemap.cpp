@@ -23,8 +23,6 @@
 #include <qfile.h>
 #include <qtextstream.h>
 
-#include <iostream.h>
-
 //This class maps a Server Side Image Map onto a
 //Client Side Image Map
 ClientSideMap::ClientSideMap(QTextStream& serverSideMap, QFile& file)
