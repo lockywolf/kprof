@@ -260,24 +260,29 @@ void KProfWidget::openRecentFile (const KURL& url)
 
 void KProfWidget::openResultsFile ()
 {
+	// customize the Open File dialog: we add
+	// a few widgets at the end which allow the user
+	// to give us a hint at which profiler the results
+	// file comes from (GNU gprof, Function Check, Palm OS Emulator)
 	KFileDialog fd (QString::null, QString::null, this, NULL, i18n ("Select a profiling results file"));
 
 	QWidget *w = fd.mainWidget ();
 	QLayout *layout = w->layout ();
 
-	QRadioButton *fmtGPROF, *fmtFNCCHECK;
-
 	QHBoxLayout *hl = new QHBoxLayout (layout);
-
 	hl->add (new QLabel (i18n ("Text File Format:"), w));
 	hl->addSpacing (10);
 
 	QButtonGroup *bg = new QHButtonGroup (w);
 	bg->setRadioButtonExclusive (true);
-	fmtGPROF = new QRadioButton (i18n ("GNU gprof  "), bg);
-	fmtFNCCHECK = new QRadioButton (i18n ("Function Check  "), bg);
+	QRadioButton *fmtGPROF = new QRadioButton (i18n ("GNU gprof  "), bg);
+	QRadioButton *fmtFNCCHECK = new QRadioButton (i18n ("Function Check  "), bg);
+	QRadioButton *fmtPOSE = new QRadioButton (i18n ("Palm OS Emulator"), bg);
+	
+	// turn on the gprof button by default (TODO: store this in the prefs)
 	if (!fmtGPROF->isOn ())
 		fmtGPROF->toggle ();
+
 	hl->add (bg);
 	hl->addStretch ();
 	
@@ -287,7 +292,9 @@ void KProfWidget::openResultsFile ()
     if (!filename.isEmpty())
         KRecentDocument::add (filename);
 
-	openFile (filename, fmtGPROF->isChecked () ? FORMAT_GPROF : FORMAT_FNCCHECK);
+	openFile (filename, fmtGPROF->isChecked () ? FORMAT_GPROF :
+						fmtFNCCHECK->isChecked () ? FORMAT_FNCCHECK :
+						FORMAT_POSE);
 }
 
 void KProfWidget::openFile (const QString &filename, int format)
@@ -305,55 +312,69 @@ void KProfWidget::openFile (const QString &filename, int format)
 		QFileInfo gmonfinfo (gmonfilename);
 		if (!gmonfinfo.exists ())
 		{
-			// TODO: prepare the .fncdump filename
-			QString text;
-			text.sprintf (i18n ("Can't find the gprof(1) output file\n'%s'"), gmonfilename.latin1());
-			KMessageBox::error (this, text, i18n ("File not found"));
-			return;
+			gmonfilename = finfo.dirPath () + "/fnccheck.out";
+			QFileInfo fnccheckinfo (gmonfilename);
+			if (!fnccheckinfo.exists ())
+			{
+				KMessageBox::error (this, i18n ("Can't find any profiling output file\n(gmon.out or fnccheck.out)"), i18n ("File not found"));
+				return;
+			}
+			else
+				format = FORMAT_FNCCHECK;
 		}
+		else
+			format = FORMAT_GPROF;
 
-		// exec "gprof -b filename"
-		KProcess gprof;
-		gprof << "gprof" << "-b" << filename << gmonfilename;
-
-		mGProfStdout = "";
-		mGProfStderr = "";
-		connect (&gprof, SIGNAL (receivedStdout (KProcess*, char*, int)), this, SLOT (gprofStdout (KProcess*, char*, int)));
-		connect (&gprof, SIGNAL (receivedStderr (KProcess*, char*, int)), this, SLOT (gprofStderr (KProcess*, char*, int)));
-
-		gprof.start (KProcess::Block, KProcess::AllOutput);
-
-		if (!gprof.normalExit () || gprof.exitStatus ())
+		if (format == FORMAT_GPROF)
 		{
-			QString text = i18n ("gprof(1) could not generate the profile data.\n");
-			if (gprof.normalExit () && gprof.exitStatus ())
+			// GNU gprof analysis of gmon.out file
+			// exec "gprof -b filename"
+			KProcess gprof;
+			gprof << "gprof" << "-b" << filename << gmonfilename;
+
+			mGProfStdout = "";
+			mGProfStderr = "";
+			connect (&gprof, SIGNAL (receivedStdout (KProcess*, char*, int)), this, SLOT (gprofStdout (KProcess*, char*, int)));
+			connect (&gprof, SIGNAL (receivedStderr (KProcess*, char*, int)), this, SLOT (gprofStderr (KProcess*, char*, int)));
+
+			gprof.start (KProcess::Block, KProcess::AllOutput);
+
+			if (!gprof.normalExit () || gprof.exitStatus ())
 			{
-				QString s;
-				s.sprintf (i18n ("Error %d was returned.\n"), gprof.exitStatus ());
-				text += s;
+				QString text = i18n ("gprof(1) could not generate the profile data.\n");
+				if (gprof.normalExit () && gprof.exitStatus ())
+				{
+					QString s;
+					s.sprintf (i18n ("Error %d was returned.\n"), gprof.exitStatus ());
+					text += s;
+				}
+				if (!mGProfStderr.isEmpty ())
+				{
+					text += i18n ("It returned the following error message(s):\n");
+					text += mGProfStderr;
+				}
+				else if (!mGProfStdout.isEmpty ())
+				{
+					text += i18n ("Following output was displayed:\n");
+					text += mGProfStdout;
+				}
+				KMessageBox::error (this, text, i18n ("gprof exited with error(s)"));
+				return;
 			}
-			if (!mGProfStderr.isEmpty ())
-			{
-				text += i18n ("It returned the following error message(s):\n");
-				text += mGProfStderr;
-			}
-			else if (!mGProfStdout.isEmpty ())
-			{
-				text += i18n ("Following output was displayed:\n");
-				text += mGProfStdout;
-			}
-			KMessageBox::error (this, text, i18n ("gprof exited with error(s)"));
-			return;
+
+			mFlat->clear ();
+			mHier->clear ();
+			mObjs->clear ();
+			mProfile.clear ();
+
+			// parse profile data
+			QTextStream t (&mGProfStdout, IO_ReadOnly);
+			parseProfile_gprof (t);
 		}
-
-		mFlat->clear ();
-		mHier->clear ();
-		mObjs->clear ();
-		mProfile.clear ();
-
-		// parse profile data
-		QTextStream t (&mGProfStdout, IO_ReadOnly);
-		parseProfile_gprof (t);
+		else
+		{
+			// Function Check analysis of fnccheck.out file
+		}
 	}
 	else
 	{
@@ -385,8 +406,10 @@ void KProfWidget::openFile (const QString &filename, int format)
 		QTextStream t (&f);
 		if (format == FORMAT_GPROF)
 			parseProfile_gprof (t);
-		else
+		else if (format == FORMAT_FNCCHECK)
 			parseProfile_fnccheck (t);
+		else
+			parseProfile_pose (t);
 	}
 
 	// post-process the parsed data
@@ -412,6 +435,84 @@ void KProfWidget::gprofStdout (KProcess *, char *buffer, int buflen)
 void KProfWidget::gprofStderr (KProcess *, char *buffer, int buflen)
 {
 	mGProfStderr += QString::fromLocal8Bit (buffer, buflen);
+}
+
+void KProfWidget::parseProfile_pose (QTextStream& t)
+{
+#if 0
+	/*
+	 * parse a profile results file generated by the PalmOS Emulator
+	 *
+	 */
+	
+	// while parsing, we temporarily store all entries of a call graph block
+	// in an array
+	QVector<SCallGraphEntry> callGraphBlock;
+	callGraphBlock.setAutoDelete (true);
+	callGraphBlock.resize (32);
+
+	// because of the way POSE results are shown, we have to keep a dictionnary
+	// of indexes -> CProfileInfo*, and a list of call maps index -> parent index
+	QAsciiDict<CProfileInfo> functions;
+
+	t.setEncoding (QTextStream::Latin1);
+	while (!t.eof ())
+	{
+		if (++line == 0)
+			continue;			// skip first line, it only contains field descriptor
+		
+		s = t.readLine ();
+		s = s.simplifyWhiteSpace ();
+		if (s.length() == 0)
+			continue;
+
+		// split the line fields
+		QStringList fields;
+		fields = QStringList::split ("\t", s, false);
+		if (fields.isEmpty ())
+			continue;
+		for (uint i=0; i < fields.count(); i++)
+			fields[i] = fields[i].stripWhiteSpace();
+
+		// first look if we have a dictionnary entry for this function
+		CProfileInfo *p = functions[fields[3].latin1()];
+		if (p == NULL)
+		{
+			p = new CProfileInfo;
+			functions.insert (fields[3].latin1(), p);
+			p->ind  = mProfile.count ();
+			p->name = fields[3];
+		}
+
+		p->cumPercent		+= fields[10].toFloat ();
+		p->cumSeconds		+= fields[9].toFloat () / 1000.0;		// value given in milliseconds
+		p->selfSeconds		+= fields[6].toFloat () / 1000.0;		// value given in milliseconds
+		p->calls			+= fields[4].toLong ();
+		p->selfTsPerCall	+= 0.0;			// not given by Function Check
+		p->totalTsPerCall	+= fields[5].toFloat ();
+
+		// p->simplifiedName will be updated in postProcessProfile()
+		p->recursive		= false;
+		p->object			= getClassName (p->name);
+		p->multipleSignatures = false;				// will be updated in postProcessProfile()
+
+		int argsoff = p->name.find ('(');
+		if (argsoff != -1)
+		{
+			p->method = p->name.mid (p->object.length(), argsoff - p->object.length());
+			p->arguments  = p->name.right (p->name.length() - argsoff);
+		}
+		else
+			p->method = p->name.right (p->name.length() - p->object.length());
+
+		if (p->method.startsWith ("::"))
+			p->method.remove (0,2);
+
+		int j = mProfile.size ();
+		mProfile.resize (j + 1);
+		mProfile.insert (j, p);
+		break;
+#endif
 }
 
 void KProfWidget::parseProfile_fnccheck (QTextStream& t)
@@ -484,7 +585,6 @@ void KProfWidget::parseProfile_fnccheck (QTextStream& t)
 				p->cumSeconds		= fields[2].toFloat ();
 				p->selfSeconds		= fields[0].toFloat ();
 				p->calls			= fields[4].toLong ();
-				p->selfTsPerCall	= 0.0;			// not given by Function Check
 				p->totalTsPerCall	= fields[5].toFloat ();
 				p->name				= fields[6];
 

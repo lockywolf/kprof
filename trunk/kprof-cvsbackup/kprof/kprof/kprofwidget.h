@@ -140,6 +140,7 @@ signals:
 private:
 	void openFile (const QString &filename, int format);
 	void prepareProfileView (KListView *view, bool rootIsDecorated);
+	void parseProfile_pose (QTextStream &t);
 	void parseProfile_fnccheck (QTextStream &t);
 	void parseProfile_gprof (QTextStream &t);
 	void processCallGraphBlock (const QVector<SCallGraphEntry> &data);

@@ -51,19 +51,38 @@ public:
 	QArray<CProfileInfo *> called;		// list of functions called by this one
 	QArray<CProfileInfo *> callers;		// list of functions that this one calls
 
-	uint		ind;					// index of this entry in the flat profile table (used to generate call graphs)
-	long		calls;					// number of times this one was called
 	float		cumPercent;
 	float		cumSeconds;
 	float		selfSeconds;
 	float		selfTsPerCall;
 	float		totalTsPerCall;
+	long		calls;					// number of times this one was called
+	long		selfCycles;				// number of cycles for this entry (when appropriate)
+	long		cumCycles;				// cumulative cycles (self + kids)
+	uint		ind;					// index of this entry in the flat profile table (used to generate call graphs)
 	bool		recursive;
 	bool		multipleSignatures;		// if true, this method name has multiple signatures
 	bool		output;					// temporary boolean used to output a partial call-graph
 
 public:
-	~CProfileInfo() { }
+	CProfileInfo ()
+		:	cumPercent (0.0),
+			cumSeconds (0.0),
+			selfSeconds (0.0),
+			selfTsPerCall (0.0),
+			totalTsPerCall (0.0),
+			calls (0),
+			selfCycles (0),
+			cumCycles (0),
+			ind (0),
+			recursive (false),
+			multipleSignatures (false)
+		{
+		}
+
+	~CProfileInfo()
+		{
+		}
 };
 
 #endif
