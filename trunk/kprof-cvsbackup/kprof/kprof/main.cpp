@@ -36,9 +36,6 @@
 #include "kprofwidget.h"
 #include <qstring.h>
 
-#include <iostream>
-using namespace std;
-
 static const char *description = I18N_NOOP("Execution profile results analysis utility");
 
 static KCmdLineOptions options[] =
@@ -47,7 +44,6 @@ static KCmdLineOptions options[] =
 	{ "p ", I18N_NOOP("profiler used - one of <gprof, fnccheck, pose>"),0},
   { 0, 0, 0 }
 };
-
 
 
 int main(int argc, char **argv)
@@ -89,5 +85,7 @@ int main(int argc, char **argv)
 	RUN("start the application");
 	int i = app.exec();
 	RUN("finish the application");
+
 	return i;
 }
+
