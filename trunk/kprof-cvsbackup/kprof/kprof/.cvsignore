@@ -1,3 +1,4 @@
+kprof.all_cpp.cpp
 *.o
 Makefile
 kprof
