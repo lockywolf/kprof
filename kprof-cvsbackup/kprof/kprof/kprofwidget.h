@@ -53,6 +53,7 @@ class KProfWidget : public QWidget
 
 public:
 	static QFont*			sListFont;	// font used to draw list entries
+	static int				sLastFileFormat;	// format of the last opened file
 
 protected:
 	KTabCtl*				mTabs;		// the tabbed control
@@ -64,7 +65,7 @@ protected:
 	QVector<QString>		mClasses;	// list of distinct class names found in the profile information
 
 #ifndef QT_NO_PRINTER
-	QPrinter				mPrinter;	// printer object
+	QPrinter			mPrinter;		// printer object
 #endif
 	int					mCurPage;		// id of the current page (used to know which to print)
 	QString				mGProfStdout;	// stdout from gprof command
@@ -89,13 +90,18 @@ protected:
 
 	enum								// states while parsing the gprof output
 	{
-		SEARCH_FLAT_PROFILE = 0,
+		ANALYZING,
+		PROCESS_CYCLES,					// used for Function Check parsing
+		SEARCH_FLAT_PROFILE,			// for GPROF (to remove later)
 		PROCESS_FLAT_PROFILE,
-		SEARCH_CALL_GRAPH,
+		PROCESS_MIN_MAX_TIME,			// used for Function Check parsing
+		SEARCH_CALL_GRAPH,				// for GPROF (to remove later)
 		PROCESS_CALL_GRAPH,
 		DISCARD_CALL_GRAPH_ENTRY
 	};
 
+
+public:
 	enum								// text results file format that we support
 	{
 		FORMAT_GPROF,					// GNU gprof
@@ -103,8 +109,7 @@ protected:
 		FORMAT_POSE						// PalmOS Emulator
 	};
 
-public:
-	enum colID
+	enum colID							// column IDs
 	{
 		col_function = 0,
 		col_recursive,
@@ -112,10 +117,17 @@ public:
 		col_total,
 		col_totalPercent,
 		col_self,
-		col_totalPerCall,
-		col_selfPerCall,
+		col_totalMsPerCall,				// last column common to all formats
 
-		col_selfCycles,
+		// gprof specific columns
+		col_selfMsPerCall = col_totalMsPerCall + 1,
+
+		// Function Check specific columns
+		col_minMsPerCall = col_totalMsPerCall + 1,
+		col_maxMsPerCall,
+
+		// POSE specific columns
+		col_selfCycles = col_totalMsPerCall + 1,
 		col_cumCycles
 	};
 
@@ -153,12 +165,12 @@ private:
 	void openFile (const QString &filename, int format);
 	void prepareProfileView (KListView *view, bool rootIsDecorated);
 	void parseProfile_pose (QTextStream &t);
-	void parseProfile_fnccheck (QTextStream &t);
+	bool parseProfile_fnccheck (QTextStream &t);
 	void parseProfile_gprof (QTextStream &t);
 	void processCallGraphBlock (const QVector<SCallGraphEntry> &data);
 	void postProcessProfile ();
 
-	void customizeColumns (int profiler);
+	void customizeColumns (KListView *view, int profiler);
 	
 	CProfileInfo *locateProfileEntry (const QString& name);
 

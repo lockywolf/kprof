@@ -55,7 +55,6 @@ public:
 	float		cumPercent;				// cumulative percentage (+children) of CPU usage
 	float		cumSeconds;				// cumulative seconds (+children) of CPU usage
 	float		selfSeconds;			// function's own CPU usage
-	float		selfMsPerCall;			// function's own CPU usage PER CALL (average)
 	float		totalMsPerCall;			// cumulative (+children) CPU usage (average)
 	long		calls;					// number of times this one was called
 	long		selfCycles;				// number of cycles for this entry (when appropriate)
@@ -65,20 +64,38 @@ public:
 	bool		multipleSignatures;		// if true, this method name has multiple signatures
 	bool		output;					// temporary boolean used to output a partial call-graph
 
+	// variant structure for various profilers
+	union {
+		// gprof
+		struct {
+			float	selfMsPerCall;		// function's own CPU usage PER CALL (average)
+		} gprof;
+
+		// function check
+		struct {
+			float	minMsPerCall;
+			float	maxMsPerCall;
+		} fnccheck;
+
+		// Palm OS Emulator
+		struct {
+			long	selfCycles;
+			long	cumCycles;
+		} pose;
+	} custom;
+
 public:
 	CProfileInfo ()
 		:	cumPercent (0.0),
 			cumSeconds (0.0),
 			selfSeconds (0.0),
-			selfMsPerCall (0.0),
 			totalMsPerCall (0.0),
 			calls (0),
-			selfCycles (0),
-			cumCycles (0),
 			ind (0),
 			recursive (false),
 			multipleSignatures (false)
 		{
+			memset (&custom, 0, sizeof (custom));
 		}
 
 	~CProfileInfo()

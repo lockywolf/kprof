@@ -31,6 +31,7 @@
 #include <qhbuttongroup.h>
 #include <qfontdialog.h>
 #include <qlayout.h>
+#include <qmessagebox.h>
 #include <qradiobutton.h>
 #include <qvector.h>
 #include <qlabel.h>
@@ -54,8 +55,13 @@
 #include "call-graph.h"
 
 
-QFont* KProfWidget::sListFont = NULL;
-static int gLastFileFormat;
+/*
+ * Some globals we need - one of these days I'll have to synthesize this 
+ * in a config class or something...
+ *
+ */
+QFont*	KProfWidget::sListFont = NULL;
+int		KProfWidget::sLastFileFormat = FORMAT_GPROF;
 
 
 KProfWidget::KProfWidget (QWidget *parent, const char *name)
@@ -186,6 +192,7 @@ void KProfWidget::selectListFont ()
 void KProfWidget::prepareProfileView (KListView *view, bool rootIsDecorated)
 {
 	KIconLoader *loader = KGlobal::iconLoader ();
+
 	view->addColumn (i18n("Function/Method"), -1);
 	view->addColumn (QIconSet (loader->loadIcon ("redo", KIcon::Small)), "", -1);
 	view->addColumn (i18n("Count"), -1);
@@ -193,18 +200,12 @@ void KProfWidget::prepareProfileView (KListView *view, bool rootIsDecorated)
 	view->addColumn (i18n("%"), -1);
 	view->addColumn (i18n("Self (s)"), -1);
 	view->addColumn (i18n("Total ms/call"), -1);
-	view->addColumn (i18n("Self ms/call"), -1);
-	view->addColumn (i18n("Self Cycles"), -1);
-	view->addColumn (i18n("Total Cycles"), -1);
 
-	view->setColumnAlignment (2, AlignRight);
-	view->setColumnAlignment (3, AlignRight);
-	view->setColumnAlignment (4, AlignRight);
-	view->setColumnAlignment (5, AlignRight);
-	view->setColumnAlignment (6, AlignRight);
-	view->setColumnAlignment (7, AlignRight);
-	view->setColumnAlignment (8, AlignRight);
-	view->setColumnAlignment (9, AlignRight);
+	view->setColumnAlignment (col_count, AlignRight);
+	view->setColumnAlignment (col_total, AlignRight);
+	view->setColumnAlignment (col_totalPercent,	AlignRight);
+	view->setColumnAlignment (col_self, AlignRight);
+	view->setColumnAlignment (col_totalMsPerCall, AlignRight);
 
 	view->setAllColumnsShowFocus (true);
 	view->setFrameStyle (QFrame::WinPanel + QFrame::Sunken);
@@ -212,20 +213,28 @@ void KProfWidget::prepareProfileView (KListView *view, bool rootIsDecorated)
 	view->setRootIsDecorated (rootIsDecorated);
 }
 
-void KProfWidget::customizeColumns (int profiler)
+void KProfWidget::customizeColumns (KListView *view, int profiler)
 {
 	// customize the columns for the profiler we are using
 	switch (profiler)
 	{
 		case FORMAT_GPROF:
+			view->addColumn (i18n("Self ms/call"), -1);
+			view->setColumnAlignment (col_selfMsPerCall, AlignRight);
 			break;
 
 		case FORMAT_FNCCHECK:
-			// remove the Self Cycles / Total Cycles columns
-			// Self ms/call to Max ms/call
+			view->addColumn (i18n("Min. ms/call"), -1);
+			view->addColumn (i18n("Max. ms/call"), -1);
+			view->setColumnAlignment (col_minMsPerCall, AlignRight);
+			view->setColumnAlignment (col_maxMsPerCall, AlignRight);
 			break;
 
 		case FORMAT_POSE:
+			view->addColumn (i18n("Self Cycles"), -1);
+			view->addColumn (i18n("Total Cycles"), -1);
+			view->setColumnAlignment (col_selfCycles, AlignRight);
+			view->setColumnAlignment (col_cumCycles, AlignRight);
 			break;
 	}
 }
@@ -242,7 +251,7 @@ void KProfWidget::applySettings ()
 	config.setGroup ("KProfiler");
 	config.writeEntry ("AbbreviateTemplates", mAbbrevTemplates);
 	config.writeEntry ("Font", sListFont->rawName ());
-	config.writeEntry ("LastFileFormat", gLastFileFormat);
+	config.writeEntry ("LastFileFormat", sLastFileFormat);
 
 	// TODO: save columns widths here
 
@@ -268,7 +277,7 @@ void KProfWidget::loadSettings ()
 		mObjs->setFont (*sListFont);
 	}
 
-	gLastFileFormat = config.readNumEntry ("LastFileFormat", FORMAT_GPROF);
+	sLastFileFormat = config.readNumEntry ("LastFileFormat", FORMAT_GPROF);
 
 	// TODO: reload columns widths here
 }
@@ -301,9 +310,9 @@ void KProfWidget::openResultsFile ()
 	QRadioButton *fmtPOSE = new QRadioButton (i18n ("Palm OS Emulator"), bg);
 
 	// reset format button to last used format
-	if (gLastFileFormat == FORMAT_GPROF && !fmtGPROF->isOn ())
+	if (sLastFileFormat == FORMAT_GPROF && !fmtGPROF->isOn ())
 		fmtGPROF->toggle ();
-	else if (gLastFileFormat == FORMAT_FNCCHECK && !fmtFNCCHECK->isOn ())
+	else if (sLastFileFormat == FORMAT_FNCCHECK && !fmtFNCCHECK->isOn ())
 		fmtFNCCHECK->toggle ();
 	else if (!fmtPOSE->isOn ())
 		fmtPOSE->toggle ();
@@ -317,10 +326,10 @@ void KProfWidget::openResultsFile ()
     if (!filename.isEmpty())
     {
 	    KRecentDocument::add (filename);
-		gLastFileFormat =	fmtGPROF->isChecked () ?		FORMAT_GPROF :
+		sLastFileFormat =	fmtGPROF->isChecked () ?		FORMAT_GPROF :
 	                        fmtFNCCHECK->isChecked () ?		FORMAT_FNCCHECK :
     	                   									FORMAT_POSE;
-		openFile (filename, gLastFileFormat);
+		openFile (filename, sLastFileFormat);
 	}
 }
 
@@ -362,8 +371,8 @@ void KProfWidget::openFile (const QString &filename, int format)
 		else
 		{
 			// Function Check analysis of fnccheck.out file
-			// exec "fncdump +calls filename"
-			profile_generator << "fncdump" << "+calls" << filename;
+			// exec "fncdump +calls -no-decoration filename"
+			profile_generator << "fncdump" << "+calls" << "-no-decoration" << "-sfile" << outfile << filename;
 		}
 
 		mGProfStdout = "";
@@ -448,6 +457,11 @@ void KProfWidget::openFile (const QString &filename, int format)
 	// post-process the parsed data
 	postProcessProfile ();
 
+	// customize the on-screen columns
+	customizeColumns (mFlat, sLastFileFormat);
+	customizeColumns (mHier, sLastFileFormat);
+	customizeColumns (mObjs, sLastFileFormat);
+
 	// fill lists
 	fillFlatProfileList ();
 	fillHierProfileList ();
@@ -521,8 +535,7 @@ void KProfWidget::parseProfile_pose (QTextStream& t)
 
 		// gather the index of this entry
 		int ind = fields[0].toInt();
-		if (ind > 512000)
-		{
+		if (ind > 512000) {
 			// uh ? this is probably a parsing problem!
 			line--;
 			continue;
@@ -563,10 +576,9 @@ void KProfWidget::parseProfile_pose (QTextStream& t)
 		p->cumPercent		+= fields[10].toFloat ();
 		p->cumSeconds		+= fields[9].toFloat () / 1000.0;		// value given in milliseconds
 		p->selfSeconds		+= fields[6].toFloat () / 1000.0;		// value given in milliseconds
-		p->selfMsPerCall	= 0.0;									// self time per call not provided by POSE
 		p->calls			+= fields[4].toLong ();
-		p->selfCycles		+= fields[5].toLong ();
-		p->cumCycles		+= fields[8].toLong ();
+		p->custom.pose.selfCycles	+= fields[5].toLong ();
+		p->custom.pose.cumCycles	+= fields[8].toLong ();
 
 		// @@@ TODO: check and fix this
 		float v = fields[11].toFloat ();
@@ -611,11 +623,11 @@ void KProfWidget::parseProfile_pose (QTextStream& t)
 			// these errors should not happen in a well-formed profile result,
 			// but who knows...
 			if (pFather == NULL) {
-				fprintf (stderr, "pFather==NULL: No profile entry for index %d!\n", father);
+				fprintf (stderr, "kprof: pFather==NULL: No profile entry for index %d!\n", father);
 				continue;
 			}
 			if (pChild == NULL) {
-				fprintf (stderr, "pChild==NULL: No profile entry for index %d!\n", child);
+				fprintf (stderr, "kprof: pChild==NULL: No profile entry for index %d!\n", child);
 				continue;
 			}
 
@@ -643,14 +655,12 @@ void KProfWidget::parseProfile_pose (QTextStream& t)
 	free (callGraph);
 }
 
-void KProfWidget::parseProfile_fnccheck (QTextStream& t)
+bool KProfWidget::parseProfile_fnccheck (QTextStream& t)
 {
 	/*
 	 * parse a profile results generated with FUNCTION CHECK
 	 *
 	 */
-
-	QRegExp indexRegExp ("\\[\\d+\\]");
 
 	// while parsing, we temporarily store all entries of a call graph block
 	// in an array
@@ -658,7 +668,7 @@ void KProfWidget::parseProfile_fnccheck (QTextStream& t)
 	callGraphBlock.setAutoDelete (true);
 	callGraphBlock.resize (32);
 
-	int state = 0;
+	int state = ANALYZING;
 	long line = 0;
 	bool processingCallers=false;	// used during call-graph processing
 	int curFunctionIndex = -1;		// current function index while processing call-graph
@@ -672,12 +682,53 @@ void KProfWidget::parseProfile_fnccheck (QTextStream& t)
 		s = s.simplifyWhiteSpace ();
 		if (s.length() == 0)
 			continue;
-
-		// split the line in tab-delimited fields
-		QStringList fields;
-		if (state == PROCESS_FLAT_PROFILE)
+		if (s[0] == '<')			// marks the end of the current section
 		{
-			fields = QStringList::split ("|", s, false);
+			state = ANALYZING;
+			continue;
+		}
+
+		// check whether the file is valid or not
+		if (line==1 && s[0]!='>')
+		{
+			QMessageBox::critical (this, i18n("Invalid File"),i18n("This file does not appear to be\na valid Function Check output file.\nIt should have been generated using the following command line:\nfncdump +calls -no-decoration {application_name}"));
+			return false;
+		}
+
+		// look for markers to change the state
+		QStringList fields;
+		if (s.startsWith (">cycles"))
+			state = PROCESS_CYCLES;
+		else if (s.startsWith (">profile"))
+			state = PROCESS_FLAT_PROFILE;
+		else if (s.startsWith (">minmax"))
+			state = PROCESS_MIN_MAX_TIME;
+		else if (s.startsWith (">callgraph"))
+			state = PROCESS_CALL_GRAPH;
+		else if (state != ANALYZING)
+		{
+			uint pos=0,i;
+			for (i=0; i<s.length(); i++)
+			{
+				if (s[i]==' ')
+				{
+					if (i==pos)
+						fields += "";
+					else
+						fields += s.mid (pos, i-pos);
+					pos = i+1;
+				}
+				else if (pos==i && s[i]=='"')
+				{
+					while (s[++i] != '"')
+						;
+					pos++;
+					fields += s.mid (pos, i-pos);
+					pos = ++i + 1;
+				}
+			}
+			if (i > pos)
+				fields += s.mid (pos,i-pos);
 			if (fields.isEmpty ())
 				continue;
 			for (uint i=0; i < fields.count(); i++)
@@ -687,12 +738,11 @@ void KProfWidget::parseProfile_fnccheck (QTextStream& t)
 		switch (state)
 		{
 			/*
-			 * look for beginning of flat profile
+			 * analyze cycles detected during execution
 			 *
 			 */
-			case SEARCH_FLAT_PROFILE:
-				if (s.startsWith ("|-----"))
-					state = PROCESS_FLAT_PROFILE;
+			case PROCESS_CYCLES:
+				// @@@ TODO
 				break;
 
 			/*
@@ -701,11 +751,12 @@ void KProfWidget::parseProfile_fnccheck (QTextStream& t)
 			 */
      		case PROCESS_FLAT_PROFILE:
 			{
-				if (!s.startsWith ("|"))
-				{
-					state = SEARCH_CALL_GRAPH;
+				if (fields.count() != 7)
 					break;
-				}
+				if (!fields[0].length())
+					break;
+				if (!fields[0][0].isDigit ())
+					break;
 
 				CProfileInfo *p = new CProfileInfo;
 				p->ind				= mProfile.count ();
@@ -740,80 +791,97 @@ void KProfWidget::parseProfile_fnccheck (QTextStream& t)
 			}
 
 			/*
-			 * look for call graph
+			 * analyze MIN/MAX time per function
 			 *
 			 */
-   			case SEARCH_CALL_GRAPH:
-				if (s.startsWith ("Call-graph:"))
-					state = PROCESS_CALL_GRAPH;
+			case PROCESS_MIN_MAX_TIME:
+			{
+				// we assume that the flat profile and the min/max time profile
+				// are displayed using the same order
+				if (fields.count() != 4)
+					break;
+				if (!fields[0].length())
+					break;
+				if (!fields[0][0].isDigit ())
+					break;
+
+				curFunctionIndex = fields[0].toInt ();
+				if (curFunctionIndex < 0 || (uint)curFunctionIndex >= mProfile.count())
+				{
+					fprintf (stderr, "kprof: missing flat profile entry for [%d] (line %ld)\n", curFunctionIndex, line);
+					break;
+				}
+
+				CProfileInfo *p = mProfile[curFunctionIndex];
+				p->custom.fnccheck.minMsPerCall = fields[1].toFloat() * 1000.0;
+				p->custom.fnccheck.maxMsPerCall = fields[2].toFloat() * 1000.0;
 				break;
+			}
 
     		/*
 			 * analyze call graph entry
 			 *
 			 */
-			case DISCARD_CALL_GRAPH_ENTRY:
-				if (!s.startsWith ("'"))
-					break;
-				state = PROCESS_CALL_GRAPH;
-
     		case PROCESS_CALL_GRAPH:
 			{
-				if (s.startsWith ("'"))
+				if (s[0]=='"')
 				{
 					// found another call-graph entry
-					processingCallers = s.contains ("called by:");
-					int pos = indexRegExp.find (s, 0);
-					if (pos == -1)
+					processingCallers = fields.count() == 3;
+					curFunctionIndex = fields[1].toInt ();
+					break;
+				}
+				if (curFunctionIndex < 0 || (uint)curFunctionIndex >= mProfile.count())
+					break;
+
+				if (fields[0]=="*")
+				{
+					// "this function does not call anyone we know"
+					curFunctionIndex = -1;
+					break;
+				}
+
+				// process current call-graph entry
+				CProfileInfo *p = mProfile[curFunctionIndex];
+				for (uint i=0; i < fields.count(); i++)
+				{
+					int referred = fields[i].toInt ();
+					if (referred < 0 || (uint)referred >= mProfile.count())
 					{
-						// this should not really happen...
-						state = DISCARD_CALL_GRAPH_ENTRY;
+						fprintf (stderr, "kprof: missing flat profile entry for [%d] (line %ld)\n", referred, line);
 						break;
 					}
-					s = s.mid (pos+1, s.find (']',pos+1)-pos-1);
-					curFunctionIndex = s.toInt ();
-					break;
-				}
 
-				int pos = indexRegExp.find (s, 0);
-				if (pos == -1)
-					break;
-				s = s.mid (pos+1, s.find (']')-pos-1);
-
-				pos = s.toInt ();
-				if (pos < 0 || (uint)pos > mProfile.count())
-				{
-					fprintf (stderr, "%s: missing flat profile entry for [%d] (line %ld)\n",
-							 "kprof"/*kapp->name.latin1()*/,
-							 pos,
-							 line);
-					break;
-				}
-
-				CProfileInfo *p = mProfile[curFunctionIndex];
-				if (pos == curFunctionIndex)
-					p->recursive = true;
-				else if (processingCallers)
-				{
-					CProfileInfo *pi = mProfile[pos];
-					if (p->callers.count()==0 || p->callers.find(pi)==-1)
+					if (referred == curFunctionIndex)
+						p->recursive = true;
+					else
 					{
-						p->callers.resize (p->callers.count () + 1);
-						p->callers [p->callers.count () - 1] = pi;
+						CProfileInfo *pi = mProfile[referred];
+						if (processingCallers)
+						{
+							// "called by"
+							if (p->callers.count()==0 || p->callers.find(pi)==-1)
+							{
+								p->callers.resize (p->callers.count () + 1);
+								p->callers [p->callers.count () - 1] = pi;
+							}
+						}
+						else
+						{
+							// "calls"
+							if (p->called.count()==0 || p->called.find(pi)==-1)
+							{
+								p->called.resize (p->called.count () + 1);
+								p->called [p->called.count () - 1] = pi;
+							}
+						}
 					}
 				}
-				else
-				{
-					CProfileInfo *pi = mProfile[pos];
-					if (p->called.count()==0 || p->called.find(pi)==-1)
-					{
-						p->called.resize (p->called.count () + 1);
-						p->called [p->called.count () - 1] = pi;
-					}
-				}
+				curFunctionIndex = -1;
     		}
    		}
 	}
+	return true;
 }
 
 void KProfWidget::parseProfile_gprof (QTextStream& t)
@@ -836,7 +904,7 @@ void KProfWidget::parseProfile_gprof (QTextStream& t)
 	callGraphBlock.setAutoDelete (true);
 	callGraphBlock.resize (32);
 
-	int state = 0;
+	int state = ANALYZING;
 	long line = 0;
 	QString s;
 
@@ -845,7 +913,8 @@ void KProfWidget::parseProfile_gprof (QTextStream& t)
 	{
 		line++;
 		s = t.readLine ();
-		if (s.length() && s[0] == 12) {
+		if (s.length() && s[0] == 12)
+		{
 			if (state == PROCESS_CALL_GRAPH)
 				processCallGraphBlock (callGraphBlock);
 			state++;			// CTRL_L marks the beginning of a new block
@@ -912,7 +981,7 @@ void KProfWidget::parseProfile_gprof (QTextStream& t)
 				if (fields[3][0].isDigit ())
 				{
 					p->calls			= fields[3].toLong ();
-					p->selfMsPerCall	= fields[4].toFloat ();
+					p->custom.gprof.selfMsPerCall	= fields[4].toFloat ();
 					p->totalMsPerCall	= fields[5].toFloat ();
 					p->name				= fields[6];
      			}
@@ -921,7 +990,7 @@ void KProfWidget::parseProfile_gprof (QTextStream& t)
 					// if the profile was generated with -z, uncalled functions
 					// have empty "calls", "selfTsPerCall" and "totalTsPerCall" fields
 					p->calls			= 0;
-					p->selfMsPerCall	= 0;
+					p->custom.gprof.selfMsPerCall = 0;
 					p->totalMsPerCall	= 0;
 					p->name				= fields[3];
      			}
@@ -1041,10 +1110,7 @@ void KProfWidget::processCallGraphBlock (const QVector<SCallGraphEntry> &data)
 	{
 		// @@@ should perform better error reporting here
 		if (i != data.count ())
-			fprintf (stderr, "%s: missing flat profile entry for '%s' (line %ld)\n",
-					"kprof"/*kapp->name.latin1()*/,
-					data[i]->name.latin1(),
-					data[i]->line);
+			fprintf (stderr, "kprof: missing flat profile entry for '%s' (line %ld)\n", data[i]->name.latin1(), data[i]->line);
   		return;
 	}
 
