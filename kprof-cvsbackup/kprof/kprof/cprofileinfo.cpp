@@ -3,7 +3,7 @@
                              -------------------
     begin                : Wed Jul 17 2002
     copyright            : (C) 2002 by Colin Desmond
-    email                : colin@localhost.localdomain
+    email                : colin.desmond@btopenworld.com
  ***************************************************************************/
 
 /***************************************************************************
@@ -29,13 +29,19 @@ CProfileInfo::CProfileInfo ()
 			ind (0),
 			recursive (false),
 			multipleSignatures (false),
-			deleted (false)
+			deleted (false),
+			dumpFile(0)
 {
 	memset (&custom, 0, sizeof (custom));
 }
 
 CProfileInfo::~CProfileInfo()
 {
+	if (dumpFile != 0)
+	{
+		delete dumpFile;
+		dumpFile = 0;
+	}
 }
 
 //Dump information relevant to the class into a HTML file
@@ -43,17 +49,18 @@ CProfileInfo::~CProfileInfo()
 void CProfileInfo::dumpHtml()
 {
 	//Open the temporary file used to store the HTML.
-	QFile dumpFile;
 	QString fileName = "/tmp/" + htmlName + "::" + method + ".html" ;
-	dumpFile.setName(fileName);
+
+	dumpFile = new KProfFile();
+	dumpFile->setName(fileName);
 
 	//If there is already a file of the same name, delete it.
-	if (dumpFile.exists())
+	if (dumpFile->exists())
 	{
-		dumpFile.remove();
+		dumpFile->remove();
 	}
 
-	dumpFile.open(IO_ReadWrite);
+	dumpFile->open(IO_ReadWrite);
 
 	QByteArray dumpText;
 	QTextOStream stream (dumpText);
@@ -162,6 +169,6 @@ void CProfileInfo::dumpHtml()
 	
 	stream << "</BODY></HTML >" << endl;
 
-	dumpFile.writeBlock (dumpText);
-	dumpFile.close();
+	dumpFile->writeBlock (dumpText);
+	dumpFile->close();
 } //void CProfileInfo::dumpHtml()

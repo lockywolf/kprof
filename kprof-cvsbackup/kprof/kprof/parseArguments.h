@@ -16,4 +16,4 @@
  ***************************************************************************/
 
 //This function parses the command line arguments
-bool parseArguments(KCmdLineArgs* args);
+bool parseArguments(KCmdLineArgs* args, QString& fileName, KProfWidget::ProfilerEnumeration& prof);

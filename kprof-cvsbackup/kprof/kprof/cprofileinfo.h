@@ -32,7 +32,7 @@
 #include <qvector.h>
 #include <qstring.h>
 #include <qarray.h>
-#include <qfile.h>
+#include "kproffile.h"
 
 
 /*
@@ -92,6 +92,9 @@ public:
 public:
 	CProfileInfo ();
 	~CProfileInfo();
+
+private:
+	KProfFile* dumpFile;
 };
 
 #endif

@@ -3,7 +3,7 @@
                              -------------------
     begin                : Mon Jul 8 2002
     copyright            : (C) 2002 by Colin Desmond
-    email                : colin@localhost.localdomain
+    email                : colin.desmond@btopenworld.com
  ***************************************************************************/
 
 /***************************************************************************
