@@ -138,7 +138,7 @@ signals:
 	void addRecentFile (const KURL&);
 
 private:
-	void openFile (const QString &filename);
+	void openFile (const QString &filename, int format);
 	void prepareProfileView (KListView *view, bool rootIsDecorated);
 	void parseProfile_fnccheck (QTextStream &t);
 	void parseProfile_gprof (QTextStream &t);
