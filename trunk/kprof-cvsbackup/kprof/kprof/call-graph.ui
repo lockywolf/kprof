@@ -1,187 +1,242 @@
-<!DOCTYPE UI><UI>
+<!DOCTYPE UI><UI version="3.0" stdsetdef="1">
 <class>CCallGraph</class>
-<widget>
-    <class>QDialog</class>
-    <property stdset="1">
-        <name>name</name>
+<widget class="QDialog">
+    <property name="name">
         <cstring>CCallGraph</cstring>
     </property>
-    <property stdset="1">
-        <name>geometry</name>
+    <property name="geometry">
         <rect>
             <x>0</x>
             <y>0</y>
             <width>331</width>
-            <height>253</height>
+            <height>309</height>
         </rect>
     </property>
-    <property stdset="1">
-        <name>caption</name>
+    <property name="caption">
         <string>Generate Call Graph</string>
     </property>
-    <grid>
-        <property stdset="1">
-            <name>margin</name>
-            <number>11</number>
+    <widget class="QButtonGroup">
+        <property name="name">
+            <cstring>ButtonGroup2</cstring>
         </property>
-        <property stdset="1">
-            <name>spacing</name>
-            <number>6</number>
+        <property name="geometry">
+            <rect>
+                <x>11</x>
+                <y>11</y>
+                <width>309</width>
+                <height>73</height>
+            </rect>
         </property>
-        <widget row="1"  column="0"  rowspan="1"  colspan="3" >
-            <class>QButtonGroup</class>
-            <property stdset="1">
-                <name>name</name>
-                <cstring>ButtonGroup1</cstring>
+        <property name="title">
+            <string>Graph File Format</string>
+        </property>
+        <grid>
+            <property name="name">
+                <cstring>unnamed</cstring>
             </property>
-            <property stdset="1">
-                <name>title</name>
-                <string>Graph Tree Settings</string>
+            <property name="margin">
+                <number>11</number>
             </property>
-            <grid>
-                <property stdset="1">
-                    <name>margin</name>
-                    <number>11</number>
+            <property name="spacing">
+                <number>6</number>
+            </property>
+            <widget class="QRadioButton" row="0" column="0">
+                <property name="name">
+                    <cstring>mGraphViz</cstring>
                 </property>
-                <property stdset="1">
-                    <name>spacing</name>
-                    <number>6</number>
+                <property name="text">
+                    <string>GraphViz</string>
                 </property>
-                <widget row="1"  column="0" >
-                    <class>QRadioButton</class>
-                    <property stdset="1">
-                        <name>name</name>
-                        <cstring>mSelectedFunction</cstring>
-                    </property>
-                    <property stdset="1">
-                        <name>text</name>
-                        <string>Selected Function And Called Functions</string>
-                    </property>
-                    <property stdset="1">
-                        <name>buttonGroupId</name>
-                        <number>1</number>
-                    </property>
-                </widget>
-                <widget row="0"  column="0" >
-                    <class>QRadioButton</class>
-                    <property stdset="1">
-                        <name>name</name>
-                        <cstring>mWholeCallTree</cstring>
-                    </property>
-                    <property stdset="1">
-                        <name>text</name>
-                        <string>Whole Call Tree</string>
-                    </property>
-                    <property stdset="1">
-                        <name>checked</name>
-                        <bool>true</bool>
-                    </property>
-                    <property stdset="1">
-                        <name>buttonGroupId</name>
-                        <number>1</number>
-                    </property>
-                </widget>
-            </grid>
-        </widget>
-        <widget row="2"  column="2" >
-            <class>QPushButton</class>
-            <property stdset="1">
-                <name>name</name>
-                <cstring>mOK</cstring>
+                <property name="checked">
+                    <bool>true</bool>
+                </property>
+            </widget>
+            <widget class="QRadioButton" row="1" column="0">
+                <property name="name">
+                    <cstring>mVCG</cstring>
+                </property>
+                <property name="text">
+                    <string>VCG</string>
+                </property>
+                <property name="buttonGroupId">
+                    <number>0</number>
+                </property>
+            </widget>
+        </grid>
+    </widget>
+    <widget class="QButtonGroup">
+        <property name="name">
+            <cstring>ButtonGroup1</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>10</x>
+                <y>180</y>
+                <width>309</width>
+                <height>80</height>
+            </rect>
+        </property>
+        <property name="title">
+            <string>Graph Tree Settings</string>
+        </property>
+        <grid>
+            <property name="name">
+                <cstring>unnamed</cstring>
             </property>
-            <property stdset="1">
-                <name>text</name>
-                <string>OK</string>
+            <property name="margin">
+                <number>11</number>
             </property>
-            <property stdset="1">
-                <name>default</name>
+            <property name="spacing">
+                <number>6</number>
+            </property>
+            <widget class="QRadioButton" row="1" column="0">
+                <property name="name">
+                    <cstring>mSelectedFunction</cstring>
+                </property>
+                <property name="text">
+                    <string>Selected Function And Called Functions</string>
+                </property>
+                <property name="buttonGroupId">
+                    <number>1</number>
+                </property>
+            </widget>
+            <widget class="QRadioButton" row="0" column="0">
+                <property name="name">
+                    <cstring>mWholeCallTree</cstring>
+                </property>
+                <property name="text">
+                    <string>Whole Call Tree</string>
+                </property>
+                <property name="checked">
+                    <bool>true</bool>
+                </property>
+                <property name="buttonGroupId">
+                    <number>1</number>
+                </property>
+            </widget>
+        </grid>
+    </widget>
+    <widget class="QPushButton">
+        <property name="name">
+            <cstring>mOK</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>110</x>
+                <y>270</y>
+                <width>99</width>
+                <height>28</height>
+            </rect>
+        </property>
+        <property name="text">
+            <string>OK</string>
+        </property>
+        <property name="default">
+            <bool>true</bool>
+        </property>
+    </widget>
+    <widget class="QPushButton">
+        <property name="name">
+            <cstring>mCancel</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>220</x>
+                <y>270</y>
+                <width>99</width>
+                <height>28</height>
+            </rect>
+        </property>
+        <property name="text">
+            <string>Cancel</string>
+        </property>
+    </widget>
+    <spacer>
+        <property name="name">
+            <cstring>Spacer2</cstring>
+        </property>
+        <property name="orientation">
+            <enum>Horizontal</enum>
+        </property>
+        <property name="sizeType">
+            <enum>Expanding</enum>
+        </property>
+        <property name="sizeHint">
+            <size>
+                <width>20</width>
+                <height>20</height>
+            </size>
+        </property>
+    </spacer>
+    <widget class="QButtonGroup">
+        <property name="name">
+            <cstring>ButtonGroup1_2</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>10</x>
+                <y>90</y>
+                <width>309</width>
+                <height>80</height>
+            </rect>
+        </property>
+        <property name="title">
+            <string>Action</string>
+        </property>
+        <widget class="QRadioButton">
+            <property name="name">
+                <cstring>mrunApplication</cstring>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>10</x>
+                    <y>20</y>
+                    <width>287</width>
+                    <height>19</height>
+                </rect>
+            </property>
+            <property name="focusPolicy">
+                <enum>NoFocus</enum>
+            </property>
+            <property name="text">
+                <string>Run graphing application</string>
+            </property>
+            <property name="checked">
                 <bool>true</bool>
             </property>
-        </widget>
-        <widget row="0"  column="0"  rowspan="1"  colspan="3" >
-            <class>QButtonGroup</class>
-            <property stdset="1">
-                <name>name</name>
-                <cstring>ButtonGroup2</cstring>
+            <property name="buttonGroupId">
+                <number>-1</number>
             </property>
-            <property stdset="1">
-                <name>title</name>
-                <string>Graph File Format</string>
-            </property>
-            <grid>
-                <property stdset="1">
-                    <name>margin</name>
-                    <number>11</number>
-                </property>
-                <property stdset="1">
-                    <name>spacing</name>
-                    <number>6</number>
-                </property>
-                <widget row="0"  column="0" >
-                    <class>QRadioButton</class>
-                    <property stdset="1">
-                        <name>name</name>
-                        <cstring>mGraphViz</cstring>
-                    </property>
-                    <property stdset="1">
-                        <name>text</name>
-                        <string>GraphViz</string>
-                    </property>
-                    <property stdset="1">
-                        <name>checked</name>
-                        <bool>true</bool>
-                    </property>
-                </widget>
-                <widget row="1"  column="0" >
-                    <class>QRadioButton</class>
-                    <property stdset="1">
-                        <name>name</name>
-                        <cstring>mVCG</cstring>
-                    </property>
-                    <property stdset="1">
-                        <name>text</name>
-                        <string>VCG</string>
-                    </property>
-                    <property stdset="1">
-                        <name>buttonGroupId</name>
-                        <number>0</number>
-                    </property>
-                </widget>
-            </grid>
-        </widget>
-        <spacer row="2"  column="0" >
-            <property>
-                <name>name</name>
-                <cstring>Spacer1</cstring>
-            </property>
-            <property stdset="1">
-                <name>orientation</name>
-                <enum>Horizontal</enum>
-            </property>
-            <property stdset="1">
-                <name>sizeType</name>
-                <enum>Expanding</enum>
-            </property>
-            <property>
-                <name>sizeHint</name>
-                <size>
-                    <width>20</width>
-                    <height>20</height>
-                </size>
-            </property>
-        </spacer>
-        <widget row="2"  column="1" >
-            <class>QPushButton</class>
-            <property stdset="1">
-                <name>name</name>
-                <cstring>mCancel</cstring>
-            </property>
-            <property stdset="1">
-                <name>text</name>
-                <string>Cancel</string>
+            <property name="toolTip" stdset="0">
+                <string>Display the call graph in the chosen application</string>
             </property>
         </widget>
-    </grid>
+        <widget class="QRadioButton">
+            <property name="name">
+                <cstring>mSaveFile</cstring>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>10</x>
+                    <y>50</y>
+                    <width>287</width>
+                    <height>19</height>
+                </rect>
+            </property>
+            <property name="focusPolicy">
+                <enum>NoFocus</enum>
+            </property>
+            <property name="text">
+                <string>Save file</string>
+            </property>
+            <property name="checked">
+                <bool>true</bool>
+            </property>
+            <property name="toolTip" stdset="0">
+                <string>Save the file to disk</string>
+            </property>
+        </widget>
+    </widget>
 </widget>
 <connections>
     <connection>
@@ -197,4 +252,8 @@
         <slot>accept()</slot>
     </connection>
 </connections>
+<slots>
+    <slot>mRun_clicked()</slot>
+</slots>
+<layoutdefaults spacing="6" margin="11"/>
 </UI>
