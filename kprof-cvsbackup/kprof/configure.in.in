@@ -1,6 +1,6 @@
 #MIN_CONFIG(3)
 
-AM_INIT_AUTOMAKE(kprof,1.4b)
+AM_INIT_AUTOMAKE(kprof,1.4.1)
 
 dnl +------------------+
 dnl |Check for QTreeMap|
