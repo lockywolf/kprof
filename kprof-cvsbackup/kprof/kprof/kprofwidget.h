@@ -158,6 +158,8 @@ private:
 	void processCallGraphBlock (const QVector<SCallGraphEntry> &data);
 	void postProcessProfile ();
 
+	void customizeColumns (int profiler);
+	
 	CProfileInfo *locateProfileEntry (const QString& name);
 
 	void fillFlatProfileList ();

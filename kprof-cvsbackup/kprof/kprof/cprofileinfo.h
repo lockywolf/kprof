@@ -55,8 +55,8 @@ public:
 	float		cumPercent;				// cumulative percentage (+children) of CPU usage
 	float		cumSeconds;				// cumulative seconds (+children) of CPU usage
 	float		selfSeconds;			// function's own CPU usage
-	float		selfTsPerCall;			// function's own CPU usage PER CALL (average)
-	float		totalTsPerCall;			// cumulative (+children) CPU usage (average)
+	float		selfMsPerCall;			// function's own CPU usage PER CALL (average)
+	float		totalMsPerCall;			// cumulative (+children) CPU usage (average)
 	long		calls;					// number of times this one was called
 	long		selfCycles;				// number of cycles for this entry (when appropriate)
 	long		cumCycles;				// cumulative cycles (self + kids)
@@ -70,8 +70,8 @@ public:
 		:	cumPercent (0.0),
 			cumSeconds (0.0),
 			selfSeconds (0.0),
-			selfTsPerCall (0.0),
-			totalTsPerCall (0.0),
+			selfMsPerCall (0.0),
+			totalMsPerCall (0.0),
 			calls (0),
 			selfCycles (0),
 			cumCycles (0),

@@ -192,10 +192,10 @@ void KProfWidget::prepareProfileView (KListView *view, bool rootIsDecorated)
 	view->addColumn (i18n("Total (s)"), -1);
 	view->addColumn (i18n("%"), -1);
 	view->addColumn (i18n("Self (s)"), -1);
-	view->addColumn (i18n("Total\nus/call"), -1);
-	view->addColumn (i18n("Self\nus/call"), -1);
-	view->addColumn (i18n("Self\nCycles"), -1);
-	view->addColumn (i18n("Total\nCycles"), -1);
+	view->addColumn (i18n("Total ms/call"), -1);
+	view->addColumn (i18n("Self ms/call"), -1);
+	view->addColumn (i18n("Self Cycles"), -1);
+	view->addColumn (i18n("Total Cycles"), -1);
 
 	view->setColumnAlignment (2, AlignRight);
 	view->setColumnAlignment (3, AlignRight);
@@ -212,6 +212,24 @@ void KProfWidget::prepareProfileView (KListView *view, bool rootIsDecorated)
 	view->setRootIsDecorated (rootIsDecorated);
 }
 
+void KProfWidget::customizeColumns (int profiler)
+{
+	// customize the columns for the profiler we are using
+	switch (profiler)
+	{
+		case FORMAT_GPROF:
+			break;
+
+		case FORMAT_FNCCHECK:
+			// remove the Self Cycles / Total Cycles columns
+			// Self ms/call to Max ms/call
+			break;
+
+		case FORMAT_POSE:
+			break;
+	}
+}
+
 void KProfWidget::settingsChanged ()
 {
 	applySettings ();
@@ -226,7 +244,7 @@ void KProfWidget::applySettings ()
 	config.writeEntry ("Font", sListFont->rawName ());
 	config.writeEntry ("LastFileFormat", gLastFileFormat);
 
-	// TODO: save columns widhts here
+	// TODO: save columns widths here
 
 	update ();
 }
@@ -545,15 +563,16 @@ void KProfWidget::parseProfile_pose (QTextStream& t)
 		p->cumPercent		+= fields[10].toFloat ();
 		p->cumSeconds		+= fields[9].toFloat () / 1000.0;		// value given in milliseconds
 		p->selfSeconds		+= fields[6].toFloat () / 1000.0;		// value given in milliseconds
-		p->selfTsPerCall	= 0.0;									// not provided by POSE
+		p->selfMsPerCall	= 0.0;									// self time per call not provided by POSE
 		p->calls			+= fields[4].toLong ();
 		p->selfCycles		+= fields[5].toLong ();
 		p->cumCycles		+= fields[8].toLong ();
 
-		float v = fields[11].toFloat () / 1000.0;
-		if (v > p->totalTsPerCall)
-			p->totalTsPerCall = v;
-		p->totalTsPerCall	+= fields[5].toFloat ();
+		// @@@ TODO: check and fix this
+		float v = fields[11].toFloat ();
+		if (v > p->totalMsPerCall)
+			p->totalMsPerCall = v;
+		p->totalMsPerCall	+= fields[5].toFloat ();
 
 		// p->simplifiedName will be updated in postProcessProfile()
 		p->recursive		= false;
@@ -694,7 +713,7 @@ void KProfWidget::parseProfile_fnccheck (QTextStream& t)
 				p->cumSeconds		= fields[2].toFloat ();
 				p->selfSeconds		= fields[0].toFloat ();
 				p->calls			= fields[4].toLong ();
-				p->totalTsPerCall	= fields[5].toFloat ();
+				p->totalMsPerCall	= fields[5].toFloat () * 1000.0;
 				p->name				= fields[6];
 
 				// p->simplifiedName will be updated in postProcessProfile()
@@ -893,8 +912,8 @@ void KProfWidget::parseProfile_gprof (QTextStream& t)
 				if (fields[3][0].isDigit ())
 				{
 					p->calls			= fields[3].toLong ();
-					p->selfTsPerCall	= fields[4].toFloat ();
-					p->totalTsPerCall	= fields[5].toFloat ();
+					p->selfMsPerCall	= fields[4].toFloat ();
+					p->totalMsPerCall	= fields[5].toFloat ();
 					p->name				= fields[6];
      			}
 				else
@@ -902,8 +921,8 @@ void KProfWidget::parseProfile_gprof (QTextStream& t)
 					// if the profile was generated with -z, uncalled functions
 					// have empty "calls", "selfTsPerCall" and "totalTsPerCall" fields
 					p->calls			= 0;
-					p->selfTsPerCall	= 0;
-					p->totalTsPerCall	= 0;
+					p->selfMsPerCall	= 0;
+					p->totalMsPerCall	= 0;
 					p->name				= fields[3];
      			}
 				// p->simplifiedName will be updated in postProcessProfile()
