@@ -491,11 +491,6 @@ void CProfileViewItem::paintCell (QPainter * p, const QColorGroup & cg, int colu
 		}
 		p->setPen (QPen (cg.foreground(), 1, solid ? SolidLine : DotLine));
 	}
-QColor c (cg.foreground());
-printf ("R=%d, g=%d, b=%d, after lighting: ", c.red(), c.green(), c.blue());
-c = c.light();
-printf ("R=%d, g=%d, b=%d\n", c.red(), c.green(), c.blue());
-p->setPen (QPen (c, 1, SolidLine));
 	p->drawLine (width-1, 0, width-1, 20);
 	p->restore ();
 }
