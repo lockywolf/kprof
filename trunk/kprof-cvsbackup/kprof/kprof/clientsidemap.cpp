@@ -60,7 +60,11 @@ ClientSideMap::ClientSideMap(QTextStream& serverSideMap, QFile& file, const QStr
 		line = serverSideMap.readLine();
 		if (line.length() && line[0] != 35)
 		{
-			
+			int beginPos = line.find(" ", 0);
+			int endPos = line.find(".html", 0);
+			QString goodName = line.mid(beginPos+1, endPos-beginPos);
+			goodName =goodName.replace(QRegExp(" "), "_");
+			goodName.append("html");
 			
 			line = line.replace( QRegExp(" \\["), "[" );
 			line = line.replace( QRegExp(" del"), "_del");
@@ -69,14 +73,14 @@ ClientSideMap::ClientSideMap(QTextStream& serverSideMap, QFile& file, const QStr
 			line = line.replace( QRegExp(") "), ")");
 			
 			shape = line.section(' ', 0,0);        //First element is the shape of the object
-			name = line. section(' ',1,1);        //Second is the name of the file to be referenced
-			coordOne = line.section(' ',2,2);  //Third is the first coordinate
-			coordTwo = line.section(' ',3,3); //Fourth is the last coordinate
+			name = line. section('.html',1,1);        //Second is the name of the file to be referenced
+			coordOne = line.section(' ',-2,-2);  //Third is the first coordinate
+			coordTwo = line.section(' ',-1,-1); //Fourth is the last coordinate
 			N = coordOne.section(',',0,0);
 			W = coordOne.section(',',1,1);
 			S = coordTwo.section(',',0,0);
 			E = coordTwo.section(',',1,1);
-			stream << "<AREA SHAPE=\"RECT\" COORDS = \"" << N << "," << W << "," << S << "," << E << "\" HREF = \"" << name << "\" />" << endl;
+			stream << "<AREA SHAPE=\"RECT\" COORDS = \"" << N << "," << W << "," << S << "," << E << "\" HREF = \"" << goodName << "\" />" << endl;
 		}
 	}
 
