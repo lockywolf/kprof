@@ -193,6 +193,9 @@ public slots:
 	void profileEntryRightClick (QListViewItem *listItem, const QPoint &p, int);
 	void flatProfileFilterChanged (const QString &filter);
 	void generateCallGraph ();
+#ifdef HAVE_LIBQTREEMAP
+	void displayTreeMapView();
+#endif
 
 	void toggleTemplateAbbrev ();
 	void selectListFont ();
@@ -232,6 +235,7 @@ private:
 
 	QString getClassName (const QString& name);
 	QString removeTemplates (const QString& name);
+
 };
 
 #endif
