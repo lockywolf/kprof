@@ -1,60 +1,44 @@
-#SUBDIRS = pics
+## Makefile.am for kprof
 
-EXTRA_DIST = kprof.desktop kprofui.rc
-INCLUDES= $(all_includes)
+# this has all of the subdirectories that make will recurse into.  if
+# there are none, comment this out
+SUBDIRS = . pics doc
 
 # the program to be generated
 bin_PROGRAMS = kprof
 
-# metasources
-kprof_METASOURCES = \
-	kprof.moc \
-	kprofwidget.moc
-
-# sources 
-kprof_SOURCES = \
-	main.cpp \
-	kprof.cpp \
-	kprofwidget.cpp \
-	cprofileviewitem.cpp \
-	$(kprof_METASOURCES)
-
-# ui files
-rcdir = $(kde_datadir)/kprof
-rc_DATA = kprofui.rc
+# set the include path for X, qt and KDE
+INCLUDES = $(all_includes)
 
 # library search path
-kprof_LDFLAGS = $(all_libraries) $(KDE_RPATH)
+kprof_LDFLAGS = $(KDE_RPATH) $(all_libraries)
 
 # libraries to link against
-kprof_LDADD  = $(LIB_KDECORE) $(LIB_KDEUI) $(LIB_KFILE)
+kprof_LDADD  = $(LIB_KFILE)
 
-# files not to install
-noinst_HEADERS = \
-	kprof.h \
-	kprofwidget.h \
-	cprofileinfo.h \
-	cprofileviewitem.h
+# sources 
+kprof_SOURCES = main.cpp kprof.cpp kprofwidget.cpp cprofileviewitem.cpp call-graph.ui
 
-# menu to put kprof in & desktop file
-desktopdir = $(kde_appsdir)/Development
-desktop_DATA = kprof.desktop
+# headers (do not install)
+noinst_HEADERS = kprof.h kprofwidget.h cprofileinfo.h cprofileviewitem.h
+
+# let automoc handle all of the meta source files (moc)
+METASOURCES = AUTO
+
+# UI files (Qt Designer)
+#kprof_UIFILES = call-graph.ui
 
 # make messages.po
-messages:
+messages: rc.cpp
 	$(XGETTEXT) *.cpp -o $(podir)/kprof.pot
 
-#
-# MOC file handling (doing this manually may not be the best solution...)
-#
+# the program icon
+KDE_ICON = kprofapp
 
-# moc file dependencies
-kprof.cpp: kprof.moc
-kprof.moc: kprof.h
-kprofwidget.moc: kprofwidget.h
-kprofwidget.cpp: kprofwidget.moc
+# this is where the kdelnk file will go 
+kdelnkdir   = $(kde_appsdir)/Development
+kdelnk_DATA = kprof.desktop
 
-# rule to make moc files
-%.moc: %.h
-	$(MOC) $< -o $@
-
+# this is where the XML-GUI resource file goes
+rcdir = $(kde_datadir)/kprof
+rc_DATA = kprofui.rc
