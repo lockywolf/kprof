@@ -16,6 +16,8 @@
  ***************************************************************************/
 #include "parseprofile_pose.h"
 
+#include <stdlib.h>
+
 #include "cprofileinfo.h"
 #include "kprofwidget.h"
 
