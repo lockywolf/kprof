@@ -38,12 +38,13 @@ class Q_EXPORT CProfileViewItem : public QListViewItem
 {
 protected:
 	CProfileInfo*		mProfile;
+	bool				mDiff;				// true if we are in diff mode
 
 public:
-	CProfileViewItem (QListView *parent, CProfileInfo *profile);
-	CProfileViewItem (QListViewItem *parent, CProfileInfo *profile);
-	CProfileViewItem (QListView *parent, QListViewItem *after, CProfileInfo *profile);
-	CProfileViewItem (QListViewItem *parent, QListViewItem *after, CProfileInfo *profile);
+	CProfileViewItem (QListView *parent, CProfileInfo *profile, bool diff);
+	CProfileViewItem (QListViewItem *parent, CProfileInfo *profile, bool diff);
+	CProfileViewItem (QListView *parent, QListViewItem *after, CProfileInfo *profile, bool diff);
+	CProfileViewItem (QListViewItem *parent, QListViewItem *after, CProfileInfo *profile, bool diff);
 	virtual ~CProfileViewItem ();
 
 #ifdef TEST_DIFF
