@@ -48,6 +48,8 @@
 #include <kfiledialog.h>
 #include <kiconloader.h>
 #include <krecentdocument.h>
+#include <khtml_part.h>
+#include <khtmlview.h>
 
 #include "kprof.h"
 #include "kprofwidget.h"
@@ -1413,12 +1415,43 @@ void KProfWidget::doPrint ()
 	KListView *view =	mCurPage == 0 ? mFlat :
 						mCurPage == 1 ? mHier :
 										mObjs;
-#ifndef QT_NO_PRINTER
-	if (mPrinter.setup(view))
-	{
-		QPainter paint (&mPrinter);
+
+	QString s;
+	s = "<HTML><HEAD><META http-equiv=\"content-type\" content=\"text/html\" charset=\"iso-8859-1\"></HEAD>";
+	s += "<BODY bgcolor=\"#FFFFFF\">";
+	s += "<TABLE border=\"0\" cellspacing=\"2\" cellpadding=\"1\">";
+
+	QListViewItem *item = view->firstChild ();
+	int cols = view->columns();
+
+	s += "<BR><BR><THEAD><TR>";		// two BRs to alleviate for margin problems
+	for (int i=0; i<cols; i++)
+		if (i==0)
+			s += "<TH align=\"left\"><B>" + view->columnText(i) + "</B></TH>";
+		else
+			s += "<TH align=\"right\"><B>" + view->columnText(i) + "</B></TH>";
+	s += "</TR></THEAD><TBODY>";
+
+	while (item) {
+		CProfileViewItem *pitem = (CProfileViewItem *) item;
+		QString sitem = "<TR valign=\"top\">";
+		for (int i=0; i<cols; i++)
+			if (i==0)
+				sitem += "<TD align=\"left\">" + pitem->text(i) + "</TD>";
+			else
+				sitem += "<TD align=\"right\">" + pitem->text(i) + "</TD>";
+		sitem += "</TR>";
+		s += sitem;
+		item = item->nextSibling();
 	}
-#endif
+	s += "</TBODY></TABLE></BODY></HTML>";
+
+	KHTMLPart *part = new KHTMLPart ();
+	part->begin();
+	part->write(s);
+	part->end();
+	part->view()->print();
+	delete part;
 }
 
 void KProfWidget::generateCallGraph ()

@@ -84,7 +84,7 @@ void KProfTopLevel::setupActions ()
 {
 	KStdAction::open (mProf, SLOT(openResultsFile()), actionCollection());
 	KStdAction::openRecent (mProf, SLOT(openRecentFile(const KURL&)), actionCollection());
-//	KStdAction::print (mProf, SLOT(doPrint()), actionCollection());
+	KStdAction::print (mProf, SLOT(doPrint()), actionCollection());
 	KStdAction::quit (this, SLOT(close()), actionCollection ());
 
 	KStdAction::showToolbar (this, SLOT(toggleToolBar()), actionCollection());
