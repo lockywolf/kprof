@@ -1,7 +1,7 @@
 # KDE tags expanded automatically by am_edit - $Revision$ 
-# Makefile.in generated automatically by automake 1.4-p4 from Makefile.am
+# Makefile.in generated automatically by automake 1.4-p5 from Makefile.am
 
-# Copyright (C) 1994, 1995-8, 1999 Free Software Foundation, Inc.
+# Copyright (C) 1994, 1995-8, 1999, 2001 Free Software Foundation, Inc.
 # This Makefile.in is free software; the Free Software Foundation
 # gives unlimited permission to copy and/or distribute it,
 # with or without modifications, as long as this notice is preserved.
@@ -10,6 +10,8 @@
 # but WITHOUT ANY WARRANTY, to the extent permitted by law; without
 # even the implied warranty of MERCHANTABILITY or FITNESS FOR A
 # PARTICULAR PURPOSE.
+
+####### kdevelop will overwrite this part!!! (begin)##########
 
 
 SHELL = @SHELL@
@@ -72,6 +74,7 @@ ARTSCCONFIG = @ARTSCCONFIG@
 AS = @AS@
 AUTODIRS = @AUTODIRS@
 CC = @CC@
+CONF_FILES = @CONF_FILES@
 CPP = @CPP@
 CXX = @CXX@
 CXXCPP = @CXXCPP@
@@ -79,6 +82,9 @@ DCOPIDL = @DCOPIDL@
 DCOPIDL2CPP = @DCOPIDL2CPP@
 DCOP_DEPENDENCIES = @DCOP_DEPENDENCIES@
 DLLTOOL = @DLLTOOL@
+DOXYGEN = @DOXYGEN@
+DOXYGEN_PROJECT_NAME = @DOXYGEN_PROJECT_NAME@
+DOXYGEN_PROJECT_NUMBER = @DOXYGEN_PROJECT_NUMBER@
 DPMSINC = @DPMSINC@
 DPMSLIB = @DPMSLIB@
 EXEEXT = @EXEEXT@
@@ -89,20 +95,31 @@ GLLIB = @GLLIB@
 GMSGFMT = @GMSGFMT@
 IDL = @IDL@
 IDL_DEPENDENCIES = @IDL_DEPENDENCIES@
-KDB2HTML = @KDB2HTML@
-KDE_CXXFLAGS = @KDE_CXXFLAGS@
+JAR = @JAR@
+JAVAC = @JAVAC@
+JAVAH = @JAVAH@
+JVMLIBS = @JVMLIBS@
+KDECONFIG = @KDECONFIG@
 KDE_EXTRA_RPATH = @KDE_EXTRA_RPATH@
+KDE_HAS_DOXYGEN = @KDE_HAS_DOXYGEN@
+KDE_HAVE_DOT = @KDE_HAVE_DOT@
 KDE_INCLUDES = @KDE_INCLUDES@
 KDE_LDFLAGS = @KDE_LDFLAGS@
+KDE_MT_LDFLAGS = @KDE_MT_LDFLAGS@
+KDE_MT_LIBS = @KDE_MT_LIBS@
 KDE_PLUGIN = @KDE_PLUGIN@
 KDE_RPATH = @KDE_RPATH@
 KDE_USE_CLOSURE_FALSE = @KDE_USE_CLOSURE_FALSE@
 KDE_USE_CLOSURE_TRUE = @KDE_USE_CLOSURE_TRUE@
 KDE_USE_FINAL_FALSE = @KDE_USE_FINAL_FALSE@
 KDE_USE_FINAL_TRUE = @KDE_USE_FINAL_TRUE@
+KDE_XSL_STYLESHEET = @KDE_XSL_STYLESHEET@
+LEX = @LEX@
+LEXLIB = @LEXLIB@
 LIBCOMPAT = @LIBCOMPAT@
 LIBCRYPT = @LIBCRYPT@
 LIBDL = @LIBDL@
+LIBGEN = @LIBGEN@
 LIBJPEG = @LIBJPEG@
 LIBMICO = @LIBMICO@
 LIBOBJS = @LIBOBJS@
@@ -110,59 +127,73 @@ LIBPNG = @LIBPNG@
 LIBPTHREAD = @LIBPTHREAD@
 LIBPYTHON = @LIBPYTHON@
 LIBQIMGIO = @LIBQIMGIO@
+LIBRESOLV = @LIBRESOLV@
+LIBSHADOW = @LIBSHADOW@
 LIBSM = @LIBSM@
 LIBSOCKET = @LIBSOCKET@
 LIBTIFF = @LIBTIFF@
 LIBTOOL = @LIBTOOL@
 LIBUCB = @LIBUCB@
+LIBUTIL = @LIBUTIL@
+LIBXINERAMA = @LIBXINERAMA@
 LIBZ = @LIBZ@
 LIB_KAB = @LIB_KAB@
 LIB_KDECORE = @LIB_KDECORE@
+LIB_KDEPRINT = @LIB_KDEPRINT@
 LIB_KDEUI = @LIB_KDEUI@
 LIB_KFILE = @LIB_KFILE@
 LIB_KFM = @LIB_KFM@
-LIB_KFORMULA = @LIB_KFORMULA@
 LIB_KHTML = @LIB_KHTML@
 LIB_KIMGIO = @LIB_KIMGIO@
 LIB_KIO = @LIB_KIO@
 LIB_KPARTS = @LIB_KPARTS@
 LIB_KSPELL = @LIB_KSPELL@
 LIB_KSYCOCA = @LIB_KSYCOCA@
-LIB_KWRITE = @LIB_KWRITE@
+LIB_QPE = @LIB_QPE@
 LIB_QT = @LIB_QT@
+LIB_QTOPIA = @LIB_QTOPIA@
 LIB_QTREEMAP = @LIB_QTREEMAP@
 LIB_SMB = @LIB_SMB@
 LIB_X11 = @LIB_X11@
+LIB_XEXT = @LIB_XEXT@
 LN_S = @LN_S@
 MAKEINFO = @MAKEINFO@
 MCOPIDL = @MCOPIDL@
+MEINPROC = @MEINPROC@
 MICO_INCLUDES = @MICO_INCLUDES@
 MICO_LDFLAGS = @MICO_LDFLAGS@
 MOC = @MOC@
 MSGFMT = @MSGFMT@
+NOOPT_CFLAGS = @NOOPT_CFLAGS@
 NOOPT_CXXFLAGS = @NOOPT_CXXFLAGS@
 NOREPO = @NOREPO@
 OBJDUMP = @OBJDUMP@
 OBJEXT = @OBJEXT@
 PACKAGE = @PACKAGE@
-PAMINC = @PAMINC@
-PAMLIBPATHS = @PAMLIBPATHS@
 PAMLIBS = @PAMLIBS@
+PASSWDLIBS = @PASSWDLIBS@
 PYTHONINC = @PYTHONINC@
 PYTHONLIB = @PYTHONLIB@
+PYTHONMODDIR = @PYTHONMODDIR@
+QTDOCDIR = @QTDOCDIR@
+QTE_NORTTI = @QTE_NORTTI@
+QTOPIA_INCLUDES = @QTOPIA_INCLUDES@
 QT_INCLUDES = @QT_INCLUDES@
 QT_LDFLAGS = @QT_LDFLAGS@
 RANLIB = @RANLIB@
 REPO = @REPO@
+SETUIDFLAGS = @SETUIDFLAGS@
 STRIP = @STRIP@
 TOPSUBDIRS = @TOPSUBDIRS@
 UIC = @UIC@
+UIC_TR = @UIC_TR@
 USER_INCLUDES = @USER_INCLUDES@
 USER_LDFLAGS = @USER_LDFLAGS@
 USE_EXCEPTIONS = @USE_EXCEPTIONS@
 USE_RTTI = @USE_RTTI@
 USE_THREADS = @USE_THREADS@
 VERSION = @VERSION@
+WOVERLOADED_VIRTUAL = @WOVERLOADED_VIRTUAL@
 XGETTEXT = @XGETTEXT@
 XPMINC = @XPMINC@
 XPMLIB = @XPMLIB@
@@ -173,6 +204,7 @@ X_PRE_LIBS = @X_PRE_LIBS@
 all_includes = @all_includes@
 all_libraries = @all_libraries@
 idldir = @idldir@
+jni_includes = @jni_includes@
 kde_appsdir = @kde_appsdir@
 kde_bindir = @kde_bindir@
 kde_confdir = @kde_confdir@
@@ -181,19 +213,28 @@ kde_htmldir = @kde_htmldir@
 kde_icondir = @kde_icondir@
 kde_includes = @kde_includes@
 kde_libraries = @kde_libraries@
+kde_libs_htmldir = @kde_libs_htmldir@
+kde_libs_prefix = @kde_libs_prefix@
 kde_locale = @kde_locale@
 kde_mimedir = @kde_mimedir@
 kde_moduledir = @kde_moduledir@
+kde_qtver = @kde_qtver@
 kde_servicesdir = @kde_servicesdir@
 kde_servicetypesdir = @kde_servicetypesdir@
 kde_sounddir = @kde_sounddir@
+kde_styledir = @kde_styledir@
 kde_templatesdir = @kde_templatesdir@
 kde_wallpaperdir = @kde_wallpaperdir@
+kde_widgetdir = @kde_widgetdir@
 micodir = @micodir@
 qt_includes = @qt_includes@
 qt_libraries = @qt_libraries@
 x_includes = @x_includes@
 x_libraries = @x_libraries@
+
+EXTRA_DIST = index.docbook 
+
+####### kdevelop will overwrite this part!!! (end)############
 
 KDE_DOCS = kprof
 KDE_LANG = en
@@ -205,12 +246,12 @@ DIST_COMMON =  Makefile.am Makefile.in
 
 #>- DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
 #>+ 4
-KDE_DIST=index.docbook redo.png 
+KDE_DIST=file-menu.html commands.html compilation.html requirements.html using-with-fnccheck.html settings-menu.html installation.html introduction.html index.html credits.html tools-menu.html using-kprof.html redo.png faq.html available-profilers.html using-with-POSE.html introduction-to-profiling.html 
 
 DISTFILES= $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST) $(KDE_DIST)
 
 
-TAR = tar
+TAR = gtar
 GZIP_ENV = --best
 #>- all: all-redirect
 #>+ 1
@@ -332,7 +373,7 @@ HTML:
 
 HTML/index.html: HTML index.docbook
 	@test -d HTML && rm -r HTML
-	$(KDB2HTML) $(srcdir)/index.docbook
+	$(MEINPROC) $(srcdir)/index.docbook
 
 install-docs:
 	$(mkinstalldirs) $(DESTDIR)$(kde_htmldir)/$(KDE_LANG)/kprof
@@ -351,20 +392,20 @@ uninstall-docs:
 #>+ 13
 install-nls:
 	$(mkinstalldirs) $(DESTDIR)$(kde_htmldir)/$(KDE_LANG)/kprof
-	@for base in index.docbook redo.png ; do \
+	@for base in index.docbook redo.png index.html introduction.html introduction-to-profiling.html available-profilers.html using-kprof.html using-with-fnccheck.html using-with-POSE.html commands.html file-menu.html tools-menu.html settings-menu.html faq.html credits.html installation.html requirements.html compilation.html ; do \
 	  echo $(INSTALL_DATA) $$base $(DESTDIR)$(kde_htmldir)/$(KDE_LANG)/kprof/$$base ;\
 	  $(INSTALL_DATA) $(srcdir)/$$base $(DESTDIR)$(kde_htmldir)/$(KDE_LANG)/kprof/$$base ;\
 	done
 
 uninstall-nls:
-	for base in index.docbook redo.png ; do \
+	for base in index.docbook redo.png index.html introduction.html introduction-to-profiling.html available-profilers.html using-kprof.html using-with-fnccheck.html using-with-POSE.html commands.html file-menu.html tools-menu.html settings-menu.html faq.html credits.html installation.html requirements.html compilation.html ; do \
 	  rm -f $(DESTDIR)$(kde_htmldir)/$(KDE_LANG)/kprof/$$base ;\
 	done
 
 
 #>+ 5
 distdir-nls:
-	for file in index.docbook redo.png ; do \
+	for file in index.docbook redo.png index.html introduction.html introduction-to-profiling.html available-profilers.html using-kprof.html using-with-fnccheck.html using-with-POSE.html commands.html file-menu.html tools-menu.html settings-menu.html faq.html credits.html installation.html requirements.html compilation.html ; do \
 	  cp $(srcdir)/$$file $(distdir); \
 	done
 
