@@ -36,7 +36,7 @@
 #include "kprof.h"
 
 static const char *description = I18N_NOOP("Execution profiling results analysis utility");
-static const char *version = "v1.0.1";
+static const char *version = "v1.1";
 
 int main(int argc, char **argv)
 {

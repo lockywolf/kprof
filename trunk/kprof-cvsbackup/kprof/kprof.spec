@@ -1,12 +1,12 @@
 Name: kprof
 Summary: KProf -- Profiling results viewer
-Version: 1.0.2pre
+Version: 1.1
 Release: 1
 Copyright: GPL
 Group: X11/KDE/Development
-Source: http://download.sourceforge.net/kprof/kprof-1.0.2pre.tar.gz
+Source: http://download.sourceforge.net/kprof/kprof-1.1.tar.gz
 Packager: Florent Pillet <fpillet@users.sourceforge.net>
-BuildRoot: /tmp/kprof-1.0.2
+BuildRoot: /tmp/kprof-1.1
 Prefix: /opt/kde2
 
 %description
@@ -14,7 +14,7 @@ A visual tool for developers that displays the execution profiling output genera
 
 %prep
 rm -rf $RPM_BUILD_ROOT
-%setup -n kprof-1.0.2
+%setup -n kprof-1.1
 
 %build
 ./configure

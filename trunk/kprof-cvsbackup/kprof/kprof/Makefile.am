@@ -30,7 +30,7 @@ messages: rc.cpp
 	$(XGETTEXT) *.cpp -o $(podir)/kprof.pot
 
 # the program icon
-KDE_ICON = kprofapp
+KDE_ICON = kprof
 
 # this is where the kdelnk file will go 
 kdelnkdir   = $(kde_appsdir)/Development
