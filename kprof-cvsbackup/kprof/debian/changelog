@@ -1,3 +1,9 @@
+kprof (1.4.2-2) unstable; urgency=low
+
+  * First KDE3 upload to debian!
+
+ -- Ben Burton <bab@debian.org>  Sat,  1 Feb 2003 11:14:49 +1100
+
 kprof (1.4.2-1) unstable; urgency=low
 
   * New upstream release.
