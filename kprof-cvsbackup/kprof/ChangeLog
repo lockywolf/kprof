@@ -1,3 +1,8 @@
+2002-07-31 Andrey Behrens <Andrey.Behrens@gmx.de>
+	* add support for objprelink
+	* add support for "--enable-final"
+	* add a better  libqtreemap recognition
+
 2002-07-16 Andrey Behrens <Andrey.Behrens@gmx.de>
 	* translate the app to german
 	* made a better libqtreemap recognition
