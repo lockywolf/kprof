@@ -106,9 +106,6 @@ KProfWidget::KProfWidget (QWidget *parent, const char *name)
 	QVBoxLayout *topLayout = new QVBoxLayout (this, 0, 0);
 
 	mTabs = new KTabCtl (this, "tabs");
-	topLayout->addWidget (mTabs);
-
-	connect (mTabs, SIGNAL (tabSelected (int)), this, SLOT (tabSelected (int)));
 
 	// create flat profile list
 	QWidget *flatWidget = new QWidget (this, "flatWidget");
@@ -151,27 +148,23 @@ KProfWidget::KProfWidget (QWidget *parent, const char *name)
 			 this, SLOT (selectionChanged (QListViewItem *)));
 
 	//create the HTML viewer for the graphical call tree
-	mCallTreeHtmlPart = new KProfHtmlPart(this, 0, this, 0, KHTMLPart::DefaultGUI);
+	mCallTreeHtmlPart = new KHTMLPart(mTabs,  "graph_part");//,mTabs);
 	CHECK_PTR(mCallTreeHtmlPart);
-	mGraphView = new KHTMLView(mCallTreeHtmlPart, this);
-	CHECK_PTR(mGraphView);
-
+	
 	//Create the HTML viewer for the method details
-	mMethodHtmlPart = new KHTMLPart();//this);
+	mMethodHtmlPart = new KHTMLPart(mTabs, "method_part");//,mTabs);
 	CHECK_PTR(mMethodHtmlPart);
-	mMethodView = new KHTMLView(mMethodHtmlPart, this);
-	CHECK_PTR(mMethodView);
 
 	KParts::BrowserExtension* ext = mCallTreeHtmlPart->browserExtension();
-	connect(ext, SIGNAL(openURLRequestDelayed(const KURL &url, const KParts::URLArgs &args)),
-					this, SLOT(openURLRequest(const KURL &url, const KParts::URLArgs &args)));
+	connect(ext, SIGNAL(openURLRequestDelayed( const KURL &, const KParts::URLArgs &)),
+					this, SLOT(openURLRequestDelayed( const KURL &, const KParts::URLArgs & )));
 
 	// add the view to the tab control
  	mTabs->addTab (flatWidget, i18n ("&Flat Profile"));
 	mTabs->addTab (mHier, i18n ("&Hierarchical Profile"));
 	mTabs->addTab (mObjs, i18n ("O&bject Profile"));
-	mTabs->addTab (mGraphView, i18n("G&raph View"));
-	mTabs->addTab (mMethodView, i18n("&Method View"));
+	mTabs->addTab (mCallTreeHtmlPart->view(), i18n("G&raph View"));
+	mTabs->addTab (mMethodHtmlPart->view(), i18n("&Method View"));
 
 	// add some help on items
 	QWhatsThis::add (flatFilter,
@@ -191,15 +184,30 @@ KProfWidget::KProfWidget (QWidget *parent, const char *name)
 		i18n (	"This is the <I>object view</I>.\n\n"
 				"It displays C++ methods grouped by object name."));
 
-  
+	topLayout->addWidget (mTabs);
+	connect (mTabs, SIGNAL (tabSelected (int)), this, SLOT (tabSelected (int)));
+
 }
 
 KProfWidget::~KProfWidget ()
 {
-	delete sListFont;
-	delete mCallTreeHtmlPart;
+	if (sListFont != NULL)
+	{
+		delete sListFont;
+		sListFont = 0;
+	}
+
+	if (mCallTreeHtmlPart != NULL)
+	{
+		delete mCallTreeHtmlPart;
+		mCallTreeHtmlPart = NULL;
+	}
+	
+	if (mMethodHtmlPart != NULL)
+	{	
 	delete mMethodHtmlPart;
-  if(sListFont != NULL)	delete sListFont;
+	mMethodHtmlPart = NULL;
+	}
 }
 
 void KProfWidget::tabSelected (int page)
@@ -696,7 +704,15 @@ void KProfWidget::openFile (const QString &filename, int format, bool compare)
 	prepareProfileView (mObjs, true);
 	customizeColumns (mObjs, sLastFileFormat);
 
-	prepareHtmlView(mGraphView);
+	prepareHtmlPart(mCallTreeHtmlPart);
+
+	//For the time being dump all the method html
+	//files to the tmp directory.
+	for (unsigned int i = 0; i < mProfile.size (); i++)
+	{
+		(mProfile[i])->dumpHtml();
+ 	}
+
 
 	QListViewItem *obj_toplevel = new QListViewItem(mObjs,"Objects");
 	QListViewItem *hier_toplevel = new QListViewItem(mHier,"Hierarchy");
@@ -1353,8 +1369,6 @@ QString KProfWidget::removeTemplates (const QString &name)
 	return s;
 }
 
-
-
 /** If the QTreeMapView library is present, display the call tree in this format */
 void KProfWidget::displayTreeMapView()
 {
@@ -1382,7 +1396,7 @@ void KProfWidget::displayTreeMapView()
 
 //This method takes the call graph and turns it into a client side image map
 //in the html viewer
-void KProfWidget::prepareHtmlView(KHTMLView* viewer)
+void KProfWidget::prepareHtmlPart(KHTMLPart* part)
 {
 	//Generate a temporary file
 	QFile file;
@@ -1428,17 +1442,14 @@ void KProfWidget::prepareHtmlView(KHTMLView* viewer)
 	 ClientSideMap(t, mapFile);
 
 	mapFile.close();
-
-	KHTMLPart* part =	viewer->part();
 	part->openURL(KURL("file:///tmp/kprof.html"));
-
-
-	part->show();
 }
 
-void KProfWidget::openURLRequest(const KURL &url, const KParts::URLArgs &args)
+//Captures the URL clicked signal from the call tree HTML widget and
+//opens the required URL in the method widget.
+void KProfWidget::openURLRequestDelayed( const KURL &url, const KParts::URLArgs &args)
 {
-	cout << "SELECTED "<< endl;
+	mMethodHtmlPart->openURL(url);
 }
 
 #include "kprofwidget.moc"
