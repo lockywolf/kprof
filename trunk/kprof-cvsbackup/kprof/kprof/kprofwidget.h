@@ -113,7 +113,7 @@ public:
 	enum colID							// column IDs
 	{
 		col_function = 0,
-		col_recursive,
+		//col_recursive,
 		col_count,
 		col_total,
 		col_totalPercent,
@@ -135,7 +135,7 @@ public:
 	enum diffColID						// diff mode column IDs
 	{
 		diff_col_function = 0,
-		diff_col_recursive,
+		//diff_col_recursive,
 		diff_col_status,
 		diff_col_count,
 		diff_col_new_count,

@@ -241,14 +241,15 @@
 				<listitem><para>The Hierarchical list displays each entry as an expandable tree. Child items are the called functions.</para></listitem>
 				<listitem><para>The Object list displays methods grouped by C++ class name. This is useful only if you are profiling C++ code.</para></listitem>
 			</itemizedlist>
+			When comparing two profile results, each number column is duplicated to display the old and new results.
 		</para>
 		<para>
 			Each list displays the same columns. You can click on the colum title to sort using this column, click a second time to change the sort
 			order (ascending or descending). Here is a brief description of the columns:
 			<itemizedlist>
-				<listitem><para>Function/Method: displays the function or method name.</para></listitem>
-				<listitem><para><inlinemediaobject><imageobject><imagedata fileref="redo.png" format="png"/></imageobject></inlinemediaobject>
-		: if this symbol is visible on a line, this indicates that the function or method is recursive.</para></listitem>
+				<listitem><para>Function/Method: displays the function or method name. If the function is recursive, 
+								a <inlinemediaobject><imageobject><imagedata fileref="redo.png" format="png"/></imageobject></inlinemediaobject>
+								icon is displayed in front of the name.</para></listitem>
 				<listitem><para>Count: the total number of times the function was called.</para></listitem>
 				<listitem><para>Total (s): the total time (in seconds) the function ran, including calls to subroutines.</para></listitem>
 				<listitem><para>%: the percent of total CPU time for the process that was used by this function and the subroutines it called.</para></listitem>
@@ -300,7 +301,7 @@
 						</menuchoice></term>
 					<listitem>
 						<para>
-							<action>Opens a results file and compares profile results. The window will show two columns for each result to show differences</action>
+							<action>Opens a results file and compares profile results. The window will show two columns for each number to show differences</action>
 						</para>
 					</listitem>
 				</varlistentry>
@@ -438,7 +439,7 @@
 				<para>When I try opening my text results file, &kprof; keeps telling me that it cannot open it.</para>
 			</question>
 			<answer>
-				<para>Make sure that the 'x' (executable) bit is not set on your file. If in doubt, do a <command>chmod -x yourfile</commmand>.</para>
+				<para>Make sure that the 'x' (executable) bit is not set on your file. If in doubt, do <command>chmod -x yourfile</command>.</para>
 			</answer>
 		</qandaentry>
 	</qandaset>
