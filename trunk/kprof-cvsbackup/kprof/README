@@ -34,14 +34,14 @@ have problems building the software, do:
 	$ make -f Makefile.cvs
 
 prior to the ./configure step. I suggest you specify the
-location where KDE2 is installed (for example, /usr or
+location where KDE3 is installed (for example, /usr or
 /opt/kde2) using the '--prefix=' directive. Here is how
 I configure KProf on my machine:
 
 	$ ./configure --prefix=/usr
 
-because KDE2 is installed in /usr. On some distributions,
-KDE2 is installed in /opt or in /opt/kde2.
+because KDE3 is installed in /usr. On some distributions,
+KDE3 is installed in /opt or in /opt/kde3.
 
 
 USING KPROF
