@@ -652,6 +652,7 @@ void KProfWidget::openFile (const QString &filename, ProfilerEnumeration format,
 			format = FORMAT_GPROF;
 
 		KProcess profile_generator;
+		profile_generator.setEnvironment("LC_ALL", "C");
 		if (format == FORMAT_GPROF)
 		{
 			// GNU gprof analysis of gmon.out file
