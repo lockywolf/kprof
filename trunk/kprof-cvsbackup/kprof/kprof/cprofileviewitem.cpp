@@ -470,8 +470,9 @@ void CProfileViewItem::paintCell (QPainter * p, const QColorGroup & cg, int colu
 	// - dark for the edge of a "new" cell
 	// this gives a display where old and new entries are grouped by blocks of two
 	p->save ();
-	if (KProfWidget::sDiffMode == false)
-		p->setPen (QPen (cg.foreground(), 1, DotLine));
+	QColor gray (125, 125, 125);
+	if (column==KProfWidget::col_function || KProfWidget::sDiffMode == false)
+		p->setPen (QPen (gray, 1, SolidLine));
 	else
 	{
 		bool solid = false;
@@ -489,7 +490,7 @@ void CProfileViewItem::paintCell (QPainter * p, const QColorGroup & cg, int colu
 		{
 			solid = true;
 		}
-		p->setPen (QPen (cg.foreground(), 1, solid ? SolidLine : DotLine));
+		p->setPen (QPen (gray, 1, solid ? SolidLine : DotLine));
 	}
 	p->drawLine (width-1, 0, width-1, 20);
 	p->restore ();
