@@ -30,8 +30,9 @@
 #define __KPROF_H__
 
 #include <ktmainwindow.h>
-#include <kmenubar.h>
 
+class KToggleAction;
+class KAction;
 class KProfWidget;
 
 class KProfTopLevel : public KMainWindow
@@ -40,11 +41,17 @@ class KProfTopLevel : public KMainWindow
 
 protected:
 	KProfWidget*	mProf;
+	KToggleAction*	mToggleTemplateAbbrev;
 	KAction*		mGenCallGraphAction;
 
 public:
 	KProfTopLevel (QWidget *parent = 0, const char *name = NULL);
 	~KProfTopLevel ();
+
+	inline KToggleAction* getToggleTemplateAbbrevAction ()
+		{
+			return mToggleTemplateAbbrev;
+		}
 
 protected slots:
 	virtual bool queryExit ();

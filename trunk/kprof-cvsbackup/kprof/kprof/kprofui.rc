@@ -5,5 +5,8 @@
 			<text>&amp;Tools</text>
 			<Action name="generate_call_graph" />
 		</Menu>
+		<Menu name="settings">
+			<Action name="toggle_template_abbreviations" />
+		</Menu>
 	</MenuBar>
 </kpartgui>

@@ -66,6 +66,9 @@ protected:
 
 	QString					mGProfStdout;	// stdout from gprof command
 	QString					mGProfStderr;	// stderr from gprof command
+	QString					mFlatFilter; // filter string for flat profile view
+
+	bool					mAbbrevTemplates;	// if true, templates are "abbreviates" (i.e. become <...>)
 
 	// this structure is used while parsing the call graph
 	typedef struct
@@ -78,7 +81,7 @@ protected:
 
 	enum								// states while parsing the gprof output
 	{
-		SEARCH_FLAT_PROFILE,
+		SEARCH_FLAT_PROFILE = 0,
 		PROCESS_FLAT_PROFILE,
 		SEARCH_CALL_GRAPH,
 		PROCESS_CALL_GRAPH
@@ -116,6 +119,8 @@ public slots:
 	void flatProfileFilterChanged (const QString &filter);
 	void generateCallGraph ();
 
+	void toggleTemplateAbbrev ();
+
 protected slots:
 	void selectionChanged (QListViewItem *item);
 	void gprofStdout (KProcess*, char *buffer, int buflen);
@@ -133,7 +138,7 @@ private:
 
 	CProfileInfo *locateProfileEntry (const QString& name);
 
-	void fillFlatProfileList (const QString& filter);
+	void fillFlatProfileList ();
 	void fillHierProfileList ();
 	void fillHierarchy (CProfileViewItem *item, CProfileInfo *parent, QArray<CProfileInfo *> &addedEntries, int &count);
 	void fillObjsProfileList ();
