@@ -50,7 +50,8 @@ void CProfileInfo::dumpHtml(const QString& tempDir)
 {
 	//Open the temporary file used to store the HTML.
 	QString fileName = tempDir + htmlName + "::" + method + ".html" ;
-
+	fileName =fileName.replace(QRegExp(" "), "_");
+	
 	dumpFile = new KProfFile();
 	dumpFile->setName(fileName);
 
