@@ -60,6 +60,7 @@ public:
 	float		totalTsPerCall;
 	bool		recursive;
 	bool		multipleSignatures;		// if true, this method name has multiple signatures
+	bool		output;					// temporary boolean used to output a partial call-graph
 
 public:
 	~CProfileInfo() { }

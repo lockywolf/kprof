@@ -43,6 +43,7 @@
 
 #include "cprofileinfo.h"
 
+class QFile;
 class CProfileViewItem;
 
 class KProfWidget : public QWidget
@@ -140,8 +141,9 @@ private:
 	void selectProfileItem (CProfileInfo *info);
 	void selectItemInView (QListView *view, CProfileInfo *info, bool examineSubs);
 
-	void generateDotCallGraph (bool currentSelectionOnly);
-	void generateVCGCallGraph (bool currentSelectionOnly);
+	void markForOutput (CProfileInfo *info);
+	void generateDotCallGraph (QFile& file, bool currentSelectionOnly);
+	void generateVCGCallGraph (QFile& file, bool currentSelectionOnly);
 
 	QString getClassName (const QString& name);
 	QString removeTemplates (const QString& name);
