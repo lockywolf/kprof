@@ -84,10 +84,7 @@ QString CProfileViewItem::text (int column) const
 		// we are a top level element of the object view: just return the
 		// name, being the class name
 		CProfileViewItem *child = (CProfileViewItem *) firstChild ();
-		if (child == NULL || column != KProfWidget::col_function)
-			return "";
-
-		return child->mProfile->object;
+		return (child == NULL || column != KProfWidget::col_function) ? QString("") : child->mProfile->object;
   	}
 
 	switch (column)
@@ -100,7 +97,6 @@ QString CProfileViewItem::text (int column) const
 				// we are in a method of an object in the object
 				if (mProfile->multipleSignatures)
 					return mProfile->name.right (mProfile->name.length () - mProfile->object.length() - 2);
-
 				return mProfile->method;
     		}
 			return mProfile->simplifiedName;
