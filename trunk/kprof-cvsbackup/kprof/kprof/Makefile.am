@@ -10,15 +10,12 @@ kprof_LDADD   =  $(LIB_KFILE) $(LIB_KHTML) $(LIB_KDEUI) $(LIB_KDECORE) $(LIB_QT)
 EXTRA_DIST = main.cpp kprof.cpp kprof.h kprofdoc.h kprofview.h kprofui.rc kprof.desktop lo32-app-kprof.png lo16-app-kprof.png cprofileviewitem.h call-graph.h call-graph.ui cprofileinfo.h cprofileviewitem.cpp kprofwidget.cpp kprofwidget.h dotCallGraph.cpp dotCallGraph.h vcgCallGraph.cpp vcgCallGraph.h clientsidemap.h clientsidemap.cpp parseprofile_gprof.h parseprofile_gprof.cpp parseprofile.h parseprofile.cpp parseprofile_fnccheck.h parseprofile_fnccheck.cpp parseprofile_pose.h parseprofile_pose.cpp cprofileinfo.cpp Log.cpp Log.h 
 
 install-data-local:
-	$(mkinstalldirs) $(kde_appsdir)/Applications/
-	$(INSTALL_DATA) $(srcdir)/kprof.desktop $(kde_appsdir)/Applications/kprof.desktop
 	$(mkinstalldirs) $(kde_icondir)/locolor/32x32/apps/
 	$(INSTALL_DATA) $(srcdir)/lo32-app-kprof.png $(kde_icondir)/locolor/32x32/apps/kprof.png
 	$(mkinstalldirs) $(kde_icondir)/locolor/16x16/apps/
 	$(INSTALL_DATA) $(srcdir)/lo16-app-kprof.png $(kde_icondir)/locolor/16x16/apps/kprof.png
 
 uninstall-local:
-	-rm -f $(kde_appsdir)/Applications/kprof.desktop
 	-rm -f $(kde_icondir)/locolor/32x32/apps/kprof.png
 	-rm -f $(kde_icondir)/locolor/16x16/apps/kprof.png
 
