@@ -5,6 +5,7 @@ kprof (1.3-4) unstable; urgency=low
     to reflect new HTML documentation generation procedure.
   * Suggests: konqueror for viewing documentation through khelpcenter.
   * Reinstating doc-base entry.
+  * Added missing TODO file in general docs.
   * Cleaned up debian/rules.
 
  -- Ben Burton <benb@acm.org>  Wed,  8 Aug 2001 11:02:58 +1000
