@@ -27,7 +27,6 @@
  */
 
 #include <qlayout.h>
-#include <qtextstream.h>
 #include <qvector.h>
 #include <qlabel.h>
 #include <qwhatsthis.h>
@@ -102,9 +101,9 @@ KProfWidget::KProfWidget (QWidget *parent, const char *name)
 			 this, SLOT (selectionChanged (QListViewItem *)));
 
 	// add the view to the tab control
- 	mTabs->addTab (flatWidget, i18n("&Flat Profile"));
-	mTabs->addTab (mHier, i18n("&Hierarchical Profile"));
-	mTabs->addTab (mObjs, i18n("O&bject Profile"));
+ 	mTabs->addTab (flatWidget, i18n ("&Flat Profile"));
+	mTabs->addTab (mHier, i18n ("&Hierarchical Profile"));
+	mTabs->addTab (mObjs, i18n ("O&bject Profile"));
 
 	// add some help on items
 	QWhatsThis::add (flatFilter, i18n ("Type text in this field to filter the display "
@@ -201,41 +200,119 @@ void KProfWidget::openFile (const QString &filename)
 	if (filename.isEmpty ())
 		return;
 
+	// if the file is an executable file, generate the profiling information
+	// directly from gprof and the gmon.out file
+	QFileInfo finfo (filename);
+	if (finfo.isExecutable ())
+	{
+		// prepare the "gmon.out" filename
+		QString gmonfilename = finfo.dirPath() + "/gmon.out";
+		QFileInfo gmonfinfo (gmonfilename);
+		if (!gmonfinfo.exists ())
+		{
+			QString text;
+			text.sprintf (i18n ("Can't find the gprof output file '%s'"), gmonfilename.latin1());
+			KMessageBox::error (this, text, i18n ("File not found"));
+			return;
+		}
+
+		// exec "gprof -b filename"
+		KProcess gprof;
+		gprof << "gprof" << "-b" << filename << gmonfilename;
+
+		mGProfStdout = "";
+		mGProfStderr = "";
+		connect (&gprof, SIGNAL (receivedStdout (KProcess*, char*, int)), this, SLOT (gprofStdout (KProcess*, char*, int)));
+		connect (&gprof, SIGNAL (receivedStderr (KProcess*, char*, int)), this, SLOT (gprofStderr (KProcess*, char*, int)));
+
+		gprof.start (KProcess::Block, KProcess::AllOutput);
+
+		if (!gprof.normalExit () || gprof.exitStatus ())
+		{
+			QString text = i18n ("gprof(1) could not generate the profile data.\n");
+			if (gprof.normalExit () && gprof.exitStatus ())
+			{
+				QString s;
+				s.sprintf (i18n ("Error %d was returned.\n"), gprof.exitStatus ());
+				text += s;
+			}
+			if (!mGProfStderr.isEmpty ())
+			{
+				text += i18n ("It returned the following error message(s):\n");
+				text += mGProfStderr;
+			}
+			else if (!mGProfStdout.isEmpty ())
+			{
+				text += i18n ("Following output was displayed:\n");
+				text += mGProfStdout;
+			}
+			KMessageBox::error (this, text, i18n ("gprof exited with error(s)"));
+			return;
+		}
+
+		mFlat->clear ();
+		mHier->clear ();
+		mObjs->clear ();
+		mProfile.clear ();
+
+		// parse profile data
+		QTextStream t (&mGProfStdout, IO_ReadOnly);
+		parseProfile (t);
+	}
+	else
+	{
+		// if user tried to open gmon.out, have him select the executable instead, then recurse to use
+		// the executable file
+		if (finfo.fileName() == QString ("gmon.out"))
+		{
+			KMessageBox::error (this, i18n ("File 'gmon.out' is the result of the execution of an application\nwith profiling turned on.\nYou can not open it as such: either open the application itself\nor open a text results file generated with 'gprof -b application-name'"),
+								i18n ("Opening gmon.out not allowed"));
+			return;
+		}
+
+		mFlat->clear ();
+		mHier->clear ();
+		mObjs->clear ();
+		mProfile.clear ();
+
+		// parse profile data
+		QFile f (filename);
+		if (!f.open (IO_ReadOnly))
+			return;
+
+		QTextStream t (&f);
+		parseProfile (t);
+	}
+
+	// fill lists
+	QString noFilter;
+	fillFlatProfileList (noFilter);
+	fillHierProfileList ();
+	fillObjsProfileList ();
+
 	// make sure we add the recent file
 	KURL url;
 	url.setProtocol ("file");
 	url.setFileName (filename);
 	emit addRecentFile (url);
-
-	// clear all lists
-	mFlat->clear ();
-	mHier->clear ();
-	mObjs->clear ();
-	mProfile.clear ();
-
-	// parse file & fill lists
-	parseProfile (filename);
-
-	QString noFilter;
-	fillFlatProfileList (noFilter);
-	fillHierProfileList ();
-	fillObjsProfileList ();
 }
 
-void KProfWidget::parseProfile (const QString& filename)
+void KProfWidget::gprofStdout (KProcess *, char *buffer, int buflen)
+{
+	mGProfStdout += QString::fromLocal8Bit (buffer, buflen);
+}
+
+void KProfWidget::gprofStderr (KProcess *, char *buffer, int buflen)
+{
+	mGProfStderr += QString::fromLocal8Bit (buffer, buflen);
+}
+
+void KProfWidget::parseProfile (QTextStream& t)
 {
 	/*
 	 * parse a GNU gprof output generated with -b (brief)
 	 *
 	 */
-
-	QFile f (filename);
-
-	if (!f.open (IO_ReadOnly))
-		return;
-
-	QTextStream t (&f);
-	QString s;
 
 	// regular expressions we use while parsing
 	QRegExp indexRegExp (" *\\[\\d+\\] *$");
@@ -252,6 +329,7 @@ void KProfWidget::parseProfile (const QString& filename)
 
 	int state = 0;
 	long line = 0;
+	QString s;
 
 	t.setEncoding (QTextStream::Latin1);
 	while (!t.eof ())
@@ -329,6 +407,7 @@ void KProfWidget::parseProfile (const QString& filename)
      		case PROCESS_FLAT_PROFILE:
 			{
 				CProfileInfo *p = new CProfileInfo;
+				p->ind				= mProfile.count ();
 				p->cumPercent		= fields[0].toFloat ();
 				p->cumSeconds		= fields[1].toFloat ();
 				p->selfSeconds		= fields[2].toFloat ();
@@ -731,6 +810,87 @@ void KProfWidget::doPrint ()
         // @@@ TODO: finish printing code
     }
 #endif
+}
+
+void KProfWidget::generateDotCallGraph ()
+{
+	// generate a call-graph to a .dot file in a format compatible with
+	// GraphViz, the free graph generator from ATT (http://www.research.att.com/sw/tools/graphviz/)
+
+	QString dotfile = KFileDialog::getSaveFileName (QString::null, i18n("*.dot|GraphViz DOT files"), this,
+													i18n ("Save call-graph file as..."));
+
+	if (dotfile.isEmpty ())
+		return;
+
+	QFile file (dotfile);
+	if (!file.open (IO_WriteOnly | IO_Truncate | IO_Translate))
+	{
+		KMessageBox::error (this, i18n ("File could not be opened for writing."), i18n ("File Error"));
+		return;
+	}
+
+	QByteArray graph;
+	QTextOStream stream (graph);
+
+	stream << "Digraph \"call-graph\" {\n";
+
+	// first create all the nodes
+	// TODO: take templates into account in classReg
+	QRegExp classReg ("::[^\\(:]*");			// regexp to collect class names
+
+	for (uint i = 0; i < mProfile.count (); i++)
+	{
+		QString className, methodName, args;
+
+		// extract class name if any
+		int classOff = classReg.find (mProfile[i]->name, 0);
+		if (classOff > 0)
+		{
+			className = mProfile[i]->name.left (classOff) + "\\n";
+			classOff += 2;						// skip ::
+		}
+		else
+			classOff = 0;
+
+		// extract method name and args
+		int methOff = mProfile[i]->name.find ('(', classOff);
+		if (methOff > 0)
+		{
+			methodName = mProfile[i]->name.mid (classOff, methOff - classOff) + "\\n";
+//			args = mProfile[i]->name.mid (methOff);
+
+		}
+		else
+			methodName = mProfile[i]->name.mid (classOff);
+
+		stream << i << " [label=\"" << className << methodName << args << "\"";
+		if (mProfile[i]->callers.count()==0 || mProfile[i]->called.count()==0)
+			stream << ", shape=box";
+		stream << "];\n";
+	}
+
+	for (uint i = 0; i < mProfile.count (); i++)
+	{
+		if (mProfile[i]->recursive)
+			stream << i << " -> " << i << " [style=dotted];\n";
+
+		if (mProfile[i]->called.count ())
+		{
+			stream << i << " -> {";
+			for (uint j = 0; j < mProfile[i]->called.count (); j++)
+			{
+				if (j)
+					stream << "; ";
+				stream << mProfile[i]->called[j]->ind;
+			}
+			stream << "};\n";
+		}
+	}
+	stream << "}\n";
+
+	file.writeBlock (graph);
+	file.close ();
 }
 
 #include "kprofwidget.moc"

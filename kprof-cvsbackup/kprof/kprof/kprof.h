@@ -29,7 +29,7 @@
 #ifndef __KPROF_H__
 #define __KPROF_H__
 
-#include <kmainwindow.h>
+#include <ktmainwindow.h>
 #include <kmenubar.h>
 
 class KProfWidget;
@@ -39,7 +39,8 @@ class KProfTopLevel : public KMainWindow
 	Q_OBJECT
 
 protected:
-	KProfWidget* mProf;
+	KProfWidget*	mProf;
+	KAction*		mGenCallGraphAction;
 
 public:
 	KProfTopLevel (QWidget *parent = 0, const char *name = NULL);

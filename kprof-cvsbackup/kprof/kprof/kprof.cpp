@@ -63,7 +63,10 @@ void KProfTopLevel::setupActions ()
 	KStdAction::print (mProf, SLOT(doPrint()), actionCollection());
 	KStdAction::quit (this, SLOT(close()), actionCollection ());
 
-//	KStdAction::showToolbar (this, SLOT(toggleToolBar()), actionCollection());
+	KStdAction::showToolbar (this, SLOT(toggleToolBar()), actionCollection());
+	
+	// add the Tools menu
+	mGenCallGraphAction = new KAction (i18n ("&Generate call graph..."), 0, mProf, SLOT (generateDotCallGraph ()), actionCollection(), "generate_call_graph");
 }
 
 void KProfTopLevel::toggleToolBar ()
