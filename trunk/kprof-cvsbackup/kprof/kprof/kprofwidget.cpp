@@ -107,18 +107,22 @@ KProfWidget::KProfWidget (QWidget *parent, const char *name)
 	mTabs->addTab (mObjs, i18n ("O&bject Profile"));
 
 	// add some help on items
-	QWhatsThis::add (flatFilter, i18n ("Type text in this field to filter the display "
-		"and only show the functions/methods whose name match the text."));
-	QWhatsThis::add (mFlat, i18n ("This is the <I>flat view</I>.\n\n"
-		"It displays all functions and method 'flat'. Click on a column header "
-		"to sort the list on this column (click a second time to reverse the "
-		"sort order)."));
-	QWhatsThis::add (mHier, i18n ("This is the <I>hierarchical view</I>.\n\n"
-		"It displays each function/method like a tree to let you see the other "
-		"functions that it calls. For that reason, each function may appear several "
-		"times in the list."));
-	QWhatsThis::add (mObjs, i18n ("This is the <I>object view</I>.\n\n"
-		"It displays C++ methods grouped by object name."));
+	QWhatsThis::add (flatFilter,
+		i18n (	"Type text in this field to filter the display "
+				"and only show the functions/methods whose name match the text."));
+	QWhatsThis::add (mFlat,
+		i18n (	"This is the <I>flat view</I>.\n\n"
+				"It displays all functions and method 'flat'. Click on a column header "
+				"to sort the list on this column (click a second time to reverse the "
+				"sort order)."));
+	QWhatsThis::add (mHier,
+		i18n (	"This is the <I>hierarchical view</I>.\n\n"
+				"It displays each function/method like a tree to let you see the other "
+				"functions that it calls. For that reason, each function may appear several "
+				"times in the list."));
+	QWhatsThis::add (mObjs,
+		i18n (	"This is the <I>object view</I>.\n\n"
+				"It displays C++ methods grouped by object name."));
 
 	loadSettings ();
 	applySettings ();
@@ -429,10 +433,9 @@ void KProfWidget::parseProfile (QTextStream& t)
 					p->name				= fields[3];
      			}
 				p->recursive		= false;
-				int j = p->name.find ("::");
-				if (j > 0)
-					p->object = p->name.left (j);
-				j = mProfile.size ();
+				p->object			= getClassName (p->name);
+
+				int j = mProfile.size ();
 				mProfile.resize (j + 1);
 				mProfile.insert (j, p);
 				break;
@@ -631,26 +634,21 @@ void KProfWidget::fillHierarchy (
 
 void KProfWidget::fillObjsProfileList ()
 {
-	// first collect all class names
-	QRegExp reg ("::[^\\(:]*\\(");
 	QVector<QString> classes;
-
 	for (uint i = 0; i < mProfile.count (); i++)
 	{
-		int j = reg.find (mProfile[i]->name, 0);
-		if (j > 0)
+		if (!mProfile[i]->object.isEmpty ())
 		{
-			QString *cl = new QString (mProfile[i]->name.left (j));
 			uint k;
 			for (k = 0; k < classes.count (); k++)
 			{
-				if (classes[k]->compare (*cl) == 0)
+				if (classes[k]->compare (mProfile[i]->object) == 0)
 					break;
      		}
 			if (k == classes.count ())
 			{
 				classes.resize (classes.count () + 1);
-				classes.insert (classes.count (), cl);
+				classes.insert (classes.count (), &mProfile[i]->object);
     		}
 		}
   	}
@@ -669,7 +667,7 @@ void KProfWidget::fillObjsHierarchy (CProfileViewItem *parent, QString *classNam
 {
 	for (uint i = 0; i < mProfile.count (); i++)
 	{
-		if (mProfile[i]->name.startsWith (*className))
+		if (mProfile[i]->object == *className)
 			new CProfileViewItem (parent, mProfile[i]);
 	}
 }
@@ -681,6 +679,8 @@ void KProfWidget::profileEntryRightClick (QListViewItem *listItem, const QPoint 
 
 	CProfileViewItem *item = (CProfileViewItem *) listItem;
 	CProfileInfo *info = item->getProfile();
+	if (info == NULL)
+		return;				// in objs profile, happens on class name lines
 
 	KPopupMenu pop (mTabs, 0);
 
@@ -854,7 +854,7 @@ void KProfWidget::generateDotCallGraph (bool currentSelectionOnly)
 	QByteArray graph;
 	QTextOStream stream (graph);
 
-	stream << "Digraph \"call-graph\" {\n";
+	stream << "Digraph \"kprof-call-graph\" {\n";
 
 	// first create all the nodes
 	// TODO: take templates into account in classReg
@@ -911,6 +911,91 @@ void KProfWidget::generateDotCallGraph (bool currentSelectionOnly)
 
 	file.writeBlock (graph);
 	file.close ();
+}
+
+QString KProfWidget::getClassName (const QString &name)
+{
+	// extract the class name from a complete method prototype
+	int args = name.find ('(');
+	if (args != -1)
+	{
+		// remove extra spaces before '(' (should not happen more than once..)
+		while (--args>0 && (name[args]==' ' || name[args]=='\t'))
+			;
+		if (args <= 0)
+			return QString ("");
+
+		// if there is a function template as member, make sure we
+		// properly skip the template
+		if (name[args] == '>')
+		{
+			int depth = 1;
+			while (--args > 0 && depth)
+			{
+				if (name[args] == '>')
+					depth++;
+				else if (name[args] == '<')
+					depth--;
+			}
+
+			// remove extra spaces before '(' (should not happen more than once..)
+			while (--args>0 && (name[args]==' ' || name[args]=='\t'))
+				;
+
+			if (args <= 0)
+				return QString ("");
+		}
+
+		while (args > 0)
+		{
+			if (name[args] == '>')
+			{
+				// end of another template: this is definitely
+				// not a class name
+				return "";
+			}
+			if (name[args]==':' && name[args-1]==':')
+			{
+				args--;
+				break;
+			}
+			args--;
+		}
+
+		if (args <= 0)
+			return QString ("");
+
+		// TODO: remove return type by analyzing the class name token
+		return name.left (args);
+	}
+	return QString ("");
+}
+
+QString KProfWidget::removeTemplates (const QString &name)
+{
+	// remove the templates from inside a name, leaving only
+	// the <> and return the converted name
+	QString s (name);
+	for (;;)
+	{
+		int i = name.find ('<');
+		if (!(i > 0 && i < ((int)s.length() - 1)))
+			break;
+		int j, depth = 1;
+		do {
+			j = name.find ("<>", i+1);
+			if (j == -1)
+				break;
+			if (name[j] == '<')
+				depth++;
+			else
+				depth--;
+		} while (depth);
+
+		if (depth == 0)
+			s.remove (i+1, j-i-1);
+	}
+	return s;
 }
 
 #include "kprofwidget.moc"

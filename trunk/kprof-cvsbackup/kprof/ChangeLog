@@ -1,3 +1,7 @@
+2001-02-05 Florent Pillet <fpillet@users.sourceforge.net>
+	* fixed a crasher when right-clicking a class name in object profile
+	* much better class name parsing when complex templates are found in names
+
 2001-01-23 Florent Pillet <florent.pillet@wanadoo.fr>
 	* added the documentation template
 	* added the call-graph generation UI, with provisions for VCG and GraphViz support.
