@@ -19,6 +19,7 @@
 
 class QFile;
 class CProfileInfo;
+class QColor;
 #include <qvector.h>
 #include <qstring.h>
 
@@ -27,7 +28,7 @@ class DotCallGraph
 public:
 	DotCallGraph (QFile& file, bool currentSelectionOnly,
 			bool imageMap, QVector<CProfileInfo>& mProfile,
-			const QString& tempDir);
+			const QString& tempDir, const QColor& fillColour);
 	~DotCallGraph() {};
 
 private:
