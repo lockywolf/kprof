@@ -1,3 +1,9 @@
+kprof (1.4.1-1) unstable; urgency=low
+
+  * New upstream release.
+
+ -- Ben Burton <benb@acm.org>  Fri,  4 Oct 2002 16:12:51 +1000
+
 kprof (1.4b-3) unstable; urgency=low
 
   * Fresh checkout of admin/ from KDE CVS.
