@@ -55,7 +55,7 @@ DotCallGraph::DotCallGraph (QFile& file, bool currentSelectionOnly,
 		stream << "]";
 		if (imageMap)
 		{
-			stream << "[URL=\"/tmp/" << className << "::" << mProfile[i]->method << ".html\"]";
+			stream << "[URL=\"/tmp/" << mProfile[i]->htmlName << "::" << mProfile[i]->method << ".html\"]";
 		}
 		stream << ";" << endl;
 	
