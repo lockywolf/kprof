@@ -34,7 +34,7 @@
 #include <kaction.h>
 #include <kstdaction.h>
 #include <kiconloader.h>
-#include <kdebug.h>
+#include "Log.h"
 
 #include "kprof.h"
 #include "kprofwidget.h"
@@ -42,7 +42,7 @@
 KProfTopLevel::KProfTopLevel (QWidget *parent, const char *name)
 	:	KMainWindow (parent, name)
 {
-  kdDebug(80000) << "Start KProfTopLevel::KProfTopLevel" << endl;
+	BEGIN;
 	mProf = new KProfWidget (this,"kprof");
 	CHECK_PTR(mProf);
 
@@ -59,32 +59,36 @@ KProfTopLevel::KProfTopLevel (QWidget *parent, const char *name)
 
 	loadSettings ();
 	applySettings ();
+	END;
 }
 
 void KProfTopLevel::loadSettings ()
 {
-  kdDebug(80000) << "KProfTopLevel::loadSettings ()" << endl;
+  BEGIN;
 	KConfig &config = *kapp->config ();
 	config.setGroup ("KProfiler");
 	int w = config.readNumEntry ("Width", width ());
 	int h = config.readNumEntry ("Height", height ());
 	resize (w,h);
 	mProf->loadSettings ();
+	END;
 }
 
 void KProfTopLevel::applySettings ()
 {
-  kdDebug(80000) << "Begin KProfTopLevel::applySettings ()" << endl;
+  BEGIN;
 	KConfig &config = *kapp->config ();
 	config.setGroup ("KProfiler");
 	config.writeEntry ("Width", width ());
 	config.writeEntry ("Height", height ());
 	mProf->applySettings ();
 	config.sync ();
+	END;
 }
 
 void KProfTopLevel::setupActions ()
 {
+	BEGIN;
 	KStdAction::open (mProf, SLOT(openResultsFile()), actionCollection());
 	KStdAction::openRecent (mProf, SLOT(openRecentFile(const KURL&)), actionCollection());
 	mCompareFile = new KAction (i18n ("Compare With..."), 0, mProf, SLOT (compareFile ()), actionCollection(), "compare_file");
@@ -100,26 +104,36 @@ void KProfTopLevel::setupActions ()
 #ifdef HAVE_LIBQTREEMAP
 	mDisplayTreeMapAction = new KAction(i18n("&Display TreeMap View"), 0, mProf, SLOT (displayTreeMapView()), actionCollection(), "display_tree_map_view");
 #endif
+
+	END;
 }
 
 void KProfTopLevel::toggleToolBar ()
 {
+	BEGIN;
+	
 	if (toolBar()->isVisible ())
 		toolBar()->hide ();
 	else
 		toolBar()->show ();
+
+	END;
 }
 
 KProfTopLevel::~KProfTopLevel ()
 {
+	BEGIN;
+	END;
 }
 
 bool KProfTopLevel::queryExit( void )
 {
+	BEGIN;
 	KConfig *config = kapp->config ();
 	KRecentFilesAction *recent = (KRecentFilesAction *) actionCollection()->action (KStdAction::stdName (KStdAction::OpenRecent));
 	recent->saveEntries (config);
 	applySettings ();
+	END;
 	return true;
 }
 
@@ -127,11 +141,13 @@ void KProfTopLevel::addRecentFile (const KURL& url)
 {
 	// this slot is called by kprofwidget when a file has been opened.
 	// we store it in the recent files and also change the window title
+	BEGIN;
 	KRecentFilesAction *recent = (KRecentFilesAction *) actionCollection()->action (KStdAction::stdName (KStdAction::OpenRecent));
 	recent->addURL (url);
 
 	setCaption (url.fileName ());
 	mCompareFile->setEnabled (true);
+	END;
 }
 
 #include "kprof.moc"

@@ -1,4 +1,7 @@
 2002-07-31 Andrey Behrens <Andrey.Behrens@gmx.de>
+	* Add some debug code
+
+2002-07-31 Andrey Behrens <Andrey.Behrens@gmx.de>
 	* add support for objprelink
 	* add support for "--enable-final"
 	* add a better  libqtreemap recognition

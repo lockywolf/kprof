@@ -40,7 +40,6 @@
 #include <qfile.h>
 
 #include <kapp.h>
-#include <kdebug.h>
 #include <kaction.h>
 #include <kconfig.h>
 #include <klocale.h>
@@ -68,6 +67,8 @@
 #include "parseprofile_gprof.h"
 #include "parseprofile_fnccheck.h"
 #include "parseprofile_pose.h"
+
+#include "Log.h"
 
 using namespace std;
 
@@ -97,6 +98,7 @@ KProfWidget::KProfWidget (QWidget *parent, const char *name)
 		mCurPage (0),
 		mAbbrevTemplates (false)
 {
+	BEGIN;
 	sListFont = new QFont;
 
 	QVBoxLayout *topLayout = new QVBoxLayout (this, 0, 0);
@@ -186,10 +188,13 @@ KProfWidget::KProfWidget (QWidget *parent, const char *name)
 	topLayout->addWidget (mTabs);
 	connect (mTabs, SIGNAL (tabSelected (int)), this, SLOT (tabSelected (int)));
 
+	END;
 }
 
 KProfWidget::~KProfWidget ()
 {
+	BEGIN;
+	
 	if (sListFont != NULL)
 	{
 		delete sListFont;
@@ -207,15 +212,23 @@ KProfWidget::~KProfWidget ()
 	delete mMethodHtmlPart;
 	mMethodHtmlPart = NULL;
 	}
+
+	END;
 }
 
 void KProfWidget::tabSelected (int page)
 {
+	BEGIN;
+	
 	mCurPage = page;
+
+	END;
 }
 
 void KProfWidget::toggleTemplateAbbrev ()
 {
+	BEGIN;
+	
 	mAbbrevTemplates = mAbbrevTemplates ? false : true;
 
 	KToggleAction *action = ((KProfTopLevel *) parent ())->getToggleTemplateAbbrevAction ();
@@ -237,28 +250,30 @@ void KProfWidget::toggleTemplateAbbrev ()
 		fillHierProfileList ();
 
 	}
+
+	END;
 }
 
 
 
 void KProfWidget::selectListFont ()
 {
-  kdDebug(80000) << "Begin selectListFont()" << endl;
+	BEGIN;
   assert(sListFont);
 	int i = KFontDialog::getFont (*sListFont);
 	if (i == KFontDialog::Accepted) {
-    kdDebug(80000) << "New Font is=" << sListFont->rawName() << endl;
 		mFlat->setFont (*sListFont);
 		mHier->setFont (*sListFont);
 		mObjs->setFont (*sListFont);
 	}
-  kdDebug(80000) << "End selectListFont()" << endl;
+	END;
 }
 
 
 
 void KProfWidget::prepareProfileView (KListView *view, bool rootIsDecorated)
 {
+	BEGIN;
 	for (int i = view->columns(); i > 0; )
 		view->removeColumn (--i);
 
@@ -311,11 +326,14 @@ void KProfWidget::prepareProfileView (KListView *view, bool rootIsDecorated)
 	view->setShowSortIndicator (true);
 	view->setRootIsDecorated (rootIsDecorated);
 	view->setItemMargin (2);
+	END;
 }
 
 void KProfWidget::customizeColumns (KListView *view, int profiler)
 {
 	// customize the columns for the profiler we are using
+	BEGIN;
+	
 	switch (profiler)
 	{
 		case FORMAT_GPROF:
@@ -375,18 +393,25 @@ void KProfWidget::customizeColumns (KListView *view, int profiler)
 			}
 			break;
 	}
+
+	END;
 }
 
 void KProfWidget::settingsChanged ()
 {
+	BEGIN;
+	
 	applySettings ();
 	loadSettings ();
+
+	END;
 }
 
 void KProfWidget::applySettings ()
 {
+	BEGIN;
+
   assert(sListFont);
-  kdDebug(80000) << "Begin KProfWidget::applySettings()" << endl;
 
   KConfig &config = *kapp->config ();
 
@@ -397,12 +422,12 @@ void KProfWidget::applySettings ()
 	config.writeEntry ("LastFileFormat", 			sLastFileFormat);
 	update();
 	
-  kdDebug(80000) << "End KProfWidget::applySettings()" << endl;
+  END;
 }
 
 void KProfWidget::loadSettings ()
 {
-  kdDebug(80000) << "Begin KProfWidget::loadSettings()" << endl;
+ 	BEGIN;
   assert(sListFont);
 
   KConfig &config = *kapp->config ();
@@ -420,11 +445,11 @@ void KProfWidget::loadSettings ()
 	int     FontSize = config.readNumEntry ("FontSize", 0);
 	if (!FontName.isEmpty() && FontSize > 0)
 	{
-    kdDebug(80000) << "    stored Font was=" << FontName << endl;
+    DBG1("stored Font was=%s",FontName.ascii());
     sListFont->setFamily(FontName);
     sListFont->setPointSize(FontSize);
 	}else{
-    kdDebug(80000) << "    set Font to menuFont=" << KGlobalSettings::menuFont().rawName() << endl;
+    DBG1("set Font to menuFont=%s",KGlobalSettings::menuFont().rawName().ascii());
     *sListFont=KGlobalSettings::menuFont();
   }
 	mFlat->setFont (*sListFont);
@@ -434,11 +459,11 @@ void KProfWidget::loadSettings ()
 	
   //Load last FileFormat settings
 	sLastFileFormat = config.readNumEntry ("LastFileFormat", FORMAT_GPROF);
-  kdDebug(80000) << "    LastFileFormat was=" << sLastFileFormat << endl;
+  DBG1("LastFileFormat was=%d",sLastFileFormat);
 
 
 	//Finish
-  kdDebug(80000) << "End KProfWidget::loadSettings()" << endl;
+	END;
 }
 
 
@@ -446,6 +471,8 @@ void KProfWidget::loadSettings ()
 
 void KProfWidget::openRecentFile (const KURL& url)
 {
+	BEGIN;
+	
 	QString filename = url.path ();
 	QString protocol = url.protocol ();
 	if (protocol == "file-gprof")
@@ -456,6 +483,8 @@ void KProfWidget::openRecentFile (const KURL& url)
 		openFile (filename, FORMAT_POSE, false);
 	else
 		openFile (filename, -1);
+
+	END;
 }
 
 
@@ -463,12 +492,18 @@ void KProfWidget::openRecentFile (const KURL& url)
 
 void KProfWidget::compareFile ()
 {
+	BEGIN;
+
 	// here we do not customize the file open dialog since the compared
 	// file should be the same type
 	QString f = KFileDialog::getOpenFileName (mCurDir.absPath(), QString::null, this, i18n ("Select a profiling results file to compare..."));
-	if (f.isEmpty ())
+	if (f.isEmpty ()){
+		END;
 		return;
+	}
 	openFile (f, sLastFileFormat, true);
+
+	END;
 }
 
 
@@ -476,6 +511,8 @@ void KProfWidget::compareFile ()
 
 void KProfWidget::openResultsFile ()
 {
+	BEGIN;
+	
 	// customize the Open File dialog: we add
 	// a few widgets at the end which allow the user
 	// to give us a hint at which profiler the results
@@ -517,25 +554,29 @@ void KProfWidget::openResultsFile ()
 
 		//print a debug message
   	switch(sLastFileFormat){
-		case	FORMAT_GPROF:			kdDebug(80000) << "Suppose Fileformat is \"GNU gprof\""<<endl;
-														break;
-		case	FORMAT_FNCCHECK:	kdDebug(80000) << "Suppose Fileformat is \"Function Check\""<<endl;
-														break;
-		case	FORMAT_POSE:			kdDebug(80000) << "Suppose Fileformat is \"PalmOS Emulator\""<<endl;
-														break;
+		case	FORMAT_GPROF:			RUN("Suppose Fileformat is \"GNU gprof\"");				break;
+		case	FORMAT_FNCCHECK:	RUN("Suppose Fileformat is \"Function Check\"");	break;
+		case	FORMAT_POSE:			RUN("Suppose Fileformat is \"PalmOS Emulator\"");	break;
 		}
 
    	//open the file
 		openFile (filename, sLastFileFormat, false);
 	}
+
+	END;
 }
 
 void KProfWidget::openFile (const QString &filename, int format, bool compare)
 {
+	BEGIN;
+
+	
 	bool isExec = false;
 
-	if (filename.isEmpty ())
+	if (filename.isEmpty ()){
+		END;
 		return;
+	}
 	
 	// if the file is an executable file, generate the profiling information
 	// directly from gprof and the gmon.out file
@@ -554,6 +595,7 @@ void KProfWidget::openFile (const QString &filename, int format, bool compare)
 			if (!fnccheckinfo.exists ())
 			{
 				KMessageBox::error (this, i18n ("Can't find any profiling output file\n(gmon.out or fnccheck.out)"), i18n ("File not found"));
+				END;
 				return;
 			}
 			else
@@ -639,6 +681,7 @@ void KProfWidget::openFile (const QString &filename, int format, bool compare)
 		if (!profile->valid())
 		{
 			KMessageBox::error(this, i18n("This fnccheck file is not in the correct format"));
+			END;
 			return;
 		}
 	}
@@ -650,12 +693,14 @@ void KProfWidget::openFile (const QString &filename, int format, bool compare)
 		{
 			KMessageBox::error (this, i18n ("File 'gmon.out' is the result of the execution of an application\nwith gprof(1) profiling turned on.\nYou can not open it as such: either open the application itself\nor open a text results file generated with 'gprof -b application-name'"),
 								i18n ("Opening gmon.out not allowed"));
+			END;
 			return;
 		}
 		else if (finfo.fileName() == "fnccheck.out")
 		{
 			KMessageBox::error (this, i18n ("File 'fnccheck.out' is the result of the execution of an application\nwith Function Check profiling turned on.\nYou can not open it as such: either open the application itself\nor open a text results file generated with 'fncdump +calls application-name'"),
 								i18n ("Opening fnccheck.out not allowed"));
+			END;
 			return;
 		}
 
@@ -680,8 +725,10 @@ void KProfWidget::openFile (const QString &filename, int format, bool compare)
 
 		// parse profile data
 		QFile f (filename);
-		if (!f.open (IO_ReadOnly))
+		if (!f.open (IO_ReadOnly)){
+			END;
 			return;
+		}
 
 		QTextStream t (&f);
 		if (format == FORMAT_GPROF)
@@ -729,7 +776,7 @@ void KProfWidget::openFile (const QString &filename, int format, bool compare)
 	// update the current directory
 	mCurDir = finfo.dir ();
 
-	
+	END;
 
 }
 
@@ -737,6 +784,8 @@ void KProfWidget::openFile (const QString &filename, int format, bool compare)
 
 void KProfWidget::gprofStdout (KProcess *, char *buffer, int buflen)
 {
+	BEGIN;
+	
 	char* newbuf = new char[buflen];
 	strncpy(newbuf, buffer, buflen);
 	newbuf[buflen] = '\0';
@@ -744,37 +793,50 @@ void KProfWidget::gprofStdout (KProcess *, char *buffer, int buflen)
 	mGProfStdout += QString::fromLocal8Bit (newbuf, buflen);
 
 	delete [] newbuf;
+
+	END;
 }
 
 
 
 void KProfWidget::gprofStderr (KProcess *, char *buffer, int buflen)
 {
+	BEGIN;
 	mGProfStderr += QString::fromLocal8Bit (buffer, buflen);
+	END;
 }
 
 //Handle the standard output from the GraphViz command
 void KProfWidget::graphVizStdout (KProcess*, char* buffer, int buflen)
 {
+	BEGIN;
 	mGraphVizStdout += QString::fromLocal8Bit(buffer, buflen);
+
+	END;
 }
 
 //Handle the standard errors from the GraphViz command
 void KProfWidget::graphVizStderr (KProcess*, char* buffer, int buflen)
 {
+	BEGIN;
 	mGraphVizStderr += QString::fromLocal8Bit(buffer, buflen);
+	END;
 }
 
 //Handle the standard output from the GraphViz command
 void KProfWidget::graphVizDispStdout (KProcess*, char* buffer, int buflen)
 {
+	BEGIN;
 	mGraphVizDispStdout += QString::fromLocal8Bit(buffer, buflen);
+	END;
 }
 
 //Handle the standard errors from the GraphViz command
 void KProfWidget::graphVizDispStderr (KProcess*, char* buffer, int buflen)
 {
+	BEGIN;
 	mGraphVizDispStderr += QString::fromLocal8Bit(buffer, buflen);
+	END;
 }
 
 
@@ -786,6 +848,8 @@ void KProfWidget::postProcessProfile (bool compare)
 	// After that, we check every function/method to see if it
 	// has multiple signatures. We mark entries with multiple signatures
 	// so that we can display the arguments only when needed
+	BEGIN;
+	
 	mClasses.resize (0);
 	uint i, j;
 	for (i = 0; i < mProfile.count (); i++)
@@ -841,8 +905,10 @@ void KProfWidget::postProcessProfile (bool compare)
 	// to the list (marking them "deleted"). To mark entries that we have already seen,
 	// set their "output" flag to true. This is temporary, just for the duration of
 	// the code below.
-	if (compare == false)
+	if (compare == false){
+		END;
 		return;
+	}
 	
 	for (i = 0; i < mPreviousProfile.count(); i++)
 		mPreviousProfile[i]->output = false;		// reset all "output" flags
@@ -870,11 +936,13 @@ void KProfWidget::postProcessProfile (bool compare)
 			mProfile.insert (mProfile.size() - 1, mPreviousProfile[j]);
 		}
 	}
+	END;
 }
 
 
 void KProfWidget::fillFlatProfileList ()
 {
+	BEGIN;
 	bool filter = mFlatFilter.isEmpty()==false && mFlatFilter.length() > 0;
 	for (unsigned int i = 0; i < mProfile.size (); i++)
 	{
@@ -884,13 +952,13 @@ void KProfWidget::fillFlatProfileList ()
   	}
 	mFlat->setColumnWidthMode (0, QListView::Manual);
 	update ();
+	END;
 }
 
 
 void KProfWidget::fillHierProfileList ()
 {
-  kdDebug(80000) << "Begin KProfWidget::fillHierProfileList()" << endl;
-  kdDebug(80000) << "mProfile.size="<< mProfile.size()<< endl;
+	BEGIN;
 
 	for (unsigned int i = 0; i < mProfile.size(); i++)
 	{
@@ -909,7 +977,7 @@ void KProfWidget::fillHierProfileList ()
 	mHier->setColumnWidthMode (0, QListView::Manual);
 	update ();
 
-  kdDebug(80000) << "End KProfWidget::fillHierProfileList()" << endl;
+  END;
 	
 }//fillHierProfileList()
 
@@ -919,6 +987,7 @@ void KProfWidget::fillHierarchy (
 		QArray<CProfileInfo *> &addedEntries,
 		int &count)
 {
+	BEGIN;
 	for (uint i = 0; i < parent->called.count (); i++)
 	{
 		// skip items already added to avoid recursion
@@ -929,10 +998,13 @@ void KProfWidget::fillHierarchy (
 		CProfileViewItem *newItem = new CProfileViewItem (item, parent->called[i]);
 		fillHierarchy (newItem, parent->called[i], addedEntries, count);
 	}
+	END;
 }
 
 void KProfWidget::fillObjsProfileList ()
 {
+	BEGIN;
+
 	// create all toplevel elements and their descendants
 	for (uint i = 0; i < mClasses.count (); i++)
 	{
@@ -945,17 +1017,24 @@ void KProfWidget::fillObjsProfileList ()
 	}
 	
 	mObjs->setColumnWidthMode (0, QListView::Manual);
+	END;
 }
 
 void KProfWidget::profileEntryRightClick (QListViewItem *listItem, const QPoint &p, int)
 {
-	if (!listItem)
+	BEGIN;
+
+	if (!listItem){
+		END;
 		return;
+	}
 
 	CProfileViewItem *item = (CProfileViewItem *) listItem;
 	CProfileInfo *info = item->getProfile();
-	if (info == NULL)
+	if (info == NULL){
+		END;
 		return;				// in objs profile, happens on class name lines
+	}
 
 	KPopupMenu pop (mTabs, 0);
 
@@ -964,8 +1043,10 @@ void KProfWidget::profileEntryRightClick (QListViewItem *listItem, const QPoint 
 	uint n = 0;
 
 	// if there are no callers nor called functions, return
-	if (itemProf.size() == 0)
+	if (itemProf.size() == 0){
+		END;
 		return;
+	}
 
 	// add callers to the pop-up menu
 	if (info->callers.count ())
@@ -995,10 +1076,15 @@ void KProfWidget::profileEntryRightClick (QListViewItem *listItem, const QPoint 
 
 	if (sel != -1)
 		selectProfileItem (itemProf[sel]);
+
+	END;
 }
 
 void KProfWidget::selectionChanged (QListViewItem *item)
 {
+	BEGIN;
+
+
 	QListView *view = item->listView();
 	CProfileInfo *info = ((CProfileViewItem *)item)->getProfile ();
 	if (view != mFlat)
@@ -1025,19 +1111,27 @@ void KProfWidget::selectionChanged (QListViewItem *item)
 		connect (mObjs, SIGNAL (selectionChanged (QListViewItem *)),
 				 this, SLOT (selectionChanged (QListViewItem *)));
 	}
+
+	END;
 }
 
 void KProfWidget::selectProfileItem (CProfileInfo *info)
 {
+	BEGIN;
+
 	// synchronize the three views by selecting the
 	// same item in all lists
 	selectItemInView (mFlat, info, false);
 	selectItemInView (mHier, info, false);
 	selectItemInView (mObjs, info, true);
+
+	END;
 }
 
 void KProfWidget::selectItemInView (QListView *view, CProfileInfo *info, bool examineSubs)
 {
+	BEGIN;
+
 	QListViewItem *item = view->firstChild ();
 	while (item)
 	{
@@ -1050,6 +1144,7 @@ void KProfWidget::selectItemInView (QListView *view, CProfileInfo *info, bool ex
 
 			view->ensureItemVisible (item);
 			view->setSelected (item, true);
+			END;
 			return;
 		}
 
@@ -1066,17 +1161,24 @@ void KProfWidget::selectItemInView (QListView *view, CProfileInfo *info, bool ex
 		else
 			break;
 	}
+	END;
 }
 
 void KProfWidget::flatProfileFilterChanged (const QString &filter)
 {
+	BEGIN;
+	
 	mFlat->clear ();
 	mFlatFilter = filter;
 	fillFlatProfileList ();
+
+	END;
 }
 
 void KProfWidget::doPrint ()
 {
+	BEGIN;
+
 	KListView *view =	mCurPage == 0 ? mFlat :
 						mCurPage == 1 ? mHier :
 										mObjs;
@@ -1117,10 +1219,14 @@ void KProfWidget::doPrint ()
 	part->end();
 	part->view()->print();
 	delete part;
+
+	END;
 }
 
 void KProfWidget::generateCallGraph ()
 {
+	BEGIN;
+	
 	// Display the call-graph format selection dialog and generate a
 	// call graph
 	CCallGraph dialog (this, "Call-Graph Format", true);
@@ -1137,6 +1243,7 @@ void KProfWidget::generateCallGraph ()
 			if (selectedItem == NULL)
 			{
 				KMessageBox::sorry (this, i18n ("To export the current selection's call-graph,\nyou must select an item in the profile view."), i18n ("Selection Empty"));
+				END;
 				return;
 			}
 		}
@@ -1150,13 +1257,16 @@ void KProfWidget::generateCallGraph ()
 				this,
 				i18n ("Save call-graph as..."));
 	
-			if (dotfile.isEmpty ())
+			if (dotfile.isEmpty ()){
+				END;
 				return;
+			}
 
 			QFile file (dotfile);
 			if (!file.open (IO_WriteOnly | IO_Truncate | IO_Translate))
 			{
 				KMessageBox::error (this, i18n ("File could not be opened for writing."), i18n ("File Error"));
+				END;
 				return;
 			}
 
@@ -1177,6 +1287,7 @@ void KProfWidget::generateCallGraph ()
 					if (info == NULL)
 					{
 						KMessageBox::error (this, i18n ("Internal Error"), i18n ("Could not find any function or class to export."));
+						END;
 						return;
 					}
 
@@ -1217,7 +1328,8 @@ void KProfWidget::generateCallGraph ()
 			if (!file.exists())
 			{
 				KMessageBox::error (this, i18n ("Internal Error"), i18n ("Could not open a temporary file for writing."));
-						return;
+				END;
+				return;
 			}
 
 			// graph generation
@@ -1268,21 +1380,29 @@ void KProfWidget::generateCallGraph ()
 					text += s;
 				}
 				KMessageBox::error (this, text, i18n ("xvcg exited with error(s)"));
+				END;
 				return;
 			}
 		}
 	}
+	END;
 }
 
 void KProfWidget::markForOutput (CProfileInfo *p)
 {
+	BEGIN;
+	
 	// if true, we already passed this item; avoid entering a recursive loop
-	if (p->output)
+	if (p->output){
+		END;
 		return;
+	}
 
 	p->output = true;
 	for (uint i = 0; i < p->called.count(); i++)
 		markForOutput (p->called[i]);
+
+	END;
 }
 
 
@@ -1291,6 +1411,7 @@ void KProfWidget::markForOutput (CProfileInfo *p)
 
 QString KProfWidget::getClassName (const QString &name)
 {
+	BEGIN;
 	// extract the class name from a complete method prototype
 	int args = name.find ('(');
 	if (args != -1)
@@ -1298,8 +1419,10 @@ QString KProfWidget::getClassName (const QString &name)
 		// remove extra spaces before '(' (should not happen more than once..)
 		while (--args>0 && (name[args]==' ' || name[args]=='\t'))
 			;
-		if (args <= 0)
+		if (args <= 0){
+			END;
 			return QString ("");
+		}
 
 		// if there is a function template as member, make sure we
 		// properly skip the template
@@ -1318,8 +1441,10 @@ QString KProfWidget::getClassName (const QString &name)
 			while (--args>0 && (name[args]==' ' || name[args]=='\t'))
 				;
 
-			if (args <= 0)
+			if (args <= 0){
+				END;
 				return QString ("");
+			}
 		}
 
 		while (args > 0)
@@ -1328,6 +1453,7 @@ QString KProfWidget::getClassName (const QString &name)
 			{
 				// end of another template: this is definitely
 				// not a class name
+				END;
 				return "";
 			}
 			if (name[args]==':' && name[args-1]==':')
@@ -1338,19 +1464,26 @@ QString KProfWidget::getClassName (const QString &name)
 			args--;
 		}
 
-		if (args <= 0)
+		if (args <= 0){
+			END;
 			return QString ("");
+		}
 
 		// TODO: remove return type by analyzing the class name token
+		END;
 		return name.left (args);
 	}
+	END;
 	return QString ("");
 }
 
 QString KProfWidget::removeTemplates (const QString &name)
 {
-	if (mAbbrevTemplates == false)
+	BEGIN;
+	if (mAbbrevTemplates == false){
+		END;
 		return name;
+	}
 
 	// remove the templates from inside a name, leaving only
 	// the <...> and return the converted name
@@ -1376,6 +1509,7 @@ QString KProfWidget::removeTemplates (const QString &name)
 			}
 		}
 	}
+	END;
 	return s;
 }
 
@@ -1383,6 +1517,7 @@ QString KProfWidget::removeTemplates (const QString &name)
 void KProfWidget::displayTreeMapView()
 {
 #ifdef HAVE_LIBQTREEMAP
+	BEGIN;
 	// create options for the treemap
 	mTreemapOptions = new QTreeMapOptions ();
 	mTreemapOptions->calc_nodesize = CALCNODE_ALWAYS;
@@ -1401,6 +1536,7 @@ void KProfWidget::displayTreeMapView()
 	mHierTreemap->getArea()->setOptions (mTreemapOptions);
 	mHierTreemap->getArea()->setTreeMap ((Object *)mHier->firstChild());
 	mHierTreemap->setWindowTitle (i18n ("KProf Hierarchy Profile"));
+	END;
 #endif
 }
 
@@ -1408,6 +1544,7 @@ void KProfWidget::displayTreeMapView()
 //in the html viewer
 void KProfWidget::prepareHtmlPart(KHTMLPart* part)
 {
+	BEGIN;
 	//Generate a temporary file
 	QFile file;
 
@@ -1453,13 +1590,18 @@ void KProfWidget::prepareHtmlPart(KHTMLPart* part)
 
 	mapFile.close();
 	part->openURL(KURL("file:///tmp/kprof.html"));
+	END;
 }
+
+
 
 //Captures the URL clicked signal from the call tree HTML widget and
 //opens the required URL in the method widget.
 void KProfWidget::openURLRequestDelayed( const KURL &url, const KParts::URLArgs &args)
 {
+	BEGIN;
 	mMethodHtmlPart->openURL(url);
+	END;
 }
 
 #include "kprofwidget.moc"
