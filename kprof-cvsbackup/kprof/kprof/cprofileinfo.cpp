@@ -17,6 +17,7 @@
 
 #include "cprofileinfo.h"
 #include <qtextstream.h>
+#include <qregexp.h>
 
 CProfileInfo::CProfileInfo ()
 		:	previous (NULL),
@@ -40,15 +41,21 @@ CProfileInfo::~CProfileInfo()
 void CProfileInfo::dumpHtml()
 {
 	QFile dumpFile;
-	QString fileName = "/tmp/" + object + "::" + method + ".html" ;
+	QString fileName = "/tmp/" + htmlName + "::" + method + ".html" ;
 	dumpFile.setName(fileName);
+
+	if (dumpFile.exists())
+	{
+		dumpFile.remove();
+	}
+
 	dumpFile.open(IO_ReadWrite);
 
 	QByteArray dumpText;
 	QTextOStream stream (dumpText);
 
 	stream << "<HTML><BODY>" << endl;
-	stream << "<H1>" << object << "::" << method << "</H1>" << endl;
+	stream << "<H1>" << htmlName << "::" << method << "</H1>" << endl;
 	stream << "<P>" <<endl;
 	stream << "Arguments\t" << arguments << endl;
 	stream << "</P>" << endl;
@@ -62,7 +69,34 @@ void CProfileInfo::dumpHtml()
 		stream << "False" << endl;
 	}
 	stream << "<P>Called\t" << calls << " times.</P>" << endl;
+	stream << "<P>Cumulative seconds\t" << cumSeconds <<  "</P>" <<endl;
 	stream << "<P>Average time per call (ms)\t" << totalMsPerCall << "</P>" << endl;
+	stream << "<P>Cumulative percentage\t" << cumPercent << "</P>" << endl;
+	stream << "<H2>Callers</H2>" << endl;
+	if (callers.count ())
+	{
+		for (uint i = 0; i < callers.count (); i++)
+		{
+			CProfileInfo *p = callers[i];
+			stream << "<LI><A HREF=\"/tmp/"<< p->htmlName << "::" << p->method << ".html\"> "
+						<< p->htmlName << "::" << p->method <<"</A></LI>" << endl;
+  		}
+   	}
+	stream << "<H2>Called</H2>" << endl;
+	if (callers.count ())
+	{
+		for (uint i = 0; i < called.count (); i++)
+		{
+			CProfileInfo *p = called[i];
+//			QString objectName = p->object;
+//			objectName.replace(QRegExp("<"), "[");
+//			objectName.replace(QRegExp(">"),"]");
+			stream << "<LI><A HREF=\"/tmp/"<< p->htmlName << "::" << p->method << ".html\"> "
+						<< p->htmlName << "::" << p->method <<"</A></LI>" << endl;
+   		}
+   	}
+	
+	
 	stream << "</BODY></HTML >" << endl;
 
 	dumpFile.writeBlock (dumpText);

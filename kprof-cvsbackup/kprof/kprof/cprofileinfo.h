@@ -48,6 +48,7 @@ class CProfileInfo
 public:
 	QString		name;					// full function/method prototype
 	QString		simplifiedName;			// full function/method prototype with templates removed
+	QString		htmlName;			//Name with <> replaced with []
 	QString		object;					// name of object if this is an object method
 	QString		method;					// method name without class name nor arguments
 	QString		arguments;				// function/method arguments
