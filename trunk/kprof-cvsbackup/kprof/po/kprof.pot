@@ -1,0 +1,167 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR Free Software Foundation, Inc.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"POT-Creation-Date: 2002-06-07 14:56+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Transfer-Encoding: 8-bit\n"
+
+#: kprof.cpp:70
+msgid "New &Window"
+msgstr ""
+
+#: kprof.cpp:85
+msgid "Opens a new application window"
+msgstr ""
+
+#: kprof.cpp:86
+msgid "Creates a new document"
+msgstr ""
+
+#: kprof.cpp:87
+msgid "Opens an existing document"
+msgstr ""
+
+#: kprof.cpp:88
+msgid "Opens a recently used file"
+msgstr ""
+
+#: kprof.cpp:89
+msgid "Saves the actual document"
+msgstr ""
+
+#: kprof.cpp:90
+msgid "Saves the actual document as..."
+msgstr ""
+
+#: kprof.cpp:91
+msgid "Closes the actual document"
+msgstr ""
+
+#: kprof.cpp:92
+msgid "Prints out the actual document"
+msgstr ""
+
+#: kprof.cpp:93
+msgid "Quits the application"
+msgstr ""
+
+#: kprof.cpp:94
+msgid "Cuts the selected section and puts it to the clipboard"
+msgstr ""
+
+#: kprof.cpp:95
+msgid "Copies the selected section to the clipboard"
+msgstr ""
+
+#: kprof.cpp:96
+msgid "Pastes the clipboard contents to actual position"
+msgstr ""
+
+#: kprof.cpp:97
+msgid "Enables/disables the toolbar"
+msgstr ""
+
+#: kprof.cpp:98
+msgid "Enables/disables the statusbar"
+msgstr ""
+
+#: kprof.cpp:111 kprof.cpp:139 kprof.cpp:260 kprof.cpp:278 kprof.cpp:301
+#: kprof.cpp:318 kprof.cpp:327 kprof.cpp:343 kprof.cpp:352 kprof.cpp:365
+#: kprof.cpp:391 kprof.cpp:398 kprof.cpp:405 kprof.cpp:422 kprof.cpp:439
+msgid "Ready."
+msgstr ""
+
+#: kprof.cpp:135 kprof.cpp:283 kprof.cpp:306
+msgid "Opening file..."
+msgstr ""
+
+#: kprof.cpp:255
+msgid "Opening a new application window..."
+msgstr ""
+
+#: kprof.cpp:265
+msgid "Creating new document..."
+msgstr ""
+
+#: kprof.cpp:293 kprof.cpp:335
+msgid "*|All files"
+msgstr ""
+
+#: kprof.cpp:293
+msgid "Open File..."
+msgstr ""
+
+#: kprof.cpp:323
+msgid "Saving file..."
+msgstr ""
+
+#: kprof.cpp:332
+msgid "Saving file with a new filename..."
+msgstr ""
+
+#: kprof.cpp:348
+msgid "Closing file..."
+msgstr ""
+
+#: kprof.cpp:357
+msgid "Printing..."
+msgstr ""
+
+#: kprof.cpp:370
+msgid "Exiting..."
+msgstr ""
+
+#: kprof.cpp:389
+msgid "Cutting selection..."
+msgstr ""
+
+#: kprof.cpp:396
+msgid "Copying selection to clipboard..."
+msgstr ""
+
+#: kprof.cpp:403
+msgid "Inserting clipboard contents..."
+msgstr ""
+
+#: kprof.cpp:410
+msgid "Toggling toolbar..."
+msgstr ""
+
+#: kprof.cpp:427
+msgid "Toggle the statusbar..."
+msgstr ""
+
+#: _translatorinfo.cpp:1 _translatorinfo.cpp:1
+msgid ""
+"_: NAME OF TRANSLATORS\n"
+"Your names"
+msgstr ""
+
+#: _translatorinfo.cpp:3 _translatorinfo.cpp:3
+msgid ""
+"_: EMAIL OF TRANSLATORS\n"
+"Your emails"
+msgstr ""
+
+#: main.cpp:25 main.cpp:39
+msgid "Kprof"
+msgstr ""
+
+#: main.cpp:31
+msgid "file to open"
+msgstr ""
+
+#: kprofdoc.cpp:90
+msgid ""
+"The current file has been modified.\n"
+"Do you want to save it?"
+msgstr ""
