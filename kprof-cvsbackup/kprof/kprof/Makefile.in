@@ -273,7 +273,7 @@ DIST_COMMON =  Makefile.am Makefile.in
 
 #>- DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
 #>+ 4
-KDE_DIST=lo32-app-kprof.png toto kprof kprof.desktop call-graph.ui kprof_meta_unload.cpp kprofui.rc call-graph.h lo16-app-kprof.png 
+KDE_DIST=lo32-app-kprof.png kprof kprof.desktop call-graph.ui kprof_meta_unload.cpp kprofui.rc call-graph.h lo16-app-kprof.png 
 
 DISTFILES= $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST) $(KDE_DIST)
 
@@ -691,9 +691,6 @@ all-redirect all-am all installdirs-am installdirs mostlyclean-generic \
 distclean-generic clean-generic maintainer-clean-generic clean \
 mostlyclean distclean maintainer-clean
 
-
-# UI files (Qt Designer)
-#kprof_UIFILES = call-graph.ui
 
 # make messages.po
 messages: rc.cpp

@@ -97,7 +97,10 @@ QString CProfileViewItem::text (int column) const
 			if (p && p->mProfile == NULL)
 			{
 				// we are in a method of an object in the object
-				return mProfile->name.right (mProfile->name.length () - mProfile->object.length() - 2);
+				if (mProfile->multipleSignatures)
+					return mProfile->name.right (mProfile->name.length () - mProfile->object.length() - 2);
+
+				return mProfile->method;
     		}
 			return mProfile->simplifiedName;
    		}

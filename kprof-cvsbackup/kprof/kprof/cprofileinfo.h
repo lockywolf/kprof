@@ -46,6 +46,8 @@ public:
 	QString		name;					// full function/method prototype
 	QString		simplifiedName;			// full function/method prototype with templates removed
 	QString		object;					// name of object if this is an object method
+	QString		method;					// method name without class name nor arguments
+	QString		arguments;				// function/method arguments
 	QArray<CProfileInfo *> called;		// list of functions called by this one
 	QArray<CProfileInfo *> callers;		// list of functions that this one calls
 
@@ -57,6 +59,7 @@ public:
 	float		selfTsPerCall;
 	float		totalTsPerCall;
 	bool		recursive;
+	bool		multipleSignatures;		// if true, this method name has multiple signatures
 
 public:
 	~CProfileInfo() { }

@@ -54,7 +54,10 @@ protected:
 	KListView*				mFlat;		// the flat profile list widget
 	KListView*				mHier;		// the hierarchical profile widget
 	KListView*				mObjs;		// the object profile widget
+
 	QVector<CProfileInfo>	mProfile;	// profile information read from file
+	QVector<QString>		mClasses;	// list of distinct class names found in the profile information
+
 #ifndef QT_NO_PRINTER
 	QPrinter				mPrinter;	// printer object
 #endif
@@ -125,6 +128,7 @@ private:
 	void prepareProfileView (KListView *view, bool rootIsDecorated);
 	void parseProfile (QTextStream &t);
 	void processCallGraphBlock (const QVector<SCallGraphEntry> &data);
+	void postProcessProfile ();
 
 	CProfileInfo *locateProfileEntry (const QString& name);
 
@@ -132,7 +136,6 @@ private:
 	void fillHierProfileList ();
 	void fillHierarchy (CProfileViewItem *item, CProfileInfo *parent, QArray<CProfileInfo *> &addedEntries, int &count);
 	void fillObjsProfileList ();
-	void fillObjsHierarchy (CProfileViewItem *parent, QString *className);
 
 	void selectProfileItem (CProfileInfo *info);
 	void selectItemInView (QListView *view, CProfileInfo *info, bool examineSubs);
