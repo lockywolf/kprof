@@ -48,6 +48,7 @@ public:
 protected slots:
 	virtual bool queryExit ();
 	void toggleToolBar ();
+	void addRecentFile (const KURL& url);
 
 private:
 	void setupActions ();

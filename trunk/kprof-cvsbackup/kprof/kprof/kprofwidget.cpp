@@ -30,6 +30,7 @@
 #include <qtextstream.h>
 #include <qvector.h>
 #include <qlabel.h>
+#include <qwhatsthis.h>
 
 #include <kapp.h>
 #include <kconfig.h>
@@ -77,6 +78,8 @@ KProfWidget::KProfWidget (QWidget *parent, const char *name)
 			 this, SLOT (profileEntryRightClick (QListViewItem*, const QPoint&, int)));
     connect (flatFilter, SIGNAL (textChanged (const QString &)),
 			 this, SLOT (flatProfileFilterChanged (const QString &)));
+	connect (mFlat, SIGNAL (selectionChanged (QListViewItem *)),
+			 this, SLOT (selectionChanged (QListViewItem *)));
 
     flatLayout->addWidget (mFlat);
 
@@ -86,6 +89,8 @@ KProfWidget::KProfWidget (QWidget *parent, const char *name)
 	prepareProfileView (mHier, true);
 	connect (mHier, SIGNAL (rightButtonPressed (QListViewItem*, const QPoint&, int)),
 			 this, SLOT (profileEntryRightClick (QListViewItem*, const QPoint&, int)));
+	connect (mHier, SIGNAL (selectionChanged (QListViewItem *)),
+			 this, SLOT (selectionChanged (QListViewItem *)));
 
 	// create object profile list
 	mObjs = new KListView (this, "objectProfile");
@@ -93,11 +98,27 @@ KProfWidget::KProfWidget (QWidget *parent, const char *name)
 	prepareProfileView (mObjs, true);
 	connect (mObjs, SIGNAL (rightButtonPressed (QListViewItem*, const QPoint&, int)),
 			 this, SLOT (profileEntryRightClick (QListViewItem*, const QPoint&, int)));
+	connect (mObjs, SIGNAL (selectionChanged (QListViewItem *)),
+			 this, SLOT (selectionChanged (QListViewItem *)));
 
 	// add the view to the tab control
  	mTabs->addTab (flatWidget, i18n("&Flat Profile"));
 	mTabs->addTab (mHier, i18n("&Hierarchical Profile"));
 	mTabs->addTab (mObjs, i18n("O&bject Profile"));
+
+	// add some help on items
+	QWhatsThis::add (flatFilter, i18n ("Type text in this field to filter the display "
+		"and only show the functions/methods whose name match the text."));
+	QWhatsThis::add (mFlat, i18n ("This is the <I>flat view</I>.\n\n"
+		"It displays all functions and method 'flat'. Click on a column header "
+		"to sort the list on this column (click a second time to reverse the "
+		"sort order)."));
+	QWhatsThis::add (mHier, i18n ("This is the <I>hierarchical view</I>.\n\n"
+		"It displays each function/method like a tree to let you see the other "
+		"functions that it calls. For that reason, each function may appear several "
+		"times in the list."));
+	QWhatsThis::add (mObjs, i18n ("This is the <I>object view</I>.\n\n"
+		"It displays C++ methods grouped by object name."));
 
 	loadSettings ();
 	applySettings ();
@@ -130,16 +151,6 @@ void KProfWidget::prepareProfileView (KListView *view, bool rootIsDecorated)
 	view->setRootIsDecorated (rootIsDecorated);
 }
 
-void KProfWidget::setManualColumnWidths (KListView *view)
-{
-	for (int i = 0; i < view->columns (); i++)
-		view->setColumnWidthMode (i, QListView::Manual);
-}
-
-void KProfWidget::openSettingsDialog ()
-{
-}
-
 void KProfWidget::settingsChanged ()
 {
 	applySettings ();
@@ -154,7 +165,7 @@ void KProfWidget::applySettings ()
 	config.writeEntry ("Width", width ());
 	config.writeEntry ("Height", height ());
 
-	// @@@ save columns widhts here
+	// TODO: save columns widhts here
 
 	config.sync ();
 	update ();
@@ -170,21 +181,39 @@ void KProfWidget::loadSettings ()
 	int h = config.readNumEntry ("Height", height ());
 	resize (w,h);
 
-	// @@@ reload columns widths here
+	// TODO: reload columns widths here
+}
+
+void KProfWidget::openRecentFile (const KURL& url)
+{
+	QString filename = url.path ();
+	openFile (filename);
 }
 
 void KProfWidget::openResultsFile ()
 {
 	QString filename = KFileDialog::getOpenFileName (NULL, NULL, this, "Select a gprof-generated file");
+	openFile (filename);
+}
 
+void KProfWidget::openFile (const QString &filename)
+{
 	if (filename.isEmpty ())
 		return;
 
+	// make sure we add the recent file
+	KURL url;
+	url.setProtocol ("file");
+	url.setFileName (filename);
+	emit addRecentFile (url);
+
+	// clear all lists
 	mFlat->clear ();
 	mHier->clear ();
 	mObjs->clear ();
 	mProfile.clear ();
 
+	// parse file & fill lists
 	parseProfile (filename);
 
 	QString noFilter;
@@ -193,7 +222,7 @@ void KProfWidget::openResultsFile ()
 	fillObjsProfileList ();
 }
 
-void KProfWidget::parseProfile (QString& filename)
+void KProfWidget::parseProfile (const QString& filename)
 {
 	/*
 	 * parse a GNU gprof output generated with -b (brief)
@@ -209,11 +238,11 @@ void KProfWidget::parseProfile (QString& filename)
 	QString s;
 
 	// regular expressions we use while parsing
-	QRegExp indexRegExp (" *\\[\\d+\\]$");
+	QRegExp indexRegExp (" *\\[\\d+\\] *$");
 	QRegExp floatRegExp ("^[0-9]*\\.[0-9]+$");
 	QRegExp countRegExp ("^[0-9]+[/\\+]?[0-9]*$");
 	QRegExp dashesRegExp ("^\\-+");
-	QRegExp	recurCountRegExp (" *<cycle \\d+.*>$");
+	QRegExp	recurCountRegExp (" *<cycle \\d+.*> *$");
 
 	// while parsing, we temporarily store all entries of a call graph block
 	// in an array
@@ -222,9 +251,12 @@ void KProfWidget::parseProfile (QString& filename)
 	callGraphBlock.resize (32);
 
 	int state = 0;
+	long line = 0;
 
+	t.setEncoding (QTextStream::Latin1);
 	while (!t.eof ())
 	{
+		line++;
 		s = t.readLine ();
 		if (s.length() && s[0] == 12) {
 			if (state == 3)
@@ -250,18 +282,21 @@ void KProfWidget::parseProfile (QString& filename)
 		if (fields.isEmpty ())
 			continue;
 
-		if (state == PROCESS_FLAT_PROFILE || state == PROCESS_CALL_GRAPH)
+		if (fields.count() > 1 && (state == PROCESS_FLAT_PROFILE || state == PROCESS_CALL_GRAPH))
 		{
 			// the split did also split the function name & args. restore them so that they
 			// are only one field
-			uint join = fields.count () - 1;
-			while (join)
+			uint join;
+			for (join = 0; join < fields.count (); join++)
 			{
-				if (fields[join - 1][0].isDigit ())
+				QChar c = fields[join][0];
+				if ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || c == '_')
 					break;
-				fields[join - 1] += " " + fields[join];
-				fields.remove (fields.at (join));
-				join--;
+			}
+			while (join < (fields.count () - 1))
+			{
+				fields[join] += " " + fields[join + 1];
+				fields.remove (fields.at (join + 1));
 			}
    		}
 
@@ -352,6 +387,7 @@ void KProfWidget::parseProfile (QString& filename)
 				SCallGraphEntry *e = new SCallGraphEntry;
 				uint field = 0;
 
+				e->line = line;
 				e->primary = false;
 				e->recursive = false;
 
@@ -415,9 +451,10 @@ void KProfWidget::processCallGraphBlock (const QVector<SCallGraphEntry> &data)
 	{
 		// @@@ should perform better error reporting here
 		if (i != data.count ())
-			fprintf (stderr, "%s: missing flat profile entry for %s\n",
+			fprintf (stderr, "%s: missing flat profile entry for '%s' (line %ld)\n",
 					"kprof"/*kapp->name.latin1()*/,
-					data[i]->name.latin1());
+					data[i]->name.latin1(),
+					data[i]->line);
   		return;
 	}
 
@@ -469,7 +506,7 @@ void KProfWidget::fillFlatProfileList (const QString& filter)
 			continue;
 		new CProfileViewItem (mFlat, mProfile[i]);
   	}
-	setManualColumnWidths (mFlat);
+	mFlat->setColumnWidthMode (0, QListView::Manual);
 	update ();
 }
 
@@ -490,7 +527,7 @@ void KProfWidget::fillHierProfileList ()
 
 		fillHierarchy (item, mProfile[i], addedEntries, count);
   	}
-	setManualColumnWidths (mFlat);
+	mHier->setColumnWidthMode (0, QListView::Manual);
 	update ();
 }
 
@@ -545,7 +582,7 @@ void KProfWidget::fillObjsProfileList ()
 		fillObjsHierarchy (item, classes[i]);
 	}
 	
-	setManualColumnWidths (mFlat);
+	mObjs->setColumnWidthMode (0, QListView::Manual);
 }
 
 void KProfWidget::fillObjsHierarchy (CProfileViewItem *parent, QString *className)
@@ -605,14 +642,46 @@ void KProfWidget::profileEntryRightClick (QListViewItem *listItem, const QPoint 
 		selectProfileItem (itemProf[sel]);
 }
 
+void KProfWidget::selectionChanged (QListViewItem *item)
+{
+	QListView *view = item->listView();
+	CProfileInfo *info = ((CProfileViewItem *)item)->getProfile ();
+	if (view != mFlat)
+	{
+		disconnect (mFlat, SIGNAL (selectionChanged (QListViewItem *)),
+			 this, SLOT (selectionChanged (QListViewItem *)));
+		selectItemInView (mFlat, info, false);
+		connect (mFlat, SIGNAL (selectionChanged (QListViewItem *)),
+				 this, SLOT (selectionChanged (QListViewItem *)));
+	}
+	if (view != mHier)
+	{
+		disconnect (mHier, SIGNAL (selectionChanged (QListViewItem *)),
+			 this, SLOT (selectionChanged (QListViewItem *)));
+		selectItemInView (mHier, info, false);
+		connect (mHier, SIGNAL (selectionChanged (QListViewItem *)),
+				 this, SLOT (selectionChanged (QListViewItem *)));
+	}
+	if (view != mObjs)
+	{
+		disconnect (mObjs, SIGNAL (selectionChanged (QListViewItem *)),
+			 this, SLOT (selectionChanged (QListViewItem *)));
+		selectItemInView (mObjs, info, true);
+		connect (mObjs, SIGNAL (selectionChanged (QListViewItem *)),
+				 this, SLOT (selectionChanged (QListViewItem *)));
+	}
+}
 
 void KProfWidget::selectProfileItem (CProfileInfo *info)
 {
-	selectItemInView (mFlat, info);
-	selectItemInView (mHier, info);
+	// synchronize the three views by selecting the
+	// same item in all lists
+	selectItemInView (mFlat, info, false);
+	selectItemInView (mHier, info, false);
+	selectItemInView (mObjs, info, true);
 }
 
-void KProfWidget::selectItemInView (QListView *view, CProfileInfo *info)
+void KProfWidget::selectItemInView (QListView *view, CProfileInfo *info, bool examineSubs)
 {
 	QListViewItem *item = view->firstChild ();
 	while (item)
@@ -620,11 +689,27 @@ void KProfWidget::selectItemInView (QListView *view, CProfileInfo *info)
 		if (((CProfileViewItem *)item)->getProfile () == info)
 		{
 			view->clearSelection ();
-			view->setSelected (item, true);
+
+			for (QListViewItem *parent = item->parent(); parent; parent=parent->parent())
+				parent->setOpen(true);
+
 			view->ensureItemVisible (item);
+			view->setSelected (item, true);
 			return;
 		}
-		item = item->itemBelow ();
+
+		if (examineSubs && item->firstChild ())
+			item = item->firstChild ();
+		else if (item->nextSibling ())
+			item = item->nextSibling ();
+		else if (examineSubs)
+		{
+			item = item->parent();
+			if (item)
+				item = item->nextSibling ();
+		}
+		else
+			break;
 	}
 }
 

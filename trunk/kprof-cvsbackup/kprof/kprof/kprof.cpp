@@ -47,11 +47,19 @@ KProfTopLevel::KProfTopLevel (QWidget *parent, const char *name)
 	setupActions ();
 	createGUI ("kprofui.rc");
 	setCentralWidget (mProf);
+
+	// load the recent files list
+	KConfig *config = kapp->config ();
+	KRecentFilesAction *recent = (KRecentFilesAction *) actionCollection()->action (KStdAction::stdName (KStdAction::OpenRecent));
+	recent->loadEntries (config);
+
+	connect (mProf, SIGNAL (addRecentFile(const KURL&)), this, SLOT(addRecentFile(const KURL&)));
 }
 
 void KProfTopLevel::setupActions ()
 {
 	KStdAction::open (mProf, SLOT(openResultsFile()), actionCollection());
+	KStdAction::openRecent (mProf, SLOT(openRecentFile(const KURL&)), actionCollection());
 	KStdAction::print (mProf, SLOT(doPrint()), actionCollection());
 	KStdAction::quit (this, SLOT(close()), actionCollection ());
 
@@ -72,8 +80,19 @@ KProfTopLevel::~KProfTopLevel ()
 
 bool KProfTopLevel::queryExit( void )
 {
+	KConfig *config = kapp->config ();
+	KRecentFilesAction *recent = (KRecentFilesAction *) actionCollection()->action (KStdAction::stdName (KStdAction::OpenRecent));
+	recent->saveEntries (config);
+
 	mProf->applySettings();
+
 	return true;
+}
+
+void KProfTopLevel::addRecentFile (const KURL& url)
+{
+	KRecentFilesAction *recent = (KRecentFilesAction *) actionCollection()->action (KStdAction::stdName (KStdAction::OpenRecent));
+	recent->addURL (url);
 }
 
 #include "kprof.moc"
