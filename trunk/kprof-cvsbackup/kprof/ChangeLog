@@ -1,3 +1,7 @@
+2001-06-10 Florent Pillet <fpillet@users.sourceforge.net>
+	* Diff mode is now working. When comparing two files, each number column
+	  is doubled to show the current and previous results.
+
 2001-06-09 Florent Pillet <fpillet@users.sourceforge.net>
 	* Added 'Compare With...' menu entry for file comparison
 	* Save and restore the current directory so ease successive usage
