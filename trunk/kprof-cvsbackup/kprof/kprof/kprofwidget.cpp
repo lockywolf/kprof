@@ -54,6 +54,8 @@
 #include <khtmlview.h>
 #include <kglobalsettings.h>
 #include <kcmdlineargs.h>
+#include <kurl.h>
+#include <kio/job.h>
 
 #include "config.h"
 
@@ -61,6 +63,7 @@
 #include "kprofwidget.h"
 #include "cprofileviewitem.h"
 #include "call-graph.h"
+#include "ctidyup.h"
 
 #include "dotCallGraph.h"
 #include "vcgCallGraph.h"
@@ -73,14 +76,15 @@
 
 #include "Log.h"
 
-using namespace std;
-
 #ifdef HAVE_LIBQTREEMAP
 #include <qtreemap.h>
 #include <qtreemapwindow.h>
 #include <qlistviewtreemap.h>
 #include <qlistviewtreemapwindow.h>
 #endif
+
+
+
 
 /*
  * Some globals we need - one of these days I'll have to synthesize this 
@@ -101,6 +105,10 @@ KProfWidget::KProfWidget (QWidget *parent, const char *name)
 		mCurPage (0),
 		mAbbrevTemplates (false)
 {
+
+	processName = "/tmp/Kprof_" + KApplication::randomString(8) + "/";
+	KIO::mkdir(KURL(processName));
+
 	BEGIN;
 	sListFont = new QFont;
 
@@ -239,15 +247,9 @@ KProfWidget::~KProfWidget ()
 	mMethodHtmlPart = NULL;
 	}
 
-	//In order to tidy up the /tmp directory
-	//we need to iterate through the mProfile
-	//list and delete each object so it in turn
-	//will delete the file associated with it.
-	while(mProfile.count())
-	{
-
-	}
-
+	CTidyUp* tidy = new CTidyUp(processName);
+	tidy->removeDir();
+	
 	END;
 }
 
@@ -503,9 +505,6 @@ void KProfWidget::loadSettings ()
 	//Finish
 	END;
 }
-
-
-
 
 void KProfWidget::openRecentFile (const KURL& url)
 {
@@ -794,7 +793,7 @@ void KProfWidget::openFile (const QString &filename, ProfilerEnumeration format,
 	//files to the tmp directory.
 	for (unsigned int i = 0; i < mProfile.size (); i++)
 	{
-		(mProfile[i])->dumpHtml();
+		(mProfile[i])->dumpHtml(processName);
  	}
 
 
@@ -1295,7 +1294,8 @@ void KProfWidget::generateCallGraph ()
 				this,
 				i18n ("Save call-graph as..."));
 	
-			if (dotfile.isEmpty ()){
+			if (dotfile.isEmpty ())
+			{
 				END;
 				return;
 			}
@@ -1342,7 +1342,7 @@ void KProfWidget::generateCallGraph ()
 
 			// graph generation
 			if (dialog.mGraphViz->isChecked ())
-				DotCallGraph dotCallGraph(file, currentSelectionOnly, false, mProfile);
+				DotCallGraph dotCallGraph(file, currentSelectionOnly, false, mProfile, processName);
 			else
 				VCGCallGraph vcgCallGraph(file, currentSelectionOnly, mProfile);
 
@@ -1373,7 +1373,7 @@ void KProfWidget::generateCallGraph ()
 			// graph generation
 			if (dialog.mGraphViz->isChecked ())
 			{
-				DotCallGraph dotCallGraph(file, currentSelectionOnly, true, mProfile);
+				DotCallGraph dotCallGraph(file, currentSelectionOnly, true, mProfile, processName);
 			}
 			else
 			{
@@ -1401,9 +1401,10 @@ void KProfWidget::generateCallGraph ()
 
 				QFile mapFile;
 				QTextStream t (&mGraphVizStdout, IO_ReadOnly);
+				
 				mapFile.setName("./.kprof.html");
 				mapFile.open(IO_ReadWrite);
-				ClientSideMap(t, mapFile);
+				ClientSideMap(t, mapFile, processName);
 			}
 			else
 			{
@@ -1587,7 +1588,7 @@ void KProfWidget::prepareHtmlPart(KHTMLPart* part)
 	//QFile file;
 	KProfFile* file = new KProfFile();
 
-	file->setName("/tmp/graphViz_temp");
+	file->setName(processName + "graphViz_temp");
 	if (file->exists())
 	{
 		file->remove();
@@ -1595,14 +1596,15 @@ void KProfWidget::prepareHtmlPart(KHTMLPart* part)
 
 	file->open(IO_ReadWrite);
 
-	DotCallGraph dotCallGraph(*file, true, true, mProfile);
+	DotCallGraph dotCallGraph(*file, true, true, mProfile, processName);
 	file->close ();
 
 	KProcess graphApplication;
 	KProcess displayApplication;
 
 	graphApplication << "dot" << file->name() << "-Timap" ;
-	displayApplication << "dot" << file->name() << "-Tjpg" << "-o" << "/tmp/graphViz.jpg";
+	QString fileName(processName + "graphViz.jpg");
+	displayApplication << "dot" << file->name() << "-Tjpg" << "-o" << fileName;
 
 	connect (&graphApplication, SIGNAL (receivedStdout (KProcess*, char*, int)), this, SLOT (graphVizStdout (KProcess*, char*, int)));
 	connect (&graphApplication, SIGNAL (receivedStderr (KProcess*, char*, int)), this, SLOT (graphVizStderr (KProcess*, char*, int)));
@@ -1615,12 +1617,13 @@ void KProfWidget::prepareHtmlPart(KHTMLPart* part)
 
 	if (!graphApplication.normalExit () || graphApplication.exitStatus ())
 	{
-		QString text = i18n ("dot could not display the data.\n");
+		QString text = i18n ("dot could not display the data (1).\n");
 		if (graphApplication.normalExit () && graphApplication.exitStatus ())
 		{
 			QString s;
 			s.sprintf (i18n ("Error %d was returned.\n"), graphApplication.exitStatus ());
 			text += s;
+			text += mGraphVizDispStderr;
 		}
 		KMessageBox::error (this, text, i18n ("Exited with error(s)"));
 		END;
@@ -1628,7 +1631,7 @@ void KProfWidget::prepareHtmlPart(KHTMLPart* part)
 	}
 	if (!displayApplication.normalExit () || displayApplication.exitStatus ())
 	{
-		QString text = i18n (" dot could not display the data.\n");
+		QString text = i18n (" dot could not display the data (2).\n");
 		if (displayApplication.normalExit () && displayApplication.exitStatus ())
 		{
 			QString s;
@@ -1640,12 +1643,12 @@ void KProfWidget::prepareHtmlPart(KHTMLPart* part)
 		return;
 	}
 	file->close();
-	delete file;
+	//delete file;
 	file = 0;
 
 	QFile mapFile;
 	QTextStream t (&mGraphVizStdout, IO_ReadOnly);
-	mapFile.setName("/tmp/kprof.html");
+	mapFile.setName(processName + "kprof.html");
 
 	if(mapFile.exists())
 	{
@@ -1653,10 +1656,10 @@ void KProfWidget::prepareHtmlPart(KHTMLPart* part)
 	}
 
 	mapFile.open(IO_ReadWrite);
-	ClientSideMap(t, mapFile);
+	ClientSideMap(t, mapFile, processName);
 
 	mapFile.close();
-	part->openURL(KURL("file:///tmp/kprof.html"));
+	part->openURL(KURL("file://" + processName + "kprof.html"));
 	END;
 }
 

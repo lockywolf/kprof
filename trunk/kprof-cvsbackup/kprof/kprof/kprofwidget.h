@@ -214,7 +214,7 @@ private:
 
 	QString removeTemplates (const QString& name);
 	
-	//KProfHtmlPart* mCallTreeHtmlPart;
+	QString processName;
 	KHTMLPart* mCallTreeHtmlPart;
 	KHTMLPart* mMethodHtmlPart;
 };
