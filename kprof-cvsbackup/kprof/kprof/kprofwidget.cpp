@@ -194,39 +194,39 @@ void KProfWidget::selectListFont ()
 
 void KProfWidget::prepareProfileView (KListView *view, bool rootIsDecorated)
 {
-	bool diff = mPreviousProfile.count() > 0;
 	KIconLoader *loader = KGlobal::iconLoader ();
 
 	for (int i = view->columns(); i > 0; )
 		view->removeColumn (--i);
 
-	if (diff)
-		view->addColumn (i18n("Status"));
 	view->addColumn (i18n("Function/Method"), -1);
 	view->addColumn (QIconSet (loader->loadIcon ("redo", KIcon::Small)), "", -1);
+	if (sDiffMode)
+		view->addColumn (i18n("Status"));
 	view->addColumn (i18n("Count"), -1);
-	if (diff)
+	if (sDiffMode)
 		view->addColumn (i18n("New Count"), -1);
 	view->addColumn (i18n("Total (s)"), -1);
-	if (diff)
+	if (sDiffMode)
 		view->addColumn(i18n("New Total (s)"), -1);
 	view->addColumn (i18n("%"), -1);
-	if (diff)
+	if (sDiffMode)
 		view->addColumn(i18n("New %"), -1);
 	view->addColumn (i18n("Self (s)"), -1);
-	if (diff)
+	if (sDiffMode)
 		view->addColumn(i18n("New Self (s)"), -1);
 	view->addColumn (i18n("Total ms/call"), -1);
-	if (diff)
+	if (sDiffMode)
 		view->addColumn (i18n("New Total ms/call"), -1);
 
-	if (!diff) {
+	if (!sDiffMode) {
 		view->setColumnAlignment (col_count, AlignRight);
 		view->setColumnAlignment (col_total, AlignRight);
 		view->setColumnAlignment (col_totalPercent,	AlignRight);
 		view->setColumnAlignment (col_self, AlignRight);
 		view->setColumnAlignment (col_totalMsPerCall, AlignRight);
 	} else {
+		view->setColumnAlignment (diff_col_status, AlignCenter);
 		view->setColumnAlignment (diff_col_count, AlignRight);
 		view->setColumnAlignment (diff_col_new_count, AlignRight);
 		view->setColumnAlignment (diff_col_total, AlignRight);
@@ -238,7 +238,6 @@ void KProfWidget::prepareProfileView (KListView *view, bool rootIsDecorated)
 		view->setColumnAlignment (diff_col_totalMsPerCall, AlignRight);
 		view->setColumnAlignment (diff_col_new_totalMsPerCall, AlignRight);
 	}
-	
 
 	view->setAllColumnsShowFocus (true);
 	view->setFrameStyle (QFrame::WinPanel + QFrame::Sunken);
@@ -249,14 +248,12 @@ void KProfWidget::prepareProfileView (KListView *view, bool rootIsDecorated)
 
 void KProfWidget::customizeColumns (KListView *view, int profiler)
 {
-	bool diff = mPreviousProfile.count() > 0;
-	
 	// customize the columns for the profiler we are using
 	switch (profiler)
 	{
 		case FORMAT_GPROF:
 			view->addColumn (i18n("Self ms/call"), -1);
-			if (diff) {
+			if (sDiffMode) {
 				view->addColumn (i18n("New Self ms/call"), -1);
 				view->setColumnAlignment (diff_col_selfMsPerCall, AlignRight);
 				view->setColumnAlignment (diff_col_new_selfMsPerCall, AlignRight);
@@ -266,12 +263,12 @@ void KProfWidget::customizeColumns (KListView *view, int profiler)
 
 		case FORMAT_FNCCHECK:
 			view->addColumn (i18n("Min. ms/call"), -1);
-			if (diff)
+			if (sDiffMode)
 				view->addColumn (i18n("New Min. ms/call"), -1);
 			view->addColumn (i18n("Max. ms/call"), -1);
-			if (diff)
+			if (sDiffMode)
 				view->addColumn (i18n("New Max. ms/call"), -1);
-			if (!diff) {
+			if (!sDiffMode) {
 				view->setColumnAlignment (col_minMsPerCall, AlignRight);
 				view->setColumnAlignment (col_maxMsPerCall, AlignRight);
 			} else {
@@ -284,12 +281,12 @@ void KProfWidget::customizeColumns (KListView *view, int profiler)
 
 		case FORMAT_POSE:
 			view->addColumn (i18n("Self Cycles"), -1);
-			if (diff)
+			if (sDiffMode)
 				view->addColumn (i18n("New Self Cycles"), -1);
 			view->addColumn (i18n("Total Cycles"), -1);
-			if (diff)
+			if (sDiffMode)
 				view->addColumn (i18n("New Total Cycles"), -1);
-			if (!diff) {
+			if (!sDiffMode) {
 				view->setColumnAlignment (col_selfCycles, AlignRight);
 				view->setColumnAlignment (col_cumCycles, AlignRight);
 			} else {
@@ -315,9 +312,6 @@ void KProfWidget::applySettings ()
 	config.writeEntry ("AbbreviateTemplates", mAbbrevTemplates);
 	config.writeEntry ("Font", sListFont->rawName ());
 	config.writeEntry ("LastFileFormat", sLastFileFormat);
-
-	// TODO: save columns widths here
-
 	update ();
 }
 
@@ -341,8 +335,6 @@ void KProfWidget::loadSettings ()
 	}
 
 	sLastFileFormat = config.readNumEntry ("LastFileFormat", FORMAT_GPROF);
-
-	// TODO: reload columns widths here
 }
 
 void KProfWidget::openRecentFile (const KURL& url)
@@ -494,6 +486,7 @@ void KProfWidget::openFile (const QString &filename, int format, bool compare)
 			{
 				if (mPreviousProfile[--i]->deleted)
 					mPreviousProfile.remove (i);
+				mPreviousProfile[i]->previous = NULL;
 			}
 		}
 		mProfile.clear ();
@@ -537,6 +530,7 @@ void KProfWidget::openFile (const QString &filename, int format, bool compare)
 			{
 				if (mPreviousProfile[--i]->deleted)
 					mPreviousProfile.remove (i);
+				mPreviousProfile[i]->previous = NULL;
 			}
 		}
 		mProfile.clear ();
@@ -1313,23 +1307,26 @@ void KProfWidget::postProcessProfile (bool compare)
 	// the code below.
 	if (compare == false)
 		return;
+	
 	for (i = 0; i < mPreviousProfile.count(); i++)
-		mPreviousProfile[i]->output = false;
+		mPreviousProfile[i]->output = false;		// reset all "output" flags
+	
 	for (i = 0; i < mProfile.count(); i++)
 	{
 		for (j = 0; j < mPreviousProfile.count(); j++)
 		{
-			if (mProfile[j]->output==false && mProfile[i]->name == mProfile[j]->name)
+			if (mPreviousProfile[j]->output == false && mProfile[i]->name == mPreviousProfile[j]->name)
 			{
 				mProfile[i]->previous = mPreviousProfile[j];
-				mProfile[j]->output = true;
+				mPreviousProfile[j]->output = true;
 				break;
 			}
 		}
 	}
-	for (j = 0; j < mPreviousProfile.count(); j++)
+
+	for (j = mPreviousProfile.count(); j > 0;)
 	{
-		if (mProfile[j]->output == false)
+		if (mPreviousProfile[--j]->output == false)
 		{
 			// this item was deleted, add it to the new list and mark it 'deleted'
 			mPreviousProfile[j]->deleted = true;
@@ -1353,13 +1350,12 @@ CProfileInfo *KProfWidget::locateProfileEntry (const QString& name)
 
 void KProfWidget::fillFlatProfileList ()
 {
-	bool diff = mPreviousProfile.count () > 0;
 	bool filter = mFlatFilter.isEmpty()==false && mFlatFilter.length() > 0;
 	for (unsigned int i = 0; i < mProfile.size (); i++)
 	{
 		if (filter && !mProfile[i]->name.contains (mFlatFilter))
 			continue;
-		new CProfileViewItem (mFlat, mProfile[i], diff);
+		new CProfileViewItem (mFlat, mProfile[i]);
   	}
 	mFlat->setColumnWidthMode (0, QListView::Manual);
 	update ();
@@ -1368,10 +1364,9 @@ void KProfWidget::fillFlatProfileList ()
 
 void KProfWidget::fillHierProfileList ()
 {
-	bool diff = mPreviousProfile.count () > 0;
 	for (unsigned int i = 0; i < mProfile.size (); i++)
 	{
-		CProfileViewItem *item = new CProfileViewItem (mHier, mProfile[i], diff);
+		CProfileViewItem *item = new CProfileViewItem (mHier, mProfile[i]);
 
 		QArray<CProfileInfo *> addedEntries (mProfile.size ());
 
@@ -1393,7 +1388,6 @@ void KProfWidget::fillHierarchy (
 		QArray<CProfileInfo *> &addedEntries,
 		int &count)
 {
-	bool diff = mPreviousProfile.count () > 0;
 	for (uint i = 0; i < parent->called.count (); i++)
 	{
 		// skip items already added to avoid recursion
@@ -1401,22 +1395,21 @@ void KProfWidget::fillHierarchy (
 			continue;
 
 		addedEntries[count++] = parent->called[i];
-		CProfileViewItem *newItem = new CProfileViewItem (item, parent->called[i], diff);
+		CProfileViewItem *newItem = new CProfileViewItem (item, parent->called[i]);
 		fillHierarchy (newItem, parent->called[i], addedEntries, count);
 	}
 }
 
 void KProfWidget::fillObjsProfileList ()
 {
-	bool diff = mPreviousProfile.count () > 0;
 	// create all toplevel elements and their descendants
 	for (uint i = 0; i < mClasses.count (); i++)
 	{
-		CProfileViewItem *parent = new CProfileViewItem (mObjs, NULL, diff);
+		CProfileViewItem *parent = new CProfileViewItem (mObjs, NULL);
 		for (uint j = 0; j < mProfile.count (); j++)
 		{
 			if (mProfile[j]->object == *mClasses[i])
-				new CProfileViewItem (parent, mProfile[j], diff);
+				new CProfileViewItem (parent, mProfile[j]);
 		}
 	}
 	
