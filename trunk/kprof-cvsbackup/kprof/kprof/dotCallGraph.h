@@ -20,12 +20,14 @@
 class QFile;
 class CProfileInfo;
 #include <qvector.h>
+#include <qstring.h>
 
 class DotCallGraph
 {
 public:
 	DotCallGraph (QFile& file, bool currentSelectionOnly,
-			bool imageMap, QVector<CProfileInfo>& mProfile);
+			bool imageMap, QVector<CProfileInfo>& mProfile,
+			const QString& tempDir);
 	~DotCallGraph() {};
 
 private:

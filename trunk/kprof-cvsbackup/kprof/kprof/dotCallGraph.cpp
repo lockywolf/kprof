@@ -21,13 +21,15 @@
 #include <qfile.h>
 #include <qtextstream.h>
 #include <qvector.h>
-
+#include <iostream>
+using namespace std;
 #ifndef __CPROFILEINFO_H__
 #include "cprofileinfo.h"
 #endif
 
 DotCallGraph::DotCallGraph (QFile& file, bool currentSelectionOnly,
-						bool imageMap, QVector<CProfileInfo>& mProfile)
+			bool imageMap, QVector<CProfileInfo>& mProfile,
+			const QString& tempDir)
 {
 	// generate a call-graph to a .dot file in a format compatible with
 	// GraphViz, a free graph generator from ATT (http://www.research.att.com/sw/tools/graphviz/)
@@ -38,9 +40,10 @@ DotCallGraph::DotCallGraph (QFile& file, bool currentSelectionOnly,
 
 	// first create all the nodes
 	for (uint i = 0; i < mProfile.count (); i++)
-	{
-		if (currentSelectionOnly && mProfile[i]->output==false)
-			continue;
+	{ 
+		
+		//if (currentSelectionOnly && mProfile[i]->output==false)
+		//	continue;
 
 		QString className = mProfile[i]->object;
 		if (className.length () && (!imageMap))
@@ -62,7 +65,7 @@ DotCallGraph::DotCallGraph (QFile& file, bool currentSelectionOnly,
 		stream << "]";
 		if (imageMap)
 		{
-			stream << "[URL=\"/tmp/" << mProfile[i]->htmlName << "::" << mProfile[i]->method << ".html\"]";
+			stream << "[URL=\"" << tempDir << mProfile[i]->htmlName << "::" << mProfile[i]->method << ".html\"]";
 		}
 		stream << ";" << endl;
 	
@@ -71,8 +74,8 @@ DotCallGraph::DotCallGraph (QFile& file, bool currentSelectionOnly,
 	// then output the nodes relationships
 	for (uint i = 0; i < mProfile.count (); i++)
 	{
-		if (currentSelectionOnly && mProfile[i]->output==false)
-			continue;
+		//if (currentSelectionOnly && mProfile[i]->output==false)
+		//	continue;
 
 		if (mProfile[i]->recursive)
 			stream << i << " -> " << i << " [style=dotted];\n";
