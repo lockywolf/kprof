@@ -37,10 +37,10 @@ static	int												NO=80000;						//KDE program number (for kdebug)
 
 #ifdef NDEBUG
 //disable asserts and some debug messages
-#warning "NDEBUG is defined (disable some debug + assert)"
+#warning "NDEBUG is defined (so debug + assert are disabled)"
 #else
 //Enable asserts and some
-#warning "NDEBUG is not defined (enable debug + assert)"
+#warning "NDEBUG is not defined (so debug + assert are enabled)"
 #endif
 
 

@@ -164,6 +164,4 @@ void CProfileInfo::dumpHtml()
 
 	dumpFile.writeBlock (dumpText);
 	dumpFile.close();
-
-
-}
+} //void CProfileInfo::dumpHtml()
