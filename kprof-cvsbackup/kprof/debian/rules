@@ -17,9 +17,6 @@ INSTALL_FILE = install -p -o root -g root -m 644
 INSTALL_DIR = install -p -d -o root -g root -m 755
 
 ARCH = $(shell dpkg-architecture -qDEB_BUILD_ARCH)
-ifeq ($(ARCH),alpha)
-  COMPILER_FLAGS=CFLAGS="-O0 -mieee" CXXFLAGS="-O0 -mieee"
-endif
 
 -include debian/debiandirs
 
@@ -29,7 +26,7 @@ debian/debiandirs: admin/debianrules
 build: build-stamp
 build-stamp:
 	dh_testdir
-	$(COMPILER_FLAGS) ./configure $(configkde)
+	./configure $(configkde)
 	$(MAKE)
 	touch build-stamp
 
