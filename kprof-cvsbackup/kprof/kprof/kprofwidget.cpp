@@ -188,6 +188,13 @@ void KProfWidget::prepareProfileView (KListView *view, bool rootIsDecorated)
 	view->addColumn (i18n("Total\nus/call"), -1);
 	view->addColumn (i18n("Self\nus/call"), -1);
 
+	view->setColumnAlignment (2, AlignRight);
+	view->setColumnAlignment (3, AlignRight);
+	view->setColumnAlignment (4, AlignRight);
+	view->setColumnAlignment (5, AlignRight);
+	view->setColumnAlignment (6, AlignRight);
+	view->setColumnAlignment (7, AlignRight);
+
 	view->setAllColumnsShowFocus (true);
 	view->setFrameStyle (QFrame::WinPanel + QFrame::Sunken);
 	view->setShowSortIndicator (true);
@@ -308,7 +315,7 @@ void KProfWidget::openFile (const QString &filename)
 
 		// parse profile data
 		QTextStream t (&mGProfStdout, IO_ReadOnly);
-		parseProfile (t);
+		parseProfile_gprof (t);
 	}
 	else
 	{
@@ -332,7 +339,7 @@ void KProfWidget::openFile (const QString &filename)
 			return;
 
 		QTextStream t (&f);
-		parseProfile (t);
+		parseProfile_gprof (t);
 	}
 
 	// post-process the parsed data
@@ -360,7 +367,174 @@ void KProfWidget::gprofStderr (KProcess *, char *buffer, int buflen)
 	mGProfStderr += QString::fromLocal8Bit (buffer, buflen);
 }
 
-void KProfWidget::parseProfile (QTextStream& t)
+void KProfWidget::parseProfile_fnccheck (QTextStream& t)
+{
+	/*
+	 * parse a profile results generated with FUNCTION CHECK
+	 *
+	 */
+
+	QRegExp indexRegExp ("\\[\\d+\\]");
+
+	// while parsing, we temporarily store all entries of a call graph block
+	// in an array
+	QVector<SCallGraphEntry> callGraphBlock;
+	callGraphBlock.setAutoDelete (true);
+	callGraphBlock.resize (32);
+
+	int state = 0;
+	long line = 0;
+	bool processingCallers=false;	// used during call-graph processing
+	int curFunctionIndex = -1;		// current function index while processing call-graph
+	QString s;
+
+	t.setEncoding (QTextStream::Latin1);
+	while (!t.eof ())
+	{
+		line++;
+		s = t.readLine ();
+		s = s.simplifyWhiteSpace ();
+		if (s.length() == 0)
+			continue;
+
+		// split the line in tab-delimited fields
+		QStringList fields;
+		if (state == PROCESS_FLAT_PROFILE)
+		{
+			fields = QStringList::split ("|", s, false);
+			if (fields.isEmpty ())
+				continue;
+			for (uint i=0; i < fields.count(); i++)
+				fields[i] = fields[i].stripWhiteSpace();
+		}
+
+		switch (state)
+		{
+			/*
+			 * look for beginning of flat profile
+			 *
+			 */
+			case SEARCH_FLAT_PROFILE:
+				if (s.startsWith ("|-----"))
+					state = PROCESS_FLAT_PROFILE;
+				break;
+
+			/*
+			 * analyze flat profile entry
+			 *
+			 */
+     		case PROCESS_FLAT_PROFILE:
+			{
+				if (!s.startsWith ("|"))
+				{
+					state = SEARCH_CALL_GRAPH;
+					break;
+				}
+
+				CProfileInfo *p = new CProfileInfo;
+				p->ind				= mProfile.count ();
+				p->cumPercent		= fields[3].toFloat ();
+				p->cumSeconds		= fields[2].toFloat ();
+				p->selfSeconds		= fields[0].toFloat ();
+				p->calls			= fields[4].toLong ();
+				p->selfTsPerCall	= 0.0;			// not given by Function Check
+				p->totalTsPerCall	= fields[5].toFloat ();
+				p->name				= fields[6];
+
+				// p->simplifiedName will be updated in postProcessProfile()
+				p->recursive		= false;
+				p->object			= getClassName (p->name);
+				p->multipleSignatures = false;				// will be updated in postProcessProfile()
+
+				int argsoff = p->name.find ('(');
+				if (argsoff != -1)
+				{
+					p->method = p->name.mid (p->object.length(), argsoff - p->object.length());
+					p->arguments  = p->name.right (p->name.length() - argsoff);
+				}
+				else
+					p->method = p->name.right (p->name.length() - p->object.length());
+
+				if (p->method.startsWith ("::"))
+					p->method.remove (0,2);
+
+				int j = mProfile.size ();
+				mProfile.resize (j + 1);
+				mProfile.insert (j, p);
+				break;
+			}
+
+			/*
+			 * look for call graph
+			 *
+			 */
+   			case SEARCH_CALL_GRAPH:
+				if (s.startsWith ("Call-graph:"))
+					state = PROCESS_CALL_GRAPH;
+				break;
+
+    		/*
+			 * analyze call graph entry
+			 *
+			 */
+			case DISCARD_CALL_GRAPH_ENTRY:
+				if (!s.startsWith ("'"))
+					break;
+				state = PROCESS_CALL_GRAPH;
+
+    		case PROCESS_CALL_GRAPH:
+			{
+				printf ("PROCESS_CALL_GRAPH: %s\n", s.latin1());
+				if (s.startsWith ("'"))
+				{
+					// found another call-graph entry
+					processingCallers = s.contains ("called by:");
+					int pos = indexRegExp.find (s, 0);
+					if (pos == -1)
+					{
+						// this should not really happen...
+						state = DISCARD_CALL_GRAPH_ENTRY;
+						break;
+					}
+					s = s.mid (pos+1, s.find (']',pos+1)-pos-1);
+					curFunctionIndex = s.toInt ();
+					break;
+				}
+
+				int pos = indexRegExp.find (s, 0);
+				if (pos == -1)
+					break;
+				s = s.mid (pos+1, s.find (']')-pos-1);
+
+				pos = s.toInt ();
+				if (pos < 0 || (uint)pos > mProfile.count())
+				{
+					fprintf (stderr, "%s: missing flat profile entry for [%d] (line %ld)\n",
+							 "kprof"/*kapp->name.latin1()*/,
+							 pos,
+							 line);
+					break;
+				}
+
+				CProfileInfo *p = mProfile[curFunctionIndex];
+				if (pos == curFunctionIndex)
+					p->recursive = true;
+				else if (processingCallers)
+				{
+					p->callers.resize (p->callers.count () + 1);
+					p->callers [p->callers.count () - 1] = mProfile[pos];
+				}
+				else
+				{
+					p->called.resize (p->called.count () + 1);
+					p->called [p->called.count () - 1] = mProfile[pos];
+				}
+    		}
+   		}
+	}
+}
+
+void KProfWidget::parseProfile_gprof (QTextStream& t)
 {
 	/*
 	 * parse a GNU gprof output generated with -b (brief)
@@ -390,7 +564,7 @@ void KProfWidget::parseProfile (QTextStream& t)
 		line++;
 		s = t.readLine ();
 		if (s.length() && s[0] == 12) {
-			if (state == 3)
+			if (state == PROCESS_CALL_GRAPH)
 				processCallGraphBlock (callGraphBlock);
 			state++;			// CTRL_L marks the beginning of a new block
 			continue;
@@ -498,7 +672,7 @@ void KProfWidget::parseProfile (QTextStream& t)
 			 */
    			case SEARCH_CALL_GRAPH:
 				if (fields[0]=="index" && fields[1]=="%")
-					state = 3;
+					state = PROCESS_CALL_GRAPH;
 				break;
 
     		/*
@@ -665,6 +839,8 @@ void KProfWidget::postProcessProfile ()
 		// construct the function/method's simplified name
 		if (mProfile[i]->multipleSignatures)
 			mProfile[i]->simplifiedName	= removeTemplates (mProfile[i]->name);
+		else if (mProfile[i]->object.isEmpty ())
+			mProfile[i]->simplifiedName = removeTemplates (mProfile[i]->method);
 		else
 			mProfile[i]->simplifiedName = removeTemplates (mProfile[i]->object) + "::" + removeTemplates (mProfile[i]->method);
   	}
