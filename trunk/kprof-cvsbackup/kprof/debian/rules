@@ -19,9 +19,12 @@ INSTALL_DIR = install -p -d -o root -g root -m 755
 ARCH = $(shell dpkg-architecture -qDEB_BUILD_ARCH)
 ifeq ($(ARCH),alpha)
   COMPILER_FLAGS=CFLAGS="-O0 -mieee" CXXFLAGS="-O0 -mieee"
-else
-  COMPILER_FLAGS=CXX=g++ CC=gcc
 endif
+
+# GCC 3.2 defines
+export CC=gcc-3.2
+export CXX=g++-3.2
+export CPP=cpp-3.2
 
 -include debian/debiandirs
 

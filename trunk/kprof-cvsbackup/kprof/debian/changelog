@@ -1,3 +1,9 @@
+kprof (1.4.1-2) unstable; urgency=low
+
+  * Built with g++-3.2.
+
+ -- Ben Burton <benb@acm.org>  Tue,  5 Nov 2002 20:09:30 +1100
+
 kprof (1.4.1-1) unstable; urgency=low
 
   * New upstream release.
