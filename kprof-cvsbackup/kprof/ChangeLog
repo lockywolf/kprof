@@ -1,3 +1,7 @@
+2001-04-15 Florent Pillet <fpillet@users.sourceforge.net>
+	* Finalized manual for 1.2 release
+	* Release 1.2
+
 2001-04-04 Florent Pillet <fpillet@users.sourceforge.net>
 	* Restructured code for parsing various profile sources
 	* Each profiler now has custom columns which display
