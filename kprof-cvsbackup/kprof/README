@@ -1,4 +1,4 @@
-KProf 1.3.2 README file
+KProf 1.4 README file
 Release date: July 2nd, 2002.
 
 SUMMARY
@@ -22,6 +22,13 @@ following profilers:
 
 INSTALLING KPROF
 ----------------
+
+New for 1.4: 	In order to be able to use the built in calltree viewer,
+it is essential that you install GraphViz from AT&T first, this
+new functionality WILL NOT WORK withoiut it.
+
+Get GraphViz at http://www.graphviz.org
+
 To install KProf, simply do:
 
 	$ ./configure --prefix=<where your kde installation is, usually /usr or /opt>
@@ -122,12 +129,10 @@ present
 	- VCG (http://rw4.cs.uni-sb.de/users/sander/html/gsvcg1.html)
 
 Feel free to send bugs and patches to
-fpillet@users.sourceforge.net
-or
 cdesmond@users.sourceforge.net
 
 Share and enjoy,
-Florent Pillet.
+Florent Pillet and Colin Desmond
 
-<mailto:fpillet@users.sourceforge.net>
+<mailto:cdesmond@users.sourceforge.net>
 
