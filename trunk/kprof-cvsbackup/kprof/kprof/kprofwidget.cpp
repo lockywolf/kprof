@@ -591,10 +591,8 @@ void KProfWidget::openFile (const QString &filename, int format, bool compare)
 	prepareProfileView (mObjs, true);
 	customizeColumns (mObjs, sLastFileFormat);
 
-#ifdef HAVE_LIBQTREEMAP
 	QListViewItem *obj_toplevel = new QListViewItem(mObjs,"Objects");
 	QListViewItem *hier_toplevel = new QListViewItem(mHier,"Hierarchy");
-#endif
 
 	// fill lists
 	fillFlatProfileList ();
@@ -1648,6 +1646,11 @@ void KProfWidget::doPrint ()
 	delete part;
 }
 
+void KProfWidget::runApplication()
+{
+	int i = 0;
+}
+
 void KProfWidget::generateCallGraph ()
 {
 	// Display the call-graph format selection dialog and generate a
@@ -1670,59 +1673,68 @@ void KProfWidget::generateCallGraph ()
 			}
 		}
 
-		QString dotfile = KFileDialog::getSaveFileName (
-			QString::null,
-			dialog.mGraphViz->isChecked () ? i18n("*.dot|GraphViz files") : i18n("*.vcg|VCG files"),
-			this,
-			i18n ("Save call-graph as..."));
-		if (dotfile.isEmpty ())
-			return;
+	if (dialog.mSaveFile->isChecked() )
+	{
 
-		QFile file (dotfile);
-		if (!file.open (IO_WriteOnly | IO_Truncate | IO_Translate))
-		{
-			KMessageBox::error (this, i18n ("File could not be opened for writing."), i18n ("File Error"));
-			return;
-		}
+			QString dotfile = KFileDialog::getSaveFileName (
+				QString::null,
+				dialog.mGraphViz->isChecked () ? i18n("*.dot|GraphViz files") : i18n("*.vcg|VCG files"),
+				this,
+				i18n ("Save call-graph as..."));
+	
+			if (dotfile.isEmpty ())
+				return;
 
-		if (currentSelectionOnly)
-		{
-			for (uint i=0; i < mProfile.count(); i++)
-				mProfile[i]->output = false;
-
-			CProfileInfo *info = ((CProfileViewItem *) selectedItem)->getProfile ();
-			if (info == NULL)
+			QFile file (dotfile);
+			if (!file.open (IO_WriteOnly | IO_Truncate | IO_Translate))
 			{
-				// probably a parent item in the object profile view;
-				// in this case, mark all objects of the same class for output
-				QListViewItem *childItem = selectedItem->firstChild ();
-				if (childItem)
-					info = ((CProfileViewItem *) childItem)->getProfile ();
-
-				if (info == NULL)
-				{
-					KMessageBox::error (this, i18n ("Internal Error"), i18n ("Could not find any function or class to export."));
-					return;
-				}
-
-				QString className = info->object;
-				for (uint i = 0; i < mProfile.count(); i++)
-				{
-					if (mProfile[i]->output==false && mProfile[i]->object==info->object)
-						markForOutput (mProfile[i]);
-				}
+				KMessageBox::error (this, i18n ("File could not be opened for writing."), i18n ("File Error"));
+				return;
 			}
+
+			if (currentSelectionOnly)
+			{
+				for (uint i=0; i < mProfile.count(); i++)
+					mProfile[i]->output = false;
+
+				CProfileInfo *info = ((CProfileViewItem *) selectedItem)->getProfile ();
+				if (info == NULL)
+				{	
+					// probably a parent item in the object profile view;
+					// in this case, mark all objects of the same class for output
+					QListViewItem *childItem = selectedItem->firstChild ();
+					if (childItem)
+						info = ((CProfileViewItem *) childItem)->getProfile ();
+
+					if (info == NULL)
+					{
+						KMessageBox::error (this, i18n ("Internal Error"), i18n ("Could not find any function or class to export."));
+						return;
+					}
+
+					QString className = info->object;
+					for (uint i = 0; i < mProfile.count(); i++)
+					{
+						if (mProfile[i]->output==false && mProfile[i]->object==info->object)
+							markForOutput (mProfile[i]);
+					}
+				}
+				else
+					markForOutput (info);
+			}
+
+			// graph generation
+			if (dialog.mGraphViz->isChecked ())
+				generateDotCallGraph (file, currentSelectionOnly);
 			else
-				markForOutput (info);
+				generateVCGCallGraph (file, currentSelectionOnly);
+
+			file.close ();
 		}
-
-		// graph generation
-		if (dialog.mGraphViz->isChecked ())
-			generateDotCallGraph (file, currentSelectionOnly);
 		else
-			generateVCGCallGraph (file, currentSelectionOnly);
-
-		file.close ();
+		{
+			//Must want to run the graphing application.
+		}
 	}
 }
 
