@@ -34,10 +34,12 @@
 #include <qstring.h>
 #include <qlineedit.h>
 #include <qprinter.h>
+#include <qtextstream.h>
 
 #include <klistview.h>
 #include <ktabctl.h>
 #include <kurl.h>
+#include <kprocess.h>
 
 #include "cprofileinfo.h"
 
@@ -57,6 +59,9 @@ protected:
 	QPrinter				mPrinter;	// printer object
 #endif
 	int						mCurPage;	// id of the current page (used to know which to print)
+
+	QString					mGProfStdout;	// stdout from gprof command
+	QString					mGProfStderr;	// stderr from gprof command
 
 	// this structure is used while parsing the call graph
 	typedef struct
@@ -105,9 +110,12 @@ public slots:
 
 	void profileEntryRightClick (QListViewItem *listItem, const QPoint &p, int);
 	void flatProfileFilterChanged (const QString &filter);
+	void generateDotCallGraph ();
 
 protected slots:
 	void selectionChanged (QListViewItem *item);
+	void gprofStdout (KProcess*, char *buffer, int buflen);
+	void gprofStderr (KProcess*, char *buffer, int buflen);
 
 signals:
 	void addRecentFile (const KURL&);
@@ -115,7 +123,7 @@ signals:
 private:
 	void openFile (const QString &filename);
 	void prepareProfileView (KListView *view, bool rootIsDecorated);
-	void parseProfile (const QString& filename);
+	void parseProfile (QTextStream &t);
 	void processCallGraphBlock (const QVector<SCallGraphEntry> &data);
 
 	CProfileInfo *locateProfileEntry (const QString& name);

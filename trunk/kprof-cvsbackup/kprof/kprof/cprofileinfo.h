@@ -48,6 +48,7 @@ public:
 	QArray<CProfileInfo *> called;		// list of functions called by this one
 	QArray<CProfileInfo *> callers;		// list of functions that this one calls
 
+	uint		ind;					// index of this entry in the flat profile table (used to generate call graphs)
 	long		calls;					// number of times this one was called
 	float		cumPercent;
 	float		cumSeconds;
