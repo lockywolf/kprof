@@ -1,0 +1,31 @@
+kprof 1.0
+---------
+
+KProf is a tool that lets you examine the output of gprof(1),
+a command which allows you to profile a program and dump
+information about execution profile.
+
+This version of KProf does not generate the profile reports
+it needs to get analysis data. You must first create the
+report using:
+
+	gprof -b myprogram > report
+
+Then open the report with KProf.
+
+KProf has only been tested with the output files produced by
+GNU gprof 2.9.5. Your mileage may vary.
+
+Feel free to send bugs and patches to florent.pillet@wanadoo.fr
+
+Florent Pillet.
+
+
+
+TODO:
+-----
+
+* Makefile links the software twice and the second time generates
+a binary with KDE & QT functions statically linked. I still have
+to figure out what's going on.
+
