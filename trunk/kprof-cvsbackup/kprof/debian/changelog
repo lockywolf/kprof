@@ -1,3 +1,18 @@
+kprof (1.4.2-4) unstable; urgency=low
+
+  * Updated SEE ALSO section of manpage.
+  * Bumped standards-version to 3.6.0.
+
+ -- Ben Burton <bab@debian.org>  Thu, 28 Aug 2003 09:04:22 +1000
+
+kprof (1.4.2-3) unstable; urgency=low
+
+  * Fresh copy of admin/debianrules for new Qt dirs (closes: #185086).
+  * Build-depends on libqt3-compat-headers.
+  * Removed alpha compile flags.
+
+ -- Ben Burton <bab@debian.org>  Mon, 17 Mar 2003 13:38:07 +1100
+
 kprof (1.4.2-2) unstable; urgency=low
 
   * First KDE3 upload to debian!

@@ -2,8 +2,8 @@ Source: kprof
 Section: devel
 Priority: optional
 Maintainer: Ben Burton <bab@debian.org>
-Build-Depends: debhelper (>> 3.0.0), kdelibs4-dev
-Standards-Version: 3.5.8.0
+Build-Depends: debhelper (>> 3.0.0), kdelibs4-dev, libqt3-compat-headers
+Standards-Version: 3.6.0
 
 Package: kprof
 Architecture: any
