@@ -73,8 +73,10 @@ void CProfileViewItem::setRecursiveIcon ()
 {
   	if (mProfile && mProfile->recursive)
 	{
+		// here we do not need to test diff mode because col_function is
+		// always the first column
 		KIconLoader *loader = KGlobal::iconLoader ();
-		setPixmap (KProfWidget::col_recursive, loader->loadIcon ("redo", KIcon::Small));
+		setPixmap (KProfWidget::col_function, loader->loadIcon ("redo", KIcon::Small));
   	}
 }
 
@@ -470,7 +472,8 @@ void CProfileViewItem::paintCell (QPainter * p, const QColorGroup & cg, int colu
 	p->save ();
 	if (KProfWidget::sDiffMode == false)
 		p->setPen (QPen (cg.foreground(), 1, DotLine));
-	else {
+	else
+	{
 		bool solid = false;
 		if (column==KProfWidget::diff_col_status ||
 			column==KProfWidget::diff_col_new_count ||
@@ -488,6 +491,11 @@ void CProfileViewItem::paintCell (QPainter * p, const QColorGroup & cg, int colu
 		}
 		p->setPen (QPen (cg.foreground(), 1, solid ? SolidLine : DotLine));
 	}
+QColor c (cg.foreground());
+printf ("R=%d, g=%d, b=%d, after lighting: ", c.red(), c.green(), c.blue());
+c = c.light();
+printf ("R=%d, g=%d, b=%d\n", c.red(), c.green(), c.blue());
+p->setPen (QPen (c, 1, SolidLine));
 	p->drawLine (width-1, 0, width-1, 20);
 	p->restore ();
 }

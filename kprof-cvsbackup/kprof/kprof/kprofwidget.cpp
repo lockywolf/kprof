@@ -200,7 +200,7 @@ void KProfWidget::prepareProfileView (KListView *view, bool rootIsDecorated)
 		view->removeColumn (--i);
 
 	view->addColumn (i18n("Function/Method"), -1);
-	view->addColumn (QIconSet (loader->loadIcon ("redo", KIcon::Small)), "", -1);
+	//view->addColumn (QIconSet (loader->loadIcon ("redo", KIcon::Small)), "", -1);
 	if (sDiffMode)
 		view->addColumn (i18n("Remarks"));
 	view->addColumn (i18n("Count"), -1);

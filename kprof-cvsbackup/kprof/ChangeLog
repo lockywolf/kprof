@@ -1,5 +1,7 @@
 2001-06-23 Florent Pillet <fpillet@users.sourceforge.net>
 	* Fixed a bug in GPROF parser where call-graph would be ignored.
+	* Removed the recursive column, recursivity is now indicated by an
+	  icon in front of the function name.
 
 2001-06-12 Florent Pillet <fpillet@users.sourceforge.net>
 	* Completed diff mode. The mode now shows an estimate of performance
