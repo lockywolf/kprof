@@ -1,6 +1,7 @@
 kprof (1.4.1-1) unstable; urgency=low
 
   * New upstream release.
+  * Build no longer requires automake.
 
  -- Ben Burton <benb@acm.org>  Fri,  4 Oct 2002 16:12:51 +1000
 
