@@ -2,29 +2,33 @@
 # Copyright (C) YEAR Free Software Foundation, Inc.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "POT-Creation-Date: 2002-07-16 15:34+0200\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"PO-Revision-Date: 2002-07-16 20:13+0200\n"
+"Last-Translator: Andrey Behrens <Andrey.Behrens@gmx.de>\n"
+"Language-Team:  <en@li.org>\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=CHARSET\n"
-"Content-Transfer-Encoding: 8-bit\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: KBabel 0.9.6\n"
 
 #: _translatorinfo.cpp:1
 msgid ""
 "_: NAME OF TRANSLATORS\n"
 "Your names"
 msgstr ""
+"Namen der √úbersetzer\n"
+"Andrey Behrens"
 
 #: _translatorinfo.cpp:3
 msgid ""
 "_: EMAIL OF TRANSLATORS\n"
 "Your emails"
 msgstr ""
+"Email-Adressen der √úbersetzer "
+"Andrey.Behrens@gmx.de"
 
 #: call-graph.cpp:33 rc.cpp:2
 msgid "Generate Call Graph"
@@ -48,7 +52,7 @@ msgstr "Graphen-Baum Einstellungen"
 
 #: call-graph.cpp:66 rc.cpp:7
 msgid "Selected Function And Called Functions"
-msgstr "Ausgew‰hlte und aufgerufene Funktionen"
+msgstr "Ausgew√§hlte und aufgerufene Funktionen"
 
 #: call-graph.cpp:72 rc.cpp:8
 msgid "Whole Call Tree"
@@ -64,7 +68,7 @@ msgstr "Aufruf Zeichenapplikation"
 
 #: call-graph.cpp:97 rc.cpp:13
 msgid "Display the call graph in the chosen application"
-msgstr "Anzeigen des Aufrufgraphen in der gew‰hlten Applikation"
+msgstr "Anzeigen des Aufrufgraphen in der gew√§hlten Applikation"
 
 #: call-graph.cpp:102 rc.cpp:14
 msgid "Save file"
@@ -86,7 +90,7 @@ msgstr "%d%% langsamer"
 
 #: cprofileviewitem.cpp:235
 msgid "deleted"
-msgstr "gelˆscht"
+msgstr "gel√∂scht"
 
 #: cprofileviewitem.cpp:235
 msgid "new"
@@ -102,7 +106,7 @@ msgstr "Anzeigen C++ &Templates"
 
 #: kprof.cpp:98
 msgid "Select Font..."
-msgstr "Font Auswahl..."
+msgstr "Schrift Auswahl..."
 
 #: kprof.cpp:99
 msgid "&Generate Call Graph..."
@@ -122,7 +126,7 @@ msgstr "&Flaches Profil"
 
 #: kprofwidget.cpp:144
 msgid "&Hierarchical Profile"
-msgstr "&Hierachisches Profil"
+msgstr "&Hierarchisches Profil"
 
 #: kprofwidget.cpp:145
 msgid "O&bject Profile"
@@ -146,7 +150,7 @@ msgstr ""
 "Diese ist die <I>flache Anzeige</I>.\n"
 "\n"
 "Alle Funktionen und Methoden werden \"flach\" angezeigt. Klicken Sie auf einen Spaltenkopf"
-"um die Anzeige zu sortieren (zweimal klicken: umgekehrte Sortierung) "
+" um die Anzeige zu sortieren (zweimal klicken: umgekehrte Sortierung) "
 
 #: kprofwidget.cpp:157
 msgid ""
@@ -156,11 +160,10 @@ msgid ""
 "functions that it calls. For that reason, each function may appear several "
 "times in the list."
 msgstr ""
-"Dies ist die <I>hierachische Anzeige</I>.\n"
+"Dies ist die <I>hierarchische Anzeige</I>.\n"
 "\n"
-"Alle Funktionen/Methoden werden in einem Baum angezeigt, um anzuzeigen welche"
-"Funktion welche andere Funktion aufruft. Daher kˆnnen Funktionen auch mehrfach"
-"aufgef¸hrt werden."
+"Alle Funktionen/Methoden werden in einem Baum angezeigt, um anzuzeigen welche "
+"Funktion welche andere Funktion aufruft. Daher k√∂nnen Funktionen auch mehrfach aufgef√ºhrt werden."
 
 #: kprofwidget.cpp:162
 msgid ""
@@ -170,7 +173,7 @@ msgid ""
 msgstr ""
 "Dies ist die <I>Objekt Anzeige</I>.\n"
 "\n"
-"C++ Methoden werden um den Objektname groupiert."
+"C++ Methoden werden um den Objektname gruppiert."
 
 #: kprofwidget.cpp:226
 msgid "Function/Method"
@@ -178,7 +181,7 @@ msgstr "Funktionen/Methoden"
 
 #: kprofwidget.cpp:231
 msgid "Remarks"
-msgstr ""
+msgstr "Bemerkungen"
 
 #: kprofwidget.cpp:232
 msgid "Old Count"
@@ -208,19 +211,19 @@ msgstr "Neu %s"
 
 #: kprofwidget.cpp:238
 msgid "Old Self (s)"
-msgstr ""
+msgstr "Altes Version (s)"
 
 #: kprofwidget.cpp:239
 msgid "New Self (s)"
-msgstr ""
+msgstr "Neue Version (s)"
 
 #: kprofwidget.cpp:240
 msgid "Old Total ms/call"
-msgstr ""
+msgstr "Alte Gesamt ms/Aufruf"
 
 #: kprofwidget.cpp:241
 msgid "New Total ms/call"
-msgstr ""
+msgstr "Neue Gesamt ms/Aufruf"
 
 #: kprofwidget.cpp:257
 msgid "Count"
@@ -237,79 +240,79 @@ msgstr "%"
 
 #: kprofwidget.cpp:260
 msgid "Self (s)"
-msgstr ""
+msgstr "selbst"
 
 #: kprofwidget.cpp:261
 msgid "Total ms/call"
-msgstr ""
+msgstr "Gesamt ms/Aufruf"
 
 #: kprofwidget.cpp:285
 msgid "Old Self ms/call"
-msgstr ""
+msgstr "Altes Selbst ms/Aufruf"
 
 #: kprofwidget.cpp:286
 msgid "New Self ms/call"
-msgstr ""
+msgstr "Neues Selbst ms/Aufruf"
 
 #: kprofwidget.cpp:292
 msgid "Self ms/call"
-msgstr ""
+msgstr "Selbst ms/Aufruf"
 
 #: kprofwidget.cpp:300
 msgid "Old Min. ms/call"
-msgstr ""
+msgstr "Alter Min ms/Aufruf"
 
 #: kprofwidget.cpp:301
 msgid "New Min. ms/call"
-msgstr ""
+msgstr "Neue Min ms/Aufruf"
 
 #: kprofwidget.cpp:302
 msgid "Old Max. ms/call"
-msgstr ""
+msgstr "Alter Max ms/Aufruf"
 
 #: kprofwidget.cpp:303
 msgid "New Max. ms/call"
-msgstr ""
+msgstr "Neuer Max ms/Aufruf"
 
 #: kprofwidget.cpp:311
 msgid "Min. ms/call"
-msgstr ""
+msgstr "Min ms/Aufruf"
 
 #: kprofwidget.cpp:312
 msgid "Max. ms/call"
-msgstr ""
+msgstr "Max ms/Aufruf"
 
 #: kprofwidget.cpp:321
 msgid "Old Self Cycles"
-msgstr ""
+msgstr "Alter Selbstkreis"
 
 #: kprofwidget.cpp:322
 msgid "New Self Cycles"
-msgstr ""
+msgstr "Neuer Selbst Kreis"
 
 #: kprofwidget.cpp:323
 msgid "Old Total Cycles"
-msgstr ""
+msgstr "Alte Gesamt Durchl√§ufe"
 
 #: kprofwidget.cpp:324
 msgid "New Total Cycles"
-msgstr ""
+msgstr "Neue Gesamtdurchl√§ufe"
 
 #: kprofwidget.cpp:332
 msgid "Self Cycles"
-msgstr ""
+msgstr "Eigene Gesamtdurchl√§ufe"
 
 #: kprofwidget.cpp:333
 msgid "Total Cycles"
-msgstr ""
+msgstr "Gesamtdurchl√§ufe"
 
 #: kprofwidget.cpp:429
 msgid "Select a profiling results file to compare..."
-msgstr ""
+msgstr "W√§hlen Sie eine Profiler Ergebnisdatei zum Vergleich"
 
 #: kprofwidget.cpp:444
 msgid "Select a profiling results file"
-msgstr ""
+msgstr "Auswahl einer Profiler Ergebnis Datei"
 
 #: kprofwidget.cpp:450
 msgid "Text File Format:"
@@ -321,7 +324,7 @@ msgstr "GNU gprof  "
 
 #: kprofwidget.cpp:456
 msgid "Function Check  "
-msgstr "Funktions ‹berpr¸fung  "
+msgstr "Function Check"
 
 #: kprofwidget.cpp:457
 msgid "Palm OS Emulator"
@@ -332,6 +335,8 @@ msgid ""
 "Can't find any profiling output file\n"
 "(gmon.out or fnccheck.out)"
 msgstr ""
+"Kann keine Ausgabe-Datei des Profilers finden\n"
+"(gmon.out oder fnccheck.out)"
 
 #: kprofwidget.cpp:517
 msgid "File not found"
@@ -344,11 +349,11 @@ msgstr "Konnte keine Profil-Daten erzeugen.\n"
 #: kprofwidget.cpp:553 kprofwidget.cpp:1837
 #, c-format
 msgid "Error %d was returned.\n"
-msgstr "Fehler %d wurde zur¸ckgegeben.\n"
+msgstr "Fehler %d wurde zur√ºckgegeben.\n"
 
 #: kprofwidget.cpp:558
 msgid "It returned the following error message(s):\n"
-msgstr "Es gab folgende Fehlermeldungen zur¸ck:\n"
+msgstr "Es gab folgende Fehlermeldungen zur√ºck:\n"
 
 #: kprofwidget.cpp:563
 msgid "Following output was displayed:\n"
@@ -365,10 +370,14 @@ msgid ""
 "You can not open it as such: either open the application itself\n"
 "or open a text results file generated with 'gprof -b application-name'"
 msgstr ""
+"Die Datei \"gmou.out\"  wird bei der Ausf√ºhrung einer Applikation erzeugt, wenn beim compilieren\n"
+"dieser Applikation der GNU Profiler (gprof) Support eingeschalten wurde\n"
+"Sie k√∂nnen diese Datei nicht direkt √∂ffnen. √ñffnen Sie stattdessen die Applikation oder "
+"eine von gprof erzeugte Text Datei (mit \"gprof -b Applikationsname\")"
 
 #: kprofwidget.cpp:605
 msgid "Opening gmon.out not allowed"
-msgstr "÷ffnen von gmou.out nicht erlaubt"
+msgstr "ÔøΩ√ñffnen von gmou.out nicht erlaubt"
 
 #: kprofwidget.cpp:610
 msgid ""
@@ -377,10 +386,14 @@ msgid ""
 "You can not open it as such: either open the application itself\n"
 "or open a text results file generated with 'fncdump +calls application-name'"
 msgstr ""
+"Die Datei \"fnccheck.out\" wird bei der Ausf√ºhrung einer Applikation mit eingeschaltetem \n"
+"Function Check Profiling Support angelegt.\n"
+"Sie k√∂nnen die Datei nicht direkt √∂ffnen. √ñffnen Sie statt dessen die Applikation selbst, oder\n"
+"eine Textdatei, welche mit dem Kommando \"fncdump +calls-application-name\" erzeugt wurde"
 
 #: kprofwidget.cpp:611
 msgid "Opening fnccheck.out not allowed"
-msgstr "÷ffnen von fnccheck.out ist nicht erlaubt"
+msgstr "√ñffnen von fnccheck.out ist nicht erlaubt"
 
 #: kprofwidget.cpp:900
 msgid "Invalid File"
@@ -393,6 +406,10 @@ msgid ""
 "It should have been generated using the following command line:\n"
 "fncdump +calls -no-decoration {application_name}"
 msgstr ""
+"Diese Datei scheint keine funktionierende Function\n"
+"Check Ausgabe Datei zu sein.\n"
+"Eine solche Datei wird mit dem folgenden Kommando erzeugt:\n"
+"fncdump +calls -no-decoration {application_name}"
 
 #: kprofwidget.cpp:1557
 msgid "Called By:"
@@ -408,7 +425,7 @@ msgid ""
 "you must select an item in the profile view."
 msgstr ""
 "Um den Aufruf-Grafik der aktuellen Auswahl zu exportieren,\n"
-"m¸ssen Sie ein Item in der Profil-Ansicht ausw‰hlen."
+"m√ºssen Sie ein Item in der Profil-Ansicht ausw√§hlen."
 
 #: kprofwidget.cpp:1723
 msgid "Selection Empty"
@@ -428,7 +445,7 @@ msgstr "Aufruf-Graph speichern unter..."
 
 #: kprofwidget.cpp:1743
 msgid "File could not be opened for writing."
-msgstr "Datei konnte nicht zum schreiben geˆffnet werden"
+msgstr "Datei konnte nicht zum schreiben ge√∂ffnet werden"
 
 #: kprofwidget.cpp:1743
 msgid "File Error"
@@ -444,7 +461,7 @@ msgstr "Konnte keine Funktionen oder Klassen zum exportieren finden"
 
 #: kprofwidget.cpp:1803
 msgid "Could not open a temporary file for writing."
-msgstr "Konnte tempor‰res Datei nicht zum schreiben ˆffnen."
+msgstr "Konnte tempor√§re Datei nicht zum schreiben √∂ffnen."
 
 #: kprofwidget.cpp:1833
 msgid "Could not display the data.\n"
@@ -456,7 +473,7 @@ msgstr "xvcg mit Fehler(n) beendet"
 
 #: kprofwidget.cpp:2073
 msgid "KProf Object Profile"
-msgstr ""
+msgstr "KProf Objekt Profil"
 
 #: kprofwidget.cpp:2080
 msgid "KProf Hierarchy Profile"
@@ -464,8 +481,9 @@ msgstr "KProf Hierarchisches Profil"
 
 #: main.cpp:36
 msgid "Execution profile results analysis utility"
-msgstr ""
+msgstr "Ausf√ºhrung des Profiler Tools zur Ergebnis-Analyse"
 
 #: main.cpp:41
 msgid "KProf"
 msgstr "KProf"
+
