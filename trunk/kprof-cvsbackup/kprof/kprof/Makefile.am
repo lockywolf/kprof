@@ -3,7 +3,7 @@ bin_PROGRAMS = kprof
 
 ## INCLUDES were found outside kdevelop specific part
 
-kprof_SOURCES = ctidyup.cpp parseArguments.cpp kproffile.cpp Log.cpp cprofileinfo.cpp parseprofile_pose.cpp parseprofile_fnccheck.cpp parseprofile.cpp parseprofile_gprof.cpp clientsidemap.cpp vcgCallGraph.cpp dotCallGraph.cpp kprofwidget.cpp cprofileviewitem.cpp call-graph.ui kprof.cpp main.cpp 
+kprof_SOURCES = ctidyup.cpp parseArguments.cpp kproffile.cpp Log.cpp cprofileinfo.cpp parseprofile_pose.cpp parseprofile_fnccheck.cpp parseprofile.cpp parseprofile_gprof.cpp clientsidemap.cpp vcgCallGraph.cpp dotCallGraph.cpp kprofwidget.cpp cprofileviewitem.cpp call-graph.ui kprof.cpp main.cpp cconfigure.cpp cconfigure.h
 kprof_LDADD   =  $(LIB_KFILE) $(LIB_KHTML) $(LIB_KDEUI) $(LIB_KDECORE) $(LIB_QT) $(LIBSOCKET)
 
 
