@@ -2,7 +2,7 @@
 .\" First parameter, NAME, should be all caps
 .\" Second parameter, SECTION, should be 1-8, maybe w/ subsection
 .\" other parameters are allowed: see man(7), man(1)
-.TH KPROF 1 "Aug 30, 2002"
+.TH KPROF 1 "October 4, 2002"
 .\" Please adjust this date whenever revising the manpage.
 .\"
 .\" Some roff macros, for reference:
@@ -20,7 +20,8 @@ kprof \- a KDE3 visual tool to help analyze profiling results
 .SH SYNOPSIS
 .B kprof
 .RI "[ " generic-options " ]"
-.RI "[ " file " ]"
+[ \fB\-f\fP \fIfile\fP ]
+[ \fB\-p\fP \fIprofiler\fP ]
 .SH DESCRIPTION
 This manual page documents briefly the
 .B kprof
@@ -37,7 +38,16 @@ profiling information very easy to understand.
 Currently supported profilers include GNU gprof, Function Check and Palm
 OS Emulator with profile option.
 .SH OPTIONS
+Below are the kprof-specific options.
 For a full summary of options, run \fIkprof \-\-help\fP.
+.TP
+\fB\-f\fP \fIfile\fP
+Open the given profiling output file.
+.TP
+\fB\-p\fP \fIprofiler\fP
+Specifies which profiler was used to create the profiling output file.
+The profiler argument must be one of \fIgprof\fP (GNU gprof),
+\fIfnccheck\fP (Function Check) or \fIpose\fP (Palm OS Emulator).
 .SH SEE ALSO
 .BR gprof (1).
 .PP

@@ -16,10 +16,6 @@ kdedocs = $(tmp)/usr/share/doc/kde/HTML
 INSTALL_FILE = install -p -o root -g root -m 644
 INSTALL_DIR = install -p -d -o root -g root -m 755
 
-files_to_clean = aclocal.m4 configure configure.in configure.files \
-	config.h.in debian/debiandirs
-dirs_to_clean = kprof/doc/kprof/HTML
-
 ARCH = $(shell dpkg-architecture -qDEB_BUILD_ARCH)
 ifeq ($(ARCH),alpha)
   COMPILER_FLAGS=CFLAGS="-O0 -mieee" CXXFLAGS="-O0 -mieee"
@@ -32,27 +28,18 @@ endif
 debian/debiandirs: admin/debianrules
 	perl -w admin/debianrules echodirs > debian/debiandirs
 
-configure: configure-stamp
-configure-stamp:
-	dh_testdir
-	$(MAKE) -f admin/Makefile.common
-	$(COMPILER_FLAGS) ./configure --disable-rpath $(configkde)
-	touch configure-stamp
-
-build: configure-stamp build-stamp
+build: build-stamp
 build-stamp:
 	dh_testdir
+	$(COMPILER_FLAGS) ./configure $(configkde)
 	$(MAKE)
 	touch build-stamp
 
 clean:
 	dh_testdir
 	dh_testroot
+	-rm -f build-stamp debian/debiandirs
 	-$(MAKE) distclean
-	-rm -f build-stamp configure-stamp
-	-rm -f $(files_to_clean)
-	-rm -rf $(dirs_to_clean)
-	for i in `find . -name "Makefile.in"`; do rm -f $$i; done
 	dh_clean
 
 install: build
