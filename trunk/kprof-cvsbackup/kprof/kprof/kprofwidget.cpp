@@ -168,7 +168,7 @@ void KProfWidget::toggleTemplateAbbrev ()
 
 	if (mProfile.count ())
 	{
-		postProcessProfile ();		// regenerate simplified names
+		postProcessProfile (false);	// regenerate simplified names
 		mFlat->clear ();			// rebuild lists to make sure refresh is done
 		mHier->clear ();
 		mObjs->clear ();
@@ -335,7 +335,7 @@ void KProfWidget::openResultsFile ()
 	}
 }
 
-void KProfWidget::openFile (const QString &filename, int format)
+void KProfWidget::openFile (const QString &filename, int format, bool compare)
 {
 	if (filename.isEmpty ())
 		return;
@@ -410,6 +410,18 @@ void KProfWidget::openFile (const QString &filename, int format)
 		mFlat->clear ();
 		mHier->clear ();
 		mObjs->clear ();
+
+		// if we are going to compare results, save the previous results and
+		// remove any previously deleted entry
+		if (compare)
+		{
+			mPreviousProfile = mProfile;
+			for (uint i=mPreviousProfile.count(); i > 0; )
+			{
+				if (mPreviousProfile[--i]->deleted)
+					mPreviousProfile.remove (i);
+			}
+		}
 		mProfile.clear ();
 
 		// parse profile data
@@ -457,7 +469,7 @@ void KProfWidget::openFile (const QString &filename, int format)
 	}
 
 	// post-process the parsed data
-	postProcessProfile ();
+	postProcessProfile (compare);
 
 	// customize the on-screen columns
 	customizeColumns (mFlat, sLastFileFormat);
@@ -1150,7 +1162,7 @@ void KProfWidget::processCallGraphBlock (const QVector<SCallGraphEntry> &data)
 	}
 }
 
-void KProfWidget::postProcessProfile ()
+void KProfWidget::postProcessProfile (bool compare)
 {
 	// once we have read a profile information file, we can post-process
 	// the data. First, we need to create the list of classes that were
@@ -1159,7 +1171,8 @@ void KProfWidget::postProcessProfile ()
 	// has multiple signatures. We mark entries with multiple signatures
 	// so that we can display the arguments only when needed
 	mClasses.resize (0);
-	for (uint i = 0; i < mProfile.count (); i++)
+	uint i, j;
+	for (i = 0; i < mProfile.count (); i++)
 	{
 		// fill the class list
 		if (!mProfile[i]->object.isEmpty ())
@@ -1178,7 +1191,7 @@ void KProfWidget::postProcessProfile ()
 		}
 
 		// check for multiple signatures
-		for (uint j = i + 1; j < mProfile.count(); j++)
+		for (j = i + 1; j < mProfile.count(); j++)
 		{
 			if (mProfile[i]->multipleSignatures)
 				continue;
@@ -1200,6 +1213,37 @@ void KProfWidget::postProcessProfile ()
 		else
 			mProfile[i]->simplifiedName = removeTemplates (mProfile[i]->object) + "::" + removeTemplates (mProfile[i]->method);
   	}
+
+	// profile results comparison: link new entry with previous entry, add deleted entries
+	// to the list (marking them "deleted"). To mark entries that we have already seen,
+	// set their "output" flag to true. This is temporary, just for the duration of
+	// the code below.
+	if (compare == false)
+		return;
+	for (i = 0; i < mPreviousProfile.count(); i++)
+		mPreviousProfile[i]->output = false;
+	for (i = 0; i < mProfile.count(); i++)
+	{
+		for (j = 0; j < mPreviousProfile.count(); j++)
+		{
+			if (mProfile[j]->output==false && mProfile[i]->name == mProfile[j]->name)
+			{
+				mProfile[i]->previous = mProfile[j];
+				mProfile[j]->output = true;
+				break;
+			}
+		}
+	}
+	for (j = 0; j < mPreviousProfile.count(); j++)
+	{
+		if (mProfile[j]->output == false)
+		{
+			// this item was deleted, add it to the new list and mark it 'deleted'
+			mPreviousProfile[j]->deleted = true;
+			mProfile.resize (mProfile.size() + 1);
+			mProfile.insert (mProfile.size() - 1, mPreviousProfile[j]);
+		}
+	}
 }
 
 CProfileInfo *KProfWidget::locateProfileEntry (const QString& name)

@@ -62,17 +62,15 @@ protected:
 	KListView*				mObjs;		// the object profile widget
 
 	QVector<CProfileInfo>	mProfile;	// profile information read from file
+	QVector<CProfileInfo>	mPreviousProfile;	// when comparing, keep previous profile information here
 	QVector<QString>		mClasses;	// list of distinct class names found in the profile information
 
-#ifndef QT_NO_PRINTER
-	QPrinter			mPrinter;		// printer object
-#endif
-	int					mCurPage;		// id of the current page (used to know which to print)
-	QString				mGProfStdout;	// stdout from gprof command
-	QString				mGProfStderr;	// stderr from gprof command
-	QString				mFlatFilter;	// filter string for flat profile view
-	QFont				mListFont;		// font used to draw the text
-	bool				mAbbrevTemplates; // if true, templates are "abbreviates" (i.e. become <...>)
+	int						mCurPage;		// id of the current page (used to know which to print)
+	QString					mGProfStdout;	// stdout from gprof command
+	QString					mGProfStderr;	// stderr from gprof command
+	QString					mFlatFilter;	// filter string for flat profile view
+	QFont					mListFont;		// font used to draw the text
+	bool					mAbbrevTemplates; // if true, templates are "abbreviates" (i.e. become <...>)
 
 	typedef struct						// structure is used while parsing the call graph for gprof and Function Check
 	{
@@ -162,13 +160,13 @@ signals:
 	void addRecentFile (const KURL&);
 
 private:
-	void openFile (const QString &filename, int format);
+	void openFile (const QString &filename, int format, bool compare = false);
 	void prepareProfileView (KListView *view, bool rootIsDecorated);
 	void parseProfile_pose (QTextStream &t);
 	bool parseProfile_fnccheck (QTextStream &t);
 	void parseProfile_gprof (QTextStream &t);
 	void processCallGraphBlock (const QVector<SCallGraphEntry> &data);
-	void postProcessProfile ();
+	void postProcessProfile (bool compare);
 
 	void customizeColumns (KListView *view, int profiler);
 	

@@ -117,8 +117,12 @@ bool KProfTopLevel::queryExit( void )
 
 void KProfTopLevel::addRecentFile (const KURL& url)
 {
+	// this slot is called by kprofwidget when a file has been opened.
+	// we store it in the recent files and also change the window title
 	KRecentFilesAction *recent = (KRecentFilesAction *) actionCollection()->action (KStdAction::stdName (KStdAction::OpenRecent));
 	recent->addURL (url);
+
+	setCaption (url.fileName ());
 }
 
 #include "kprof.moc"

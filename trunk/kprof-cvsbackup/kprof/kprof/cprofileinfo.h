@@ -50,6 +50,7 @@ public:
 	QString		arguments;				// function/method arguments
 	QArray<CProfileInfo *> called;		// list of functions called by this one
 	QArray<CProfileInfo *> callers;		// list of functions that this one calls
+	CProfileInfo* previous;				// when comparing, points to the previous profile result for this entry
 
 	// members are arranged by descending size to save memory
 	float		cumPercent;				// cumulative percentage (+children) of CPU usage
@@ -61,6 +62,7 @@ public:
 	bool		recursive;
 	bool		multipleSignatures;		// if true, this method name has multiple signatures
 	bool		output;					// temporary boolean used to output a partial call-graph
+	bool		deleted;				// when comparing, set to true if this entry was existing in previous profile results
 
 	// variant structure for various profilers
 	union {
@@ -84,14 +86,16 @@ public:
 
 public:
 	CProfileInfo ()
-		:	cumPercent (0.0),
+		:	previous (NULL),
+			cumPercent (0.0),
 			cumSeconds (0.0),
 			selfSeconds (0.0),
 			totalMsPerCall (0.0),
 			calls (0),
 			ind (0),
 			recursive (false),
-			multipleSignatures (false)
+			multipleSignatures (false),
+			deleted (false)
 		{
 			memset (&custom, 0, sizeof (custom));
 		}
