@@ -1,6 +1,6 @@
 In order to configure and build Kprof you need to do the following
 
-	- cd to the kprof-1.4b directory
+	- cd to the kprof-1.4.1 directory
 	- type "make -f Makefile.cvs"
 	- type "configure"
 	- type "make"
