@@ -51,7 +51,7 @@ VCGCallGraph ::VCGCallGraph (QFile& file, bool currentSelectionOnly, QVector<CPr
 		if (className.length ())
 			className += "\\n";
 
-		stream << "node: {title:\"" << i << "\" label:\"" << className << profile[i]->method;
+		stream << "node: {title:\"" << i << "\" label:\"" << className << "::" <<  profile[i]->method;
 
 		if (profile[i]->multipleSignatures)
 			stream << "\\n" << profile[i]->arguments;
