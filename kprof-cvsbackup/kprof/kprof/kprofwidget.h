@@ -54,6 +54,7 @@ class KProfWidget : public QWidget
 public:
 	static QFont*			sListFont;	// font used to draw list entries
 	static int				sLastFileFormat;	// format of the last opened file
+	static bool				sDiffMode;	// true if performing a diff. Used by CProfileViewItem
 
 protected:
 	KTabCtl*				mTabs;		// the tabbed control

@@ -46,6 +46,8 @@ public:
 	CProfileViewItem (QListViewItem *parent, QListViewItem *after, CProfileInfo *profile);
 	virtual ~CProfileViewItem ();
 
+	virtual void paintCell (QPainter * p, const QColorGroup & cg, int column, int width, int align);
+
 	virtual QString text (int column) const;
 	virtual QString key (int column, bool ascending) const;
 

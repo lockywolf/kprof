@@ -217,3 +217,31 @@ QString CProfileViewItem::formatFloat (float n, int precision)
 	return QString (buffer);
 }
 
+void CProfileViewItem::paintCell (QPainter * p, const QColorGroup & cg, int column, int width, int align)
+{
+	// pre-change font attributes to take "diff" values into account
+	if (mProfile->previous || KProfWidget::sDiffMode)
+	{
+		if (column == KProfWidget::col_function)
+		{
+			if (!mProfile->previous)
+			{
+				// new function: display name in BOLD
+				QFont f = p->font ();
+				f.setBold (true);
+				p->setFont (f);
+			}
+		}
+	}
+
+	// paint the cell "regularly"
+	QListViewItem::paintCell (p, cg, column, width, align);
+
+	// post-paint the cell: draw a line accross the cell if the entry is "deleted"
+	if (mProfile->deleted)
+	{
+		int y = height() / 2;
+		p->moveTo (0, y);
+		p->lineTo (width-1, y);
+	}
+}
