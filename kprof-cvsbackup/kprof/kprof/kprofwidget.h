@@ -47,6 +47,10 @@
 class QFont;
 class QFile;
 class CProfileViewItem;
+class KHTMLView;
+#include <khtml_part.h>
+#include <kurl.h>
+#include "kprofhtmlview.h"
 
 #ifdef HAVE_LIBQTREEMAP
 class QListViewTreeMapWindow;
@@ -64,18 +68,24 @@ public:
 
 protected:
 	KTabCtl*				mTabs;		// the tabbed control
-	KListView*			mFlat;		// the flat profile list widget
-	KListView*			mHier;		// the hierarchical profile widget
-	KListView*			mObjs;		// the object profile widget
+	KListView*				mFlat;		// the flat profile list widget
+	KListView*				mHier;		// the hierarchical profile widget
+	KListView*				mObjs;		// the object profile widget
+	KHTMLView*			mGraphView;  //the graphical call tree view
+	KHTMLView*			mMethodView;  //the graphical method view
 
 	QVector<CProfileInfo>	mProfile;	// profile information read from file
 	QVector<CProfileInfo>	mPreviousProfile;	// when comparing, keep previous profile information here
 	QVector<QString>			mClasses;	// list of distinct class names found in the profile information
 
 	int						mCurPage;		// id of the current page (used to know which to print)
-	QString				mGProfStdout;	// stdout from gprof command
-	QString				mGProfStderr;	// stderr from gprof command
-	QString				mFlatFilter;	// filter string for flat profile view
+	QString					mGProfStdout;	// stdout from gprof command
+	QString					mGProfStderr;	// stderr from gprof command
+	QString					mGraphVizStdout;//	Stdout from the graphViz command
+	QString					mGraphVizStderr; //	Stderr from the graphViz command
+	QString					mGraphVizDispStdout;//	Stdout from the graphViz command
+	QString					mGraphVizDispStderr; //	Stderr from the graphViz command
+	QString					mFlatFilter;	// filter string for flat profile view
 	QFont					mListFont;		// font used to draw the text
 	bool					mAbbrevTemplates; // if true, templates are "abbreviates" (i.e. become <...>)
 	QDir					mCurDir;		// current directory
@@ -86,32 +96,6 @@ protected:
 	QListViewTreeMapWindow*	mHierTreemap;
 #endif
 	
-	typedef struct						// structure is used while parsing the call graph for gprof and Function Check
-	{
-		QString	name;
-		long	line;
-		bool	primary;
-		bool	recursive;
-	} SCallGraphEntry;
-
-	typedef struct					 	// structure holding call-graph data for PalmOS Emulator results
-	{
-		int		index;
-		int		parent;
-	} SPoseCallGraph;
-
-	enum								// states while parsing the gprof output
-	{
-		ANALYZING,
-		PROCESS_CYCLES,					// used for Function Check parsing
-		SEARCH_FLAT_PROFILE,			// for GPROF (to remove later)
-		PROCESS_FLAT_PROFILE,
-		PROCESS_MIN_MAX_TIME,			// used for Function Check parsing
-		SEARCH_CALL_GRAPH,				// for GPROF (to remove later)
-		PROCESS_CALL_GRAPH,
-		DISCARD_CALL_GRAPH_ENTRY
-	};
-
 
 public:
 	enum								// text results file format that we support
@@ -177,6 +161,7 @@ public:
 public:
 	KProfWidget (QWidget *parent=NULL, const char *name=NULL);
 	~KProfWidget ();
+	static QString getClassName (const QString& name);
 
 public slots:
 	void tabSelected (int page);
@@ -202,6 +187,11 @@ protected slots:
 	void selectionChanged (QListViewItem *item);
 	void gprofStdout (KProcess*, char *buffer, int buflen);
 	void gprofStderr (KProcess*, char *buffer, int buflen);
+	void graphVizStdout (KProcess*, char* buffer, int buflen);
+	void graphVizStderr (KProcess*, char* buffer, int buflen);
+	void graphVizDispStdout (KProcess*, char* buffer, int buflen);
+	void graphVizDispStderr (KProcess*, char* buffer, int buflen);
+	void openURLRequest(const KURL &url, const KParts::URLArgs &args);
 
 signals:
 	void addRecentFile (const KURL&);
@@ -209,16 +199,11 @@ signals:
 private:
 	void openFile (const QString &filename, int format, bool compare = false);
 	void prepareProfileView (KListView *view, bool rootIsDecorated);
-	void parseProfile_pose (QTextStream &t);
-	bool parseProfile_fnccheck (QTextStream &t);
-	void parseProfile_gprof (QTextStream &t);
-	void processCallGraphBlock (const QVector<SCallGraphEntry> &data);
 	void postProcessProfile (bool compare);
+	void prepareHtmlView(KHTMLView* viewer);
 
 	void customizeColumns (KListView *view, int profiler);
 	
-	CProfileInfo *locateProfileEntry (const QString& name);
-
 	void fillFlatProfileList ();
 	void fillHierProfileList ();
 	void fillHierarchy (CProfileViewItem *item, CProfileInfo *parent, QArray<CProfileInfo *> &addedEntries, int &count);
@@ -228,12 +213,11 @@ private:
 	void selectItemInView (QListView *view, CProfileInfo *info, bool examineSubs);
 
 	void markForOutput (CProfileInfo *info);
-	void generateDotCallGraph (QFile& file, bool currentSelectionOnly);
-	void generateVCGCallGraph (QFile& file, bool currentSelectionOnly);
 
-	QString getClassName (const QString& name);
 	QString removeTemplates (const QString& name);
-
+	
+	KProfHtmlPart* mCallTreeHtmlPart;
+	KHTMLPart* mMethodHtmlPart;
 };
 
 #endif
