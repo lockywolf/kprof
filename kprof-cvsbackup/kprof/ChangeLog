@@ -2,6 +2,7 @@
 	* improved the display of method names: if a method name has multiple signatures,
 	  we display the arguments. Otherwise, we do not display the arguments in order
 	  to produce a more readable display.
+	* implemented GraphViz and VCG call-graph export functions.
 
 2001-02-05 Florent Pillet <fpillet@users.sourceforge.net>
 	* fixed a crasher when right-clicking a class name in object profile
@@ -27,7 +28,8 @@
 	  graphs for visualization in external graphing programs.
 	  Supported output formats are GraphViz, an excellent
 	  open source graph visualization program from ATT
-	  (http://www.graphviz.org/) and XVCG.
+	  (http://www.graphviz.org/) and VCG, another free graph
+	  visualization tool.
 
 2000-09-10 Florent Pillet <florent.pillet@wanadoo.fr>
 

@@ -180,7 +180,6 @@ the &kprof; main window. It's not a bug, it's a feature!
 <chapter id="faq">
 <title>Questions and Answers</title>
 &reporting.bugs;
-&updating.documentation;
 
 <qandaset id="faqlist">
 <qandaentry>
@@ -268,7 +267,7 @@ directory of the distribution:
 <screen width="40">
 <prompt>%</prompt> <userinput>./configure</userinput>
 <prompt>%</prompt> <userinput>make</userinput>
-<prompt>%</prompt> <userinput>su - root
+<prompt>%</prompt> <userinput>su - root</userinput>
 <prompt>%</prompt> <userinput>make install</userinput>
 </screen>
 </para>

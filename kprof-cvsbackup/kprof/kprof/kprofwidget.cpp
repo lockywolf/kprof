@@ -864,35 +864,147 @@ void KProfWidget::generateCallGraph ()
 	if (dialog.exec ())
 	{
 		bool currentSelectionOnly = dialog.mSelectedFunction->isChecked ();
+
+		QListViewItem *selectedItem = NULL;
+		if (currentSelectionOnly)
+		{
+			selectedItem = (mCurPage == 0 ? mFlat->selectedItem() :
+							mCurPage == 1 ? mHier->selectedItem() :
+							mObjs->selectedItem());
+			if (selectedItem == NULL)
+			{
+				KMessageBox::sorry (this, i18n ("To export the current selection's call-graph,\nyou must select an item in the profile view."), i18n ("Selection Empty"));
+				return;
+			}
+		}
+
+		QString dotfile = KFileDialog::getSaveFileName (
+			QString::null,
+			dialog.mGraphViz->isChecked () ? i18n("*.dot|GraphViz files") : i18n("*.vcg|VCG files"),
+			this,
+			i18n ("Save call-graph as..."));
+		if (dotfile.isEmpty ())
+			return;
+
+		QFile file (dotfile);
+		if (!file.open (IO_WriteOnly | IO_Truncate | IO_Translate))
+		{
+			KMessageBox::error (this, i18n ("File could not be opened for writing."), i18n ("File Error"));
+			return;
+		}
+
+		if (currentSelectionOnly)
+		{
+			for (uint i=0; i < mProfile.count(); i++)
+				mProfile[i]->output = false;
+
+			CProfileInfo *info = ((CProfileViewItem *) selectedItem)->getProfile ();
+			if (info == NULL)
+			{
+				// probably a parent item in the object profile view;
+				// in this case, mark all objects of the same class for output
+				QListViewItem *childItem = selectedItem->firstChild ();
+				if (childItem)
+					info = ((CProfileViewItem *) childItem)->getProfile ();
+
+				if (info == NULL)
+				{
+					KMessageBox::error (this, i18n ("Internal Error"), i18n ("Could not find any function or class to export."));
+					return;
+				}
+
+				QString className = info->object;
+				for (uint i = 0; i < mProfile.count(); i++)
+				{
+					if (mProfile[i]->output==false && mProfile[i]->object==info->object)
+						markForOutput (mProfile[i]);
+				}
+			}
+			else
+				markForOutput (info);
+		}
+
+		// graph generation
 		if (dialog.mGraphViz->isChecked ())
-			generateDotCallGraph (currentSelectionOnly);
+			generateDotCallGraph (file, currentSelectionOnly);
 		else
-			generateVCGCallGraph (currentSelectionOnly);
+			generateVCGCallGraph (file, currentSelectionOnly);
+
+		file.close ();
 	}
 }
 
-void KProfWidget::generateVCGCallGraph (bool currentSelectionOnly)
+void KProfWidget::markForOutput (CProfileInfo *p)
 {
-	// TODO
+	// if true, we already passed this item; avoid entering a recursive loop
+	if (p->output)
+		return;
+
+	p->output = true;
+	for (uint i = 0; i < p->called.count(); i++)
+		markForOutput (p->called[i]);
 }
 
-void KProfWidget::generateDotCallGraph (bool currentSelectionOnly)
+void KProfWidget::generateVCGCallGraph (QFile& file, bool currentSelectionOnly)
+{
+	// generate a call-graph to a .vcg file in a format compatible with
+	// VCG, a free graph generator available from http://www.cs.uni-sb.de/RW/users/sander/html/gsvcg1.html
+	QByteArray graph;
+	QTextOStream stream (graph);
+
+	stream << "graph: {\n";
+	stream << "spreadlevel: 1\n";
+	stream << "treefactor: 0.500000\n";
+	stream << "splines: yes\n";
+	stream << "node_alignment: bottom\n";
+	stream << "orientation: left_to_right\n";
+
+	// first create all the nodes
+	for (uint i = 0; i < mProfile.count (); i++)
+	{
+		if (currentSelectionOnly && mProfile[i]->output==false)
+			continue;
+
+		QString className = mProfile[i]->object;
+		if (className.length ())
+			className += "\\n";
+
+		stream << "node: {title:\"" << i << "\" label:\"" << className << mProfile[i]->method;
+
+		if (mProfile[i]->multipleSignatures)
+			stream << "\\n" << mProfile[i]->arguments;
+		stream << "\"";
+
+		if (!(mProfile[i]->callers.count()==0 || mProfile[i]->called.count()==0))
+			stream << " shape: ellipse";
+
+		stream << "}\n";
+	}
+
+	// then output the nodes relationships (edges)
+	for (uint i = 0; i < mProfile.count (); i++)
+	{
+		if (currentSelectionOnly && mProfile[i]->output==false)
+			continue;
+
+		if (mProfile[i]->recursive)
+			stream << "edge:{sourcename:\"" << i << "\" targetname:\"" << i << "\" thickness:3}\n";
+
+		if (mProfile[i]->called.count ())
+		{
+			for (uint j = 0; j < mProfile[i]->called.count (); j++)
+				stream << "edge:{sourcename:\"" << i << "\" targetname:\"" << mProfile[i]->called[j]->ind << "\"}\n";
+		}
+	}
+	stream << "}\n";
+
+	file.writeBlock (graph);
+}
+
+void KProfWidget::generateDotCallGraph (QFile& file, bool currentSelectionOnly)
 {
 	// generate a call-graph to a .dot file in a format compatible with
 	// GraphViz, a free graph generator from ATT (http://www.research.att.com/sw/tools/graphviz/)
-
-	QString dotfile = KFileDialog::getSaveFileName (QString::null, i18n("*.dot|GraphViz files"), this,
-													i18n ("Save call-graph as..."));
-	if (dotfile.isEmpty ())
-		return;
-
-	QFile file (dotfile);
-	if (!file.open (IO_WriteOnly | IO_Truncate | IO_Translate))
-	{
-		KMessageBox::error (this, i18n ("File could not be opened for writing."), i18n ("File Error"));
-		return;
-	}
-
 	QByteArray graph;
 	QTextOStream stream (graph);
 
@@ -901,6 +1013,9 @@ void KProfWidget::generateDotCallGraph (bool currentSelectionOnly)
 	// first create all the nodes
 	for (uint i = 0; i < mProfile.count (); i++)
 	{
+		if (currentSelectionOnly && mProfile[i]->output==false)
+			continue;
+
 		QString className = mProfile[i]->object;
 		if (className.length ())
 			className += "\\n";
@@ -917,6 +1032,9 @@ void KProfWidget::generateDotCallGraph (bool currentSelectionOnly)
 	// then output the nodes relationships
 	for (uint i = 0; i < mProfile.count (); i++)
 	{
+		if (currentSelectionOnly && mProfile[i]->output==false)
+			continue;
+
 		if (mProfile[i]->recursive)
 			stream << i << " -> " << i << " [style=dotted];\n";
 
@@ -935,7 +1053,6 @@ void KProfWidget::generateDotCallGraph (bool currentSelectionOnly)
 	stream << "}\n";
 
 	file.writeBlock (graph);
-	file.close ();
 }
 
 QString KProfWidget::getClassName (const QString &name)
