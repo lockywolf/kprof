@@ -1,0 +1,14 @@
+*.o
+Makefile
+kprof
+*.bak
+*~
+*.moc
+gmon.out
+liste.txt
+call-graph.h
+.graphViz_temp
+call-graph.cpp
+kprof_meta_unload.cpp
+.libs
+.deps
