@@ -104,6 +104,7 @@ void KProfTopLevel::setupActions ()
 #ifdef HAVE_LIBQTREEMAP
 	mDisplayTreeMapAction = new KAction(i18n("&Display TreeMap View"), 0, mProf, SLOT (displayTreeMapView()), actionCollection(), "display_tree_map_view");
 #endif
+	mConfigure = new KAction(i18n("&Configure KProf"), 0, mProf, SLOT(configure()), actionCollection(), "configure_kprof");
 
 	END;
 }
