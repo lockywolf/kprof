@@ -153,8 +153,11 @@ KProfWidget::KProfWidget (QWidget *parent, const char *name)
 	mMethodHtmlPart = new KHTMLPart(mTabs, "method_part");//,mTabs);
 	CHECK_PTR(mMethodHtmlPart);
 
-	KParts::BrowserExtension* ext = mCallTreeHtmlPart->browserExtension();
-	connect(ext, SIGNAL(openURLRequestDelayed( const KURL &, const KParts::URLArgs &)),
+	//KParts::BrowserExtension* ext = mCallTreeHtmlPart->browserExtension();
+	connect(mCallTreeHtmlPart->browserExtension(), SIGNAL(openURLRequestDelayed( const KURL &, const KParts::URLArgs &)),
+					this, SLOT(openURLRequestDelayed( const KURL &, const KParts::URLArgs & )));
+
+	connect(mMethodHtmlPart->browserExtension(), SIGNAL(openURLRequestDelayed( const KURL &, const KParts::URLArgs &)),
 					this, SLOT(openURLRequestDelayed( const KURL &, const KParts::URLArgs & )));
 
 	// add the view to the tab control
@@ -815,6 +818,13 @@ void KProfWidget::postProcessProfile (bool compare)
 				mProfile[j]->multipleSignatures = true;
 			}
 		}
+
+		//construct the HTML name
+		QString htmlName = mProfile[i]->object;
+		htmlName.replace(QRegExp("<"), "[");
+		htmlName.replace(QRegExp(">"),"]");
+		mProfile[i]->htmlName = htmlName;
+
 
 		// construct the function/method's simplified name
 		if (mProfile[i]->multipleSignatures)
