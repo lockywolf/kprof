@@ -21,8 +21,7 @@
 
 #include <qstring.h>
 #include <qvector.h>
-#include <string.h>
-#include <iostream.h>
+#include <kdebug.h>
 
 CParseProfile::CParseProfile()
 {
@@ -53,7 +52,8 @@ void CParseProfile::processCallGraphBlock (const QVector<SCallGraphEntry> &data,
 	{
 		// @@@ should perform better error reporting here
 		if (i != data.count ())
-			fprintf (stderr, "kprof: missing flat profile entry for '%s' (line %ld)\n", data[i]->name.latin1(), data[i]->line);
+		  kdDebug(80000)  << "missing flat profile entry for '" <<data[i]->name.latin1()
+		  								<< "' (line "<<data[i]->line<< ")"<<endl;
   		return;
 	}
 
