@@ -28,7 +28,7 @@
 
 	<!-- Date and version information of the documentation -->
 	<date>28/06/2001</date>
-	<releaseinfo>1.3</releaseinfo>
+	<releaseinfo>1.3.1</releaseinfo>
 
 	<!-- Abstract about this handbook -->
 	<abstract>
@@ -502,7 +502,7 @@ instructions for getting the up-to-date sources via CVS.
 <sect1 id="requirements">
 <title>Requirements</title>
 <para>
-KProf is a KDE 2 application. In order to use it, you need the KDE Libraries available for
+KProf is a KDE 3 application. In order to use it, you need the KDE Libraries available for
 free from the <ulink url="http://www.kde.org/">KDE Web Site</ulink>.
 </para>
 </sect1>
