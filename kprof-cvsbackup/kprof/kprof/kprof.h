@@ -8,7 +8,7 @@
  * Requires the Qt widget libraries, available at no cost at
  * http://www.trolltech.com/
  *
- * Requires the K Desktop Environment 2.0 (KDE 2.0) libraries, available
+ * Requires the K Desktop Environment 3.0 (KDE 3.0) libraries, available
  * at no cost at http://www.kde.org/
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -29,7 +29,7 @@
 #ifndef __KPROF_H__
 #define __KPROF_H__
 
-#include <ktmainwindow.h>
+#include <kmainwindow.h>
 
 class KToggleAction;
 class KAction;
