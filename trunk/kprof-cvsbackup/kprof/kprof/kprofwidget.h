@@ -50,7 +50,6 @@ class CProfileViewItem;
 class KHTMLView;
 #include <khtml_part.h>
 #include <kurl.h>
-#include "kprofhtmlview.h"
 
 #ifdef HAVE_LIBQTREEMAP
 class QListViewTreeMapWindow;
@@ -191,7 +190,7 @@ protected slots:
 	void graphVizStderr (KProcess*, char* buffer, int buflen);
 	void graphVizDispStdout (KProcess*, char* buffer, int buflen);
 	void graphVizDispStderr (KProcess*, char* buffer, int buflen);
-	void openURLRequest(const KURL &url, const KParts::URLArgs &args);
+	void openURLRequestDelayed( const KURL &url, const KParts::URLArgs &args = KParts::URLArgs() );
 
 signals:
 	void addRecentFile (const KURL&);
@@ -216,7 +215,8 @@ private:
 
 	QString removeTemplates (const QString& name);
 	
-	KProfHtmlPart* mCallTreeHtmlPart;
+	//KProfHtmlPart* mCallTreeHtmlPart;
+	KHTMLPart* mCallTreeHtmlPart;
 	KHTMLPart* mMethodHtmlPart;
 };
 
