@@ -210,7 +210,7 @@ configure configure.in
 
 #>- DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
 #>+ 4
-KDE_DIST=kprof.lsm configure.in.in kprof.spec kprof-1.2.tar.gz Makefile.cvs VERSION 
+KDE_DIST=kprof.lsm configure.in.in kprof.spec Makefile.cvs VERSION 
 
 DISTFILES= $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST) $(KDE_DIST)
 

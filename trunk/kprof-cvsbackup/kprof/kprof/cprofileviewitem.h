@@ -38,20 +38,15 @@ class Q_EXPORT CProfileViewItem : public QListViewItem
 {
 protected:
 	CProfileInfo*		mProfile;
-	bool				mDiff;				// true if we are in diff mode
 
 public:
-	CProfileViewItem (QListView *parent, CProfileInfo *profile, bool diff);
-	CProfileViewItem (QListViewItem *parent, CProfileInfo *profile, bool diff);
-	CProfileViewItem (QListView *parent, QListViewItem *after, CProfileInfo *profile, bool diff);
-	CProfileViewItem (QListViewItem *parent, QListViewItem *after, CProfileInfo *profile, bool diff);
+	CProfileViewItem (QListView *parent, CProfileInfo *profile);
+	CProfileViewItem (QListViewItem *parent, CProfileInfo *profile);
+	CProfileViewItem (QListView *parent, QListViewItem *after, CProfileInfo *profile);
+	CProfileViewItem (QListViewItem *parent, QListViewItem *after, CProfileInfo *profile);
 	virtual ~CProfileViewItem ();
 
-#ifdef TEST_DIFF
-	virtual void setup ();
-	virtual void invalidateHeight ();
 	virtual void paintCell (QPainter * p, const QColorGroup & cg, int column, int width, int align);
-#endif
 	virtual QString text (int column) const;
 	virtual QString key (int column, bool ascending) const;
 
@@ -60,6 +55,7 @@ public:
 private:
 	void setRecursiveIcon ();
 	static QString formatFloat (float n, int precision);
+	static QString formatSpeedDiff (float newSpeed, float oldSpeed);
 };
 
 #endif

@@ -134,9 +134,9 @@ public:
 	
 	enum diffColID						// diff mode column IDs
 	{
-		diff_col_status = 0,
-		diff_col_function,
+		diff_col_function = 0,
 		diff_col_recursive,
+		diff_col_status,
 		diff_col_count,
 		diff_col_new_count,
 		diff_col_total,
