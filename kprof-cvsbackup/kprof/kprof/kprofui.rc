@@ -12,6 +12,7 @@
 		<Menu name="settings">
 			<Action name="toggle_template_abbreviations" />
 			<Action name="select_list_font" />
+			<Action name="configure_kprof" />
 		</Menu>
 	</MenuBar>
 </kpartgui>
