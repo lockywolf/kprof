@@ -122,7 +122,7 @@ install_location=
 type=HEADER
 
 [kprof/Makefile.am]
-files=kprof/main.cpp,kprof/kprof.cpp,kprof/kprof.h,kprof/kprofdoc.h,kprof/kprofview.h,kprof/kprofui.rc,kprof/kprof.desktop,kprof/lo32-app-kprof.png,kprof/lo16-app-kprof.png,kprof/cprofileviewitem.h,kprof/call-graph.h,kprof/call-graph.ui,kprof/cprofileinfo.h,kprof/cprofileviewitem.cpp,kprof/kprofwidget.cpp,kprof/kprofwidget.h,kprof/dotCallGraph.cpp,kprof/dotCallGraph.h,kprof/vcgCallGraph.cpp,kprof/vcgCallGraph.h,kprof/clientsidemap.h,kprof/clientsidemap.cpp,kprof/parseprofile_gprof.h,kprof/parseprofile_gprof.cpp,kprof/parseprofile.h,kprof/parseprofile.cpp,kprof/parseprofile_fnccheck.h,kprof/parseprofile_fnccheck.cpp,kprof/parseprofile_pose.h,kprof/parseprofile_pose.cpp,kprof/cprofileinfo.cpp,kprof/Log.cpp,kprof/Log.h
+files=kprof/main.cpp,kprof/kprof.cpp,kprof/kprof.h,kprof/kprofdoc.h,kprof/kprofview.h,kprof/kprofui.rc,kprof/kprof.desktop,kprof/lo32-app-kprof.png,kprof/lo16-app-kprof.png,kprof/cprofileviewitem.h,kprof/call-graph.h,kprof/call-graph.ui,kprof/cprofileinfo.h,kprof/cprofileviewitem.cpp,kprof/kprofwidget.cpp,kprof/kprofwidget.h,kprof/dotCallGraph.cpp,kprof/dotCallGraph.h,kprof/vcgCallGraph.cpp,kprof/vcgCallGraph.h,kprof/clientsidemap.h,kprof/clientsidemap.cpp,kprof/parseprofile_gprof.h,kprof/parseprofile_gprof.cpp,kprof/parseprofile.h,kprof/parseprofile.cpp,kprof/parseprofile_fnccheck.h,kprof/parseprofile_fnccheck.cpp,kprof/parseprofile_pose.h,kprof/parseprofile_pose.cpp,kprof/cprofileinfo.cpp,kprof/Log.cpp,kprof/Log.h,kprof/kproffile.cpp,kprof/kproffile.h,kprof/parseArguments.cpp,kprof/parseArguments.h
 sub_dirs=
 type=prog_main
 
@@ -210,6 +210,18 @@ install=false
 install_location=
 type=HEADER
 
+[kprof/kproffile.cpp]
+dist=true
+install=false
+install_location=
+type=SOURCE
+
+[kprof/kproffile.h]
+dist=true
+install=false
+install_location=
+type=HEADER
+
 [kprof/kprofui.rc]
 dist=true
 install=false
@@ -251,6 +263,18 @@ dist=true
 install=false
 install_location=
 type=SOURCE
+
+[kprof/parseArguments.cpp]
+dist=true
+install=false
+install_location=
+type=SOURCE
+
+[kprof/parseArguments.h]
+dist=true
+install=false
+install_location=
+type=HEADER
 
 [kprof/parseprofile.cpp]
 dist=true
