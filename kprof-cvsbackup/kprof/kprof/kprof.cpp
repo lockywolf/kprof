@@ -59,6 +59,10 @@ KProfTopLevel::KProfTopLevel (QWidget *parent, const char *name)
 
 	loadSettings ();
 	applySettings ();
+
+	RUN("process command line args");
+	mProf->openCommandLineFiles ();
+
 	END;
 }
 
