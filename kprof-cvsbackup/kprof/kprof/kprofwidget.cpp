@@ -194,38 +194,26 @@ void KProfWidget::selectListFont ()
 
 void KProfWidget::prepareProfileView (KListView *view, bool rootIsDecorated)
 {
-	KIconLoader *loader = KGlobal::iconLoader ();
-
 	for (int i = view->columns(); i > 0; )
 		view->removeColumn (--i);
 
 	view->addColumn (i18n("Function/Method"), -1);
-	//view->addColumn (QIconSet (loader->loadIcon ("redo", KIcon::Small)), "", -1);
+	
 	if (sDiffMode)
-		view->addColumn (i18n("Remarks"));
-	view->addColumn (i18n("Count"), -1);
-	if (sDiffMode)
-		view->addColumn (i18n("New Count"), -1);
-	view->addColumn (i18n("Total (s)"), -1);
-	if (sDiffMode)
-		view->addColumn(i18n("New Total (s)"), -1);
-	view->addColumn (i18n("%"), -1);
-	if (sDiffMode)
-		view->addColumn(i18n("New %"), -1);
-	view->addColumn (i18n("Self (s)"), -1);
-	if (sDiffMode)
-		view->addColumn(i18n("New Self (s)"), -1);
-	view->addColumn (i18n("Total ms/call"), -1);
-	if (sDiffMode)
-		view->addColumn (i18n("New Total ms/call"), -1);
-
-	if (!sDiffMode) {
-		view->setColumnAlignment (col_count, AlignRight);
-		view->setColumnAlignment (col_total, AlignRight);
-		view->setColumnAlignment (col_totalPercent,	AlignRight);
-		view->setColumnAlignment (col_self, AlignRight);
-		view->setColumnAlignment (col_totalMsPerCall, AlignRight);
-	} else {
+	{
+		// in diff mode, each number column is doubled
+		view->addColumn (i18n ("Remarks"));
+		view->addColumn (i18n ("Old Count"), -1);
+		view->addColumn (i18n ("New Count"), -1);
+		view->addColumn (i18n ("Old Total (s)"), -1);
+		view->addColumn (i18n ("New Total (s)"), -1);
+		view->addColumn (i18n ("Old %"), -1);
+		view->addColumn (i18n ("New %"), -1);
+		view->addColumn (i18n ("Old Self (s)"), -1);
+		view->addColumn (i18n ("New Self (s)"), -1);
+		view->addColumn (i18n ("Old Total ms/call"), -1);
+		view->addColumn (i18n ("New Total ms/call"), -1);
+		
 		view->setColumnAlignment (diff_col_status, AlignCenter);
 		view->setColumnAlignment (diff_col_count, AlignRight);
 		view->setColumnAlignment (diff_col_new_count, AlignRight);
@@ -237,6 +225,20 @@ void KProfWidget::prepareProfileView (KListView *view, bool rootIsDecorated)
 		view->setColumnAlignment (diff_col_new_self, AlignRight);
 		view->setColumnAlignment (diff_col_totalMsPerCall, AlignRight);
 		view->setColumnAlignment (diff_col_new_totalMsPerCall, AlignRight);
+	}
+	else
+	{
+		view->addColumn (i18n ("Count"), -1);
+		view->addColumn (i18n ("Total (s)"), -1);
+		view->addColumn (i18n ("%"), -1);
+		view->addColumn (i18n ("Self (s)"), -1);
+		view->addColumn (i18n ("Total ms/call"), -1);
+		
+		view->setColumnAlignment (col_count, AlignRight);
+		view->setColumnAlignment (col_total, AlignRight);
+		view->setColumnAlignment (col_totalPercent,	AlignRight);
+		view->setColumnAlignment (col_self, AlignRight);
+		view->setColumnAlignment (col_totalMsPerCall, AlignRight);
 	}
 
 	view->setAllColumnsShowFocus (true);
@@ -252,48 +254,59 @@ void KProfWidget::customizeColumns (KListView *view, int profiler)
 	switch (profiler)
 	{
 		case FORMAT_GPROF:
-			view->addColumn (i18n("Self ms/call"), -1);
-			if (sDiffMode) {
+			if (sDiffMode)
+			{
+				view->addColumn (i18n("Old Self ms/call"), -1);
 				view->addColumn (i18n("New Self ms/call"), -1);
 				view->setColumnAlignment (diff_col_selfMsPerCall, AlignRight);
 				view->setColumnAlignment (diff_col_new_selfMsPerCall, AlignRight);
-			} else
+			}
+			else
+			{
+				view->addColumn (i18n("Self ms/call"), -1);
 				view->setColumnAlignment (col_selfMsPerCall, AlignRight);
+			}
 			break;
 
 		case FORMAT_FNCCHECK:
-			view->addColumn (i18n("Min. ms/call"), -1);
 			if (sDiffMode)
+			{
+				view->addColumn (i18n("Old Min. ms/call"), -1);
 				view->addColumn (i18n("New Min. ms/call"), -1);
-			view->addColumn (i18n("Max. ms/call"), -1);
-			if (sDiffMode)
+				view->addColumn (i18n("Old Max. ms/call"), -1);
 				view->addColumn (i18n("New Max. ms/call"), -1);
-			if (!sDiffMode) {
-				view->setColumnAlignment (col_minMsPerCall, AlignRight);
-				view->setColumnAlignment (col_maxMsPerCall, AlignRight);
-			} else {
 				view->setColumnAlignment (diff_col_minMsPerCall, AlignRight);
 				view->setColumnAlignment (diff_col_new_minMsPerCall, AlignRight);
 				view->setColumnAlignment (diff_col_maxMsPerCall, AlignRight);
 				view->setColumnAlignment (diff_col_new_maxMsPerCall, AlignRight);
 			}
+			else
+			{
+				view->addColumn (i18n("Min. ms/call"), -1);
+				view->addColumn (i18n("Max. ms/call"), -1);
+				view->setColumnAlignment (col_minMsPerCall, AlignRight);
+				view->setColumnAlignment (col_maxMsPerCall, AlignRight);
+			}
 			break;
 
 		case FORMAT_POSE:
-			view->addColumn (i18n("Self Cycles"), -1);
 			if (sDiffMode)
+			{
+				view->addColumn (i18n("Old Self Cycles"), -1);
 				view->addColumn (i18n("New Self Cycles"), -1);
-			view->addColumn (i18n("Total Cycles"), -1);
-			if (sDiffMode)
+				view->addColumn (i18n("Old Total Cycles"), -1);
 				view->addColumn (i18n("New Total Cycles"), -1);
-			if (!sDiffMode) {
-				view->setColumnAlignment (col_selfCycles, AlignRight);
-				view->setColumnAlignment (col_cumCycles, AlignRight);
-			} else {
 				view->setColumnAlignment (diff_col_selfCycles, AlignRight);
 				view->setColumnAlignment (diff_col_new_selfCycles, AlignRight);
 				view->setColumnAlignment (diff_col_cumCycles, AlignRight);
 				view->setColumnAlignment (diff_col_new_cumCycles, AlignRight);
+			}
+			else
+			{
+				view->addColumn (i18n("Self Cycles"), -1);
+				view->addColumn (i18n("Total Cycles"), -1);
+				view->setColumnAlignment (col_selfCycles, AlignRight);
+				view->setColumnAlignment (col_cumCycles, AlignRight);
 			}
 			break;
 	}
