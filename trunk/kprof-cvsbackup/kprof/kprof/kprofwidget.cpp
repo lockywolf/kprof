@@ -38,6 +38,7 @@
 #include <qlabel.h>
 #include <qwhatsthis.h>
 #include <qfile.h>
+#include <qdir.h>
 
 #include <kapp.h>
 #include <kaction.h>
@@ -55,7 +56,6 @@
 #include <kglobalsettings.h>
 #include <kcmdlineargs.h>
 #include <kurl.h>
-#include <kio/job.h>
 
 #include "config.h"
 
@@ -107,7 +107,7 @@ KProfWidget::KProfWidget (QWidget *parent, const char *name)
 {
 
 	processName = "/tmp/Kprof_" + KApplication::randomString(8) + "/";
-	KIO::mkdir(KURL(processName));
+	QDir().mkdir(processName);
 
 	BEGIN;
 	sListFont = new QFont;
