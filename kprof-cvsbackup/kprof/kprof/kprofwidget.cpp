@@ -904,7 +904,7 @@ void KProfWidget::parseProfile_gprof (QTextStream& t)
 	callGraphBlock.setAutoDelete (true);
 	callGraphBlock.resize (32);
 
-	int state = ANALYZING;
+	int state = SEARCH_FLAT_PROFILE;
 	long line = 0;
 	QString s;
 
