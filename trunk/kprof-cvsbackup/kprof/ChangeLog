@@ -5,6 +5,7 @@
 	* added some What's This? help items
 	* new build system (got rid of KDE2's 600K+ build scripts)
 	* the three views are now synchronized (selection occurs simultaneously)
+	* moved to KActions for menus and added kprofui.rc
 
 2000-08-27 Bernd Gehrman <bernd@physik.hu-berlin.de>
 

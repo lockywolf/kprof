@@ -1,5 +1,6 @@
 #SUBDIRS = pics
 
+EXTRA_DIST = kprof.desktop kprofui.rc
 INCLUDES= $(all_includes)
 
 # the program to be generated

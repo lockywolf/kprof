@@ -1,5 +1,5 @@
-kprof 1.0
----------
+kprof 1.0.1
+-----------
 
 KProf is a tool that lets you examine the output of gprof(1),
 a command which allows you to profile a program and dump
@@ -18,14 +18,12 @@ GNU gprof 2.9.5. Your mileage may vary.
 
 Feel free to send bugs and patches to florent.pillet@wanadoo.fr
 
+Share and enjoy,
 Florent Pillet.
 
 
 
 TODO:
 -----
-
-* Makefile links the software twice and the second time generates
-a binary with KDE & QT functions statically linked. I still have
-to figure out what's going on.
-
+	* Printing is not implemented yet
+	* Restoring previous window size is not properly handled

@@ -35,7 +35,7 @@
 
 #include "kprof.h"
 
-static const char *description = I18N_NOOP("gprof(1) execution profiling results examination utility");
+static const char *description = I18N_NOOP("Execution profiling results analysis utility");
 static const char *version = "v1.0.1";
 
 int main(int argc, char **argv)
