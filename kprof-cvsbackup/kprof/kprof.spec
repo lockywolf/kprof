@@ -1,6 +1,6 @@
 Name: kprof
 Summary: KProf -- Profiling results viewer
-Version: 1.3.1
+Version: 1.3.2
 Release: 1
 Copyright: GPL
 Group: X11/KDE/Development
@@ -14,7 +14,7 @@ A visual tool for developers that displays the execution profiling output genera
 
 %prep
 rm -rf $RPM_BUILD_ROOT
-%setup -n kprof-1.3.1
+%setup -n kprof-1.3.2
 
 %build
 ./configure
