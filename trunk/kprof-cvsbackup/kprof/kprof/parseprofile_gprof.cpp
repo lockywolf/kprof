@@ -3,7 +3,7 @@
                              -------------------
     begin                : Tue Jul 9 2002
     copyright            : (C) 2002 by Colin Desmond
-    email                : colin@localhost.localdomain
+    email                : colin.desmond@btopenworld.com
  ***************************************************************************/
 
 /***************************************************************************
@@ -22,6 +22,7 @@
 #include <qtextstream.h>
 #include <qvector.h>
 #include <qregexp.h>
+
 
 CParseProfile_gprof::CParseProfile_gprof (QTextStream& t, QVector<CProfileInfo>& profile)
 {

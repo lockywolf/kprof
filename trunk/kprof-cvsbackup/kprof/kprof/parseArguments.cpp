@@ -21,15 +21,14 @@
 
 //Having set up the command line options above, parse them and
 //use the data
-bool parseArguments(KCmdLineArgs* args)
+bool parseArguments(KCmdLineArgs* args, QString& fileName, KProfWidget::ProfilerEnumeration& prof)
 {
-	bool success = true;
-	QString fileName = "";
-	KProfWidget::ProfilerEnumeration prof;
+	bool success = false;
 
 	if (args->isSet("f"))
 	{
 		fileName = args->getOption("f");
+		success = true;
 	}
 	if(args->isSet("p"))
 	{
@@ -38,14 +37,17 @@ bool parseArguments(KCmdLineArgs* args)
 		if (profiler == "gprof")
 		{
 			prof = KProfWidget::FORMAT_GPROF;
+			success = true;
 		}
 		else if (profiler == "fnccheck")
 		{
 			prof = KProfWidget::FORMAT_FNCCHECK;
+			success = true;
 		}
 		else if (profiler == "pose")
 		{
 			prof = KProfWidget::FORMAT_POSE;
+			success = true;
 		}
 		else
 		{

@@ -33,16 +33,21 @@
 #include "../config.h"
 #include "kprof.h"
 #include "Log.h"
+#include "kprofwidget.h"
+#include <qstring.h>
 
+#include <iostream>
+using namespace std;
 
 static const char *description = I18N_NOOP("Execution profile results analysis utility");
 
 static KCmdLineOptions options[] =
 {
-  { "+[File]", I18N_NOOP("file to open"), 0 },
+	{ "f ", I18N_NOOP("file to open"), 0 },
+	{ "p ", I18N_NOOP("profiler used - one of <gprof, fnccheck, pose>"),0},
   { 0, 0, 0 }
-  // INSERT YOUR COMMANDLINE OPTIONS HERE
 };
+
 
 
 int main(int argc, char **argv)
@@ -50,43 +55,34 @@ int main(int argc, char **argv)
 	KAboutData aboutData(
 			PACKAGE, I18N_NOOP("KProf"),
 			VERSION, description, KAboutData::License_GPL,
-			"(c) 2000-2001, Florent Pillet",
+			"(c) 2000-2002, Florent Pillet & Colin Desmond",
 			NULL,
 			"http://kprof.sourceforge.net/",
-			"fpillet@users.sourceforge.net");
-
-	aboutData.addAuthor("Florent Pillet",0, "florent.pillet@wanadoo.fr");
+			"fpillet,cdesmond@users.sourceforge.net");
 
 	KCmdLineArgs::init (argc, argv, &aboutData);
-	KCmdLineArgs::addCmdLineOptions( options ); // Add our own options.
+	KCmdLineArgs::addCmdLineOptions( options );
+
+	aboutData.addAuthor("Florent Pillet",0, "florent.pillet@wanadoo.fr ");
+	aboutData.addAuthor("Colin Desmond", 0, "colin.desmond@btopenworld.com");
 
 	KApplication app;
 
 	Log::Init("TRC",80000);
 	RUN("create the application");
+
 	if( app.isRestored() ) //SessionManagement
 	{
 		RUN("restore the top level widget");
 		RESTORE(KProfTopLevel);
-	}	else {
+	}
+	else
+	{
 		RUN("create the top level widget");
 		KProfTopLevel *ktl = new KProfTopLevel(0,"KProf main");
 		CHECK_PTR(ktl);
 		RUN("show the top level widget");
 		ktl->show();
-		RUN("process command line args");
-    KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
-    /*
-		if (args->count())
-		{
-        ktl->openDocumentFile(args->arg(0));
-		}
-		else
-		{
-		  ktl->openDocumentFile();
-		}*/
-		args->clear();
-    
 
 	}
 
