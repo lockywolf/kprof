@@ -1,0 +1,15 @@
+Begin3
+Title:          KProf
+Version:        1.0
+Entered-date:   24Aug00
+Description:    Shell script that will automatically create a full-featured
+Keywords:       KDE application development profile profiling gprof performance
+Author:         Florent Pillet <florent.pillet@wanadoo.fr>
+Maintained-by:  Florent Pillet <florent.pillet@wanadoo.fr>
+Home-page:      http://kprof.sourceforge.net/
+Primary-site:   http://kprof.sourceforge.net/
+                xxxxxx  kprof-1.0.tar.gz
+                xxx     kprof-1.0.lsm
+Platform:       Unix
+Copying-policy: GPL
+End
