@@ -29,6 +29,7 @@
 #include <stdlib.h>
 #include <math.h>
 #include <qstring.h>
+#include <qpainter.h>
 #include <klocale.h>
 #include <kiconloader.h>
 
