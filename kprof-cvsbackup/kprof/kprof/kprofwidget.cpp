@@ -27,6 +27,7 @@
  */
 
 #include <stdlib.h>
+#include <string.h>
 
 #include <qhbuttongroup.h>
 #include <qfontdialog.h>
@@ -607,26 +608,6 @@ void KProfWidget::openFile (const QString &filename, int format, bool compare)
 	// update the current directory
 	mCurDir = finfo.dir ();
 
-#ifdef HAVE_LIBQTREEMAP
-	// create options for the treemap
-	mTreemapOptions = new QTreeMapOptions ();
-	mTreemapOptions->calc_nodesize = CALCNODE_ALWAYS;
-	
-	// open up the treemap widget
-	mObjTreemap = new QListViewTreeMapWindow (KProfWidget::col_function, KProfWidget::col_totalPercent);
-	mObjTreemap->makeWidgets ();
-	mObjTreemap->makeColumnMenu (mObjs);
-	mObjTreemap->getArea()->setOptions (mTreemapOptions);
-	mObjTreemap->getArea()->setTreeMap ((Object *)mObjs->firstChild ());
-	mObjTreemap->setWindowTitle (i18n ("KProf Object Profile"));
-
-	mHierTreemap = new QListViewTreeMapWindow (KProfWidget::col_function, KProfWidget::col_totalPercent);
-	mHierTreemap->makeWidgets ();
-	mHierTreemap->makeColumnMenu (mHier);
-	mHierTreemap->getArea()->setOptions (mTreemapOptions);
-	mHierTreemap->getArea()->setTreeMap ((Object *)mHier->firstChild());
-	mHierTreemap->setWindowTitle (i18n ("KProf Hierarchy Profile"));
-#endif
 }
 
 void KProfWidget::gprofStdout (KProcess *, char *buffer, int buflen)
@@ -1646,11 +1627,6 @@ void KProfWidget::doPrint ()
 	delete part;
 }
 
-void KProfWidget::runApplication()
-{
-	int i = 0;
-}
-
 void KProfWidget::generateCallGraph ()
 {
 	// Display the call-graph format selection dialog and generate a
@@ -1733,7 +1709,61 @@ void KProfWidget::generateCallGraph ()
 		}
 		else
 		{
-			//Must want to run the graphing application.
+			//Generate a temporary file
+			QFile file;
+
+			if (dialog.mGraphViz->isChecked ())
+			{
+				file.setName(".graphViz_temp");
+			}
+			else
+			{
+            	file.setName(".vcg_temp");
+			}
+
+			file.open(IO_ReadWrite);
+			if (!file.exists())
+			{
+				KMessageBox::error (this, i18n ("Internal Error"), i18n ("Could not open a temporary file for writing."));
+						return;
+			}
+
+			// graph generation
+			if (dialog.mGraphViz->isChecked ())
+				generateDotCallGraph (file, currentSelectionOnly);
+			else
+				generateVCGCallGraph (file, currentSelectionOnly);
+
+			file.close ();
+
+			KProcess graphApplication;
+			KProcess displayApplication;
+
+			if (dialog.mGraphViz->isChecked ())
+			{
+				graphApplication << "dot" << file.name() << "-Tjpeg" << "-o" << ".dot_temp.jpg";
+				displayApplication << "kfmclient" << "openURL" << "./.dot_temp.jpg";
+			}
+			else
+			{
+				cout << file.name() << endl;
+				graphApplication << "xvcg" << file.name() ;
+			}
+			graphApplication.start();
+			displayApplication.start();
+		
+			if (!graphApplication.normalExit () || graphApplication.exitStatus ())
+			{
+				QString text = i18n ("Could not display the data.\n");
+				if (graphApplication.normalExit () && graphApplication.exitStatus ())
+				{
+					QString s;
+					s.sprintf (i18n ("Error %d was returned.\n"), graphApplication.exitStatus ());
+					text += s;
+				}
+				KMessageBox::error (this, text, i18n ("xvcg exited with error(s)"));
+				return;
+			}
 		}
 	}
 }
@@ -1948,5 +1978,31 @@ QString KProfWidget::removeTemplates (const QString &name)
 	}
 	return s;
 }
+
+
+#ifdef HAVE_LIBQTREEMAP
+/** If the QTreeMapView library is present, display the call tree in this format */
+void KProfWidget::displayTreeMapView()
+{
+	// create options for the treemap
+	mTreemapOptions = new QTreeMapOptions ();
+	mTreemapOptions->calc_nodesize = CALCNODE_ALWAYS;
+	
+	// open up the treemap widget
+	mObjTreemap = new QListViewTreeMapWindow (KProfWidget::col_function, KProfWidget::col_totalPercent);
+	mObjTreemap->makeWidgets ();
+	mObjTreemap->makeColumnMenu (mObjs);
+	mObjTreemap->getArea()->setOptions (mTreemapOptions);
+	mObjTreemap->getArea()->setTreeMap ((Object *)mObjs->firstChild ());
+	mObjTreemap->setWindowTitle (i18n ("KProf Object Profile"));
+
+	mHierTreemap = new QListViewTreeMapWindow (KProfWidget::col_function, KProfWidget::col_totalPercent);
+	mHierTreemap->makeWidgets ();
+	mHierTreemap->makeColumnMenu (mHier);
+	mHierTreemap->getArea()->setOptions (mTreemapOptions);
+	mHierTreemap->getArea()->setTreeMap ((Object *)mHier->firstChild());
+	mHierTreemap->setWindowTitle (i18n ("KProf Hierarchy Profile"));
+}
+#endif
 
 #include "kprofwidget.moc"
