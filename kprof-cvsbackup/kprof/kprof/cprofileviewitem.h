@@ -40,17 +40,17 @@ protected:
 	CProfileInfo*		mProfile;
 
 public:
-	CProfileViewItem (QListView *parent, CProfileInfo *profile);
-	CProfileViewItem (QListViewItem *parent, CProfileInfo *profile);
-	CProfileViewItem (QListView *parent, QListViewItem *after, CProfileInfo *profile);
-	CProfileViewItem (QListViewItem *parent, QListViewItem *after, CProfileInfo *profile);
+	CProfileViewItem (QListView *parent, 			CProfileInfo *profile);
+	CProfileViewItem (QListViewItem *parent, 	CProfileInfo *profile);
+	CProfileViewItem (QListView *parent, 			QListViewItem *after, CProfileInfo *profile);
+	CProfileViewItem (QListViewItem *parent, 	QListViewItem *after, CProfileInfo *profile);
 	virtual ~CProfileViewItem ();
 
 	virtual void paintCell (QPainter * p, const QColorGroup & cg, int column, int width, int align);
 	virtual QString text (int column) const;
 	virtual QString key (int column, bool ascending) const;
 
-	inline CProfileInfo* getProfile () { return mProfile; }
+	inline CProfileInfo* getProfile () const { return mProfile; }
 
 private:
 	void setRecursiveIcon ();

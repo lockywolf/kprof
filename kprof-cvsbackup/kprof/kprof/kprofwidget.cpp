@@ -26,11 +26,12 @@
  *  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#include <stdlib.h>
-#include <string.h>
+#include <cstdlib>
+#include <cstring>
+#include <iostream>
 
 #include <qhbuttongroup.h>
-#include <qfontdialog.h>
+#include <kfontdialog.h>
 #include <qlayout.h>
 #include <qmessagebox.h>
 #include <qradiobutton.h>
@@ -39,6 +40,7 @@
 #include <qwhatsthis.h>
 
 #include <kapp.h>
+#include <kdebug.h>
 #include <kaction.h>
 #include <kconfig.h>
 #include <klocale.h>
@@ -51,6 +53,7 @@
 #include <krecentdocument.h>
 #include <khtml_part.h>
 #include <khtmlview.h>
+#include <kglobalsettings.h>
 
 #include "config.h"
 
@@ -58,6 +61,8 @@
 #include "kprofwidget.h"
 #include "cprofileviewitem.h"
 #include "call-graph.h"
+
+using namespace std;
 
 #ifdef HAVE_LIBQTREEMAP
 #include <qtreemap.h>
@@ -72,8 +77,8 @@
  *
  */
 QFont*	KProfWidget::sListFont = NULL;
-int		KProfWidget::sLastFileFormat = FORMAT_GPROF;
-bool	KProfWidget::sDiffMode = false;
+int		  KProfWidget::sLastFileFormat = FORMAT_GPROF;
+bool	  KProfWidget::sDiffMode = false;
 
 
 KProfWidget::KProfWidget (QWidget *parent, const char *name)
@@ -156,11 +161,13 @@ KProfWidget::KProfWidget (QWidget *parent, const char *name)
 	QWhatsThis::add (mObjs,
 		i18n (	"This is the <I>object view</I>.\n\n"
 				"It displays C++ methods grouped by object name."));
+
+  
 }
 
 KProfWidget::~KProfWidget ()
 {
-	delete sListFont;
+  if(sListFont != NULL)	delete sListFont;
 }
 
 void KProfWidget::tabSelected (int page)
@@ -179,27 +186,37 @@ void KProfWidget::toggleTemplateAbbrev ()
 	if (mProfile.count ())
 	{
 		postProcessProfile (false);	// regenerate simplified names
-		mFlat->clear ();			// rebuild lists to make sure refresh is done
+		mFlat->clear ();						// rebuild lists to make sure refresh is done
 		mHier->clear ();
 		mObjs->clear ();
+		
+		QListViewItem *obj_toplevel = new QListViewItem(mObjs,"Objects");
+		QListViewItem *hier_toplevel = new QListViewItem(mHier,"Hierarchy");
+		
 		fillFlatProfileList ();
-		fillHierProfileList ();
 		fillObjsProfileList ();
+		fillHierProfileList ();
+
 	}
 }
 
+
+
 void KProfWidget::selectListFont ()
 {
-	bool ok = false;
-	QFont f = QFontDialog::getFont (&ok, *sListFont, this, "font selector");
-	if (ok) {
-		delete sListFont;
-		sListFont = new QFont (f);
+  kdDebug(80000) << "Begin selectListFont()" << endl;
+  assert(sListFont);
+	int i = KFontDialog::getFont (*sListFont);
+	if (i == KFontDialog::Accepted) {
+    kdDebug(80000) << "New Font is=" << sListFont->rawName() << endl;
 		mFlat->setFont (*sListFont);
 		mHier->setFont (*sListFont);
 		mObjs->setFont (*sListFont);
 	}
+  kdDebug(80000) << "End selectListFont()" << endl;
 }
+
+
 
 void KProfWidget::prepareProfileView (KListView *view, bool rootIsDecorated)
 {
@@ -329,35 +346,64 @@ void KProfWidget::settingsChanged ()
 
 void KProfWidget::applySettings ()
 {
-	KConfig &config = *kapp->config ();
+  assert(sListFont);
+  kdDebug(80000) << "Begin KProfWidget::applySettings()" << endl;
+
+  KConfig &config = *kapp->config ();
+
 	config.setGroup ("KProfiler");
 	config.writeEntry ("AbbreviateTemplates", mAbbrevTemplates);
-	config.writeEntry ("Font", sListFont->rawName ());
-	config.writeEntry ("LastFileFormat", sLastFileFormat);
-	update ();
+	config.writeEntry ("FontName", 						sListFont->family());
+	config.writeEntry ("FontSize", 						sListFont->pointSize());
+	config.writeEntry ("LastFileFormat", 			sLastFileFormat);
+	update();
+	
+  kdDebug(80000) << "End KProfWidget::applySettings()" << endl;
 }
 
 void KProfWidget::loadSettings ()
 {
-	KConfig &config = *kapp->config ();
+  kdDebug(80000) << "Begin KProfWidget::loadSettings()" << endl;
+  assert(sListFont);
+
+  KConfig &config = *kapp->config ();
 	config.setGroup ("KProfiler");
 
+	//Load settings for C++ Templates
 	mAbbrevTemplates = config.readBoolEntry ("AbbreviateTemplates", true);
 	KToggleAction *action = ((KProfTopLevel *) parent ())->getToggleTemplateAbbrevAction ();
 	if (action)
 		action->setChecked (mAbbrevTemplates);
 
-	QString s = config.readEntry ("Font", sListFont->rawName ());
-	if (s)
+	
+  //Load old Font-Settings
+	QString FontName = config.readEntry ("FontName", "");
+	int     FontSize = config.readNumEntry ("FontSize", 0);
+	if (!FontName.isEmpty() && FontSize > 0)
 	{
-		sListFont->setRawName (s);
-		mFlat->setFont (*sListFont);
-		mHier->setFont (*sListFont);
-		mObjs->setFont (*sListFont);
-	}
+    kdDebug(80000) << "    stored Font was=" << FontName << endl;
+    sListFont->setFamily(FontName);
+    sListFont->setPointSize(FontSize);
+	}else{
+    kdDebug(80000) << "    set Font to menuFont=" << KGlobalSettings::menuFont().rawName() << endl;
+    *sListFont=KGlobalSettings::menuFont();
+  }
+	mFlat->setFont (*sListFont);
+	mHier->setFont (*sListFont);
+	mObjs->setFont (*sListFont);
 
+	
+  //Load last FileFormat settings
 	sLastFileFormat = config.readNumEntry ("LastFileFormat", FORMAT_GPROF);
+  kdDebug(80000) << "    LastFileFormat was=" << sLastFileFormat << endl;
+
+
+	//Finish
+  kdDebug(80000) << "End KProfWidget::loadSettings()" << endl;
 }
+
+
+
 
 void KProfWidget::openRecentFile (const KURL& url)
 {
@@ -373,6 +419,9 @@ void KProfWidget::openRecentFile (const KURL& url)
 		openFile (filename, -1);
 }
 
+
+
+
 void KProfWidget::compareFile ()
 {
 	// here we do not customize the file open dialog since the compared
@@ -382,6 +431,9 @@ void KProfWidget::compareFile ()
 		return;
 	openFile (f, sLastFileFormat, true);
 }
+
+
+
 
 void KProfWidget::openResultsFile ()
 {
@@ -400,9 +452,9 @@ void KProfWidget::openResultsFile ()
 
 	QButtonGroup *bg = new QHButtonGroup (w);
 	bg->setRadioButtonExclusive (true);
-	QRadioButton *fmtGPROF = new QRadioButton (i18n ("GNU gprof  "), bg);
+	QRadioButton *fmtGPROF = 		new QRadioButton (i18n ("GNU gprof  "), bg);
 	QRadioButton *fmtFNCCHECK = new QRadioButton (i18n ("Function Check  "), bg);
-	QRadioButton *fmtPOSE = new QRadioButton (i18n ("Palm OS Emulator"), bg);
+	QRadioButton *fmtPOSE = 		new QRadioButton (i18n ("Palm OS Emulator"), bg);
 
 	// reset format button to last used format
 	if (sLastFileFormat == FORMAT_GPROF && !fmtGPROF->isOn ())
@@ -421,8 +473,20 @@ void KProfWidget::openResultsFile ()
     if (!filename.isEmpty())
     {
 		sLastFileFormat =	fmtGPROF->isChecked () ?		FORMAT_GPROF :
-	                        fmtFNCCHECK->isChecked () ?		FORMAT_FNCCHECK :
-    	                   									FORMAT_POSE;
+                      fmtFNCCHECK->isChecked () ?		FORMAT_FNCCHECK :
+											FORMAT_POSE;
+
+		//print a debug message
+  	switch(sLastFileFormat){
+		case	FORMAT_GPROF:			kdDebug(80000) << "Suppose Fileformat is \"GNU gprof\""<<endl;
+														break;
+		case	FORMAT_FNCCHECK:	kdDebug(80000) << "Suppose Fileformat is \"Function Check\""<<endl;
+														break;
+		case	FORMAT_POSE:			kdDebug(80000) << "Suppose Fileformat is \"PalmOS Emulator\""<<endl;
+														break;
+		}
+
+   	//open the file
 		openFile (filename, sLastFileFormat, false);
 	}
 }
@@ -610,15 +674,21 @@ void KProfWidget::openFile (const QString &filename, int format, bool compare)
 
 }
 
+
+
 void KProfWidget::gprofStdout (KProcess *, char *buffer, int buflen)
 {
 	mGProfStdout += QString::fromLocal8Bit (buffer, buflen);
 }
 
+
+
 void KProfWidget::gprofStderr (KProcess *, char *buffer, int buflen)
 {
 	mGProfStderr += QString::fromLocal8Bit (buffer, buflen);
 }
+
+
 
 void KProfWidget::parseProfile_pose (QTextStream& t)
 {
@@ -1403,10 +1473,12 @@ void KProfWidget::fillFlatProfileList ()
 
 void KProfWidget::fillHierProfileList ()
 {
-	for (unsigned int i = 0; i < mProfile.size (); i++)
+  kdDebug(80000) << "Begin KProfWidget::fillHierProfileList()" << endl;
+  kdDebug(80000) << "mProfile.size="<< mProfile.size()<< endl;
+
+	for (unsigned int i = 0; i < mProfile.size(); i++)
 	{
 		CProfileViewItem *item = new CProfileViewItem (mHier->firstChild(), mProfile[i]);
-
 		QArray<CProfileInfo *> addedEntries (mProfile.size ());
 
 		CProfileInfo *p = NULL;
@@ -1416,10 +1488,14 @@ void KProfWidget::fillHierProfileList ()
 		addedEntries [0] = mProfile[i];
 
 		fillHierarchy (item, mProfile[i], addedEntries, count);
-  	}
+	}
+   
 	mHier->setColumnWidthMode (0, QListView::Manual);
 	update ();
-}
+
+  kdDebug(80000) << "End KProfWidget::fillHierProfileList()" << endl;
+	
+}//fillHierProfileList()
 
 void KProfWidget::fillHierarchy (
 		CProfileViewItem *item,
@@ -1980,10 +2056,10 @@ QString KProfWidget::removeTemplates (const QString &name)
 }
 
 
-#ifdef HAVE_LIBQTREEMAP
 /** If the QTreeMapView library is present, display the call tree in this format */
 void KProfWidget::displayTreeMapView()
 {
+#ifdef HAVE_LIBQTREEMAP
 	// create options for the treemap
 	mTreemapOptions = new QTreeMapOptions ();
 	mTreemapOptions->calc_nodesize = CALCNODE_ALWAYS;
@@ -2002,7 +2078,7 @@ void KProfWidget::displayTreeMapView()
 	mHierTreemap->getArea()->setOptions (mTreemapOptions);
 	mHierTreemap->getArea()->setTreeMap ((Object *)mHier->firstChild());
 	mHierTreemap->setWindowTitle (i18n ("KProf Hierarchy Profile"));
-}
 #endif
+}
 
 #include "kprofwidget.moc"

@@ -34,6 +34,7 @@
 #include <kaction.h>
 #include <kstdaction.h>
 #include <kiconloader.h>
+#include <kdebug.h>
 
 #include "kprof.h"
 #include "kprofwidget.h"
@@ -41,6 +42,7 @@
 KProfTopLevel::KProfTopLevel (QWidget *parent, const char *name)
 	:	KMainWindow (parent, name)
 {
+  kdDebug(80000) << "Start KProfTopLevel::KProfTopLevel" << endl;
 	mProf = new KProfWidget (this,"kprof");
 	CHECK_PTR(mProf);
 
@@ -61,17 +63,18 @@ KProfTopLevel::KProfTopLevel (QWidget *parent, const char *name)
 
 void KProfTopLevel::loadSettings ()
 {
+  kdDebug(80000) << "KProfTopLevel::loadSettings ()" << endl;
 	KConfig &config = *kapp->config ();
 	config.setGroup ("KProfiler");
 	int w = config.readNumEntry ("Width", width ());
 	int h = config.readNumEntry ("Height", height ());
 	resize (w,h);
-
 	mProf->loadSettings ();
 }
 
 void KProfTopLevel::applySettings ()
 {
+  kdDebug(80000) << "Begin KProfTopLevel::applySettings ()" << endl;
 	KConfig &config = *kapp->config ();
 	config.setGroup ("KProfiler");
 	config.writeEntry ("Width", width ());
