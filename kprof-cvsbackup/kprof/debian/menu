@@ -1,0 +1,7 @@
+?package(kprof):needs=X11\
+	section=Apps/Programming\
+	hints="KDE"\
+	kderemove="1"\
+	title="KProf"\
+	command="/usr/bin/kprof"\
+	icon="/usr/share/pixmaps/kprof.xpm"

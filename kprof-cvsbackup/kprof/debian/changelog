@@ -1,0 +1,84 @@
+kprof (1.3-4) unstable; urgency=low
+
+  * Generating HTML docs for users who can't view KDE docbook files.
+  * Build-Depends: removed docbook-stylesheets and requires newer kdelibs-dev
+    to reflect new HTML documentation generation procedure.
+  * Suggests: konqueror for viewing documentation through khelpcenter.
+  * Reinstating doc-base entry.
+  * Cleaned up debian/rules.
+
+ -- Ben Burton <benb@acm.org>  Wed,  8 Aug 2001 11:02:58 +1000
+
+kprof (1.3-3) unstable; urgency=low
+
+  * Upgraded documentation to KDE 2.2 docbook format.
+  * Updated desktop file to reflect documentation path.
+  * Upped standards-version to 3.5.6.
+
+ -- Ben Burton <benb@acm.org>  Sat,  4 Aug 2001 21:09:59 +1000
+
+kprof (1.3-2) unstable; urgency=low
+
+  * Builds on alpha.
+  * Removed doc-base entry (closes: Bug#106828).
+  * No longer recompresses .bz2 files.
+  * Bumped standards version to 3.5.5.
+
+ -- Ben Burton <benb@acm.org>  Thu,  2 Aug 2001 13:31:55 +1000
+
+kprof (1.3-1) unstable; urgency=low
+
+  * New upstream release.
+  * Added symlinks from locolor icons to hicolor icons to satisfy KDE 2.2.
+
+ -- Ben Burton <benb@acm.org>  Fri, 29 Jun 2001 22:58:14 -0500
+
+kprof (1.2-4) unstable; urgency=low
+
+  * Removed redundancies from build-depends.
+  * Cosmetic change to doc-base registration.
+
+ -- Ben Burton <benb@acm.org>  Mon, 21 May 2001 10:48:13 -0500
+
+kprof (1.2-3) unstable; urgency=low
+
+  * Fleshed out man page.
+  * Leaves index.docbook uncompressed.
+
+ -- Ben Burton <benb@acm.org>  Mon,  7 May 2001 07:58:17 -0500
+
+kprof (1.2-2) unstable; urgency=low
+
+  * Removed subdirectory of debian/ that should never have been there.
+
+ -- Ben Burton <benb@acm.org>  Thu, 26 Apr 2001 12:44:35 -0500
+
+kprof (1.2-1) unstable; urgency=low
+
+  * New upstream release.
+  * Updated debian/rules to DH_COMPAT=3.
+  * Build-Depends: required version (>> 3.0.0) of debhelper.
+  * Updated Standards-Version to 3.5.2.
+  * Updated descriptions to reflect new profiler support.
+  * Miscellaneous tidying in debian/.
+
+ -- Ben Burton <benb@acm.org>  Mon, 16 Apr 2001 22:30:28 +1000
+
+kprof (1.1-2) unstable; urgency=low
+
+  * Rebuilt for new libqt2 libraries.
+
+ -- Ben Burton <benb@acm.org>  Tue,  6 Mar 2001 07:49:40 -0600
+
+kprof (1.1-1) unstable; urgency=low
+
+  * Initial Release (closes: Bug#86904).
+  * Added a (fairly uninformative) man page.
+  * Added an icon in /usr/share/pixmaps/.
+  * Edited kprof.desktop to use the KProf icon.
+
+ -- Ben Burton <benb@acm.org>  Wed, 21 Feb 2001 12:08:33 -0600
+
+Local variables:
+mode: debian-changelog
+End:
