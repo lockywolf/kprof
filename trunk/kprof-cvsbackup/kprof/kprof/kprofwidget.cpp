@@ -1025,8 +1025,12 @@ void KProfWidget::parseProfile_gprof (QTextStream& t)
 		if (s.length() && s[0] == 12)
 		{
 			if (state == PROCESS_CALL_GRAPH)
+			{
 				processCallGraphBlock (callGraphBlock);
-			state++;			// CTRL_L marks the beginning of a new block
+				break;
+			}
+			if (state == PROCESS_FLAT_PROFILE)
+				state = SEARCH_CALL_GRAPH;
 			continue;
    		}
 		s = s.simplifyWhiteSpace ();
