@@ -1,3 +1,8 @@
+2001-06-12 Florent Pillet <fpillet@users.sourceforge.net>
+	* Completed diff mode. The mode now shows an estimate of performance
+	  improvement or degradation.
+	* Recent files are now remembered with a protocol matching their
+	  format (i.e. "file-gprof" for a gprof results file)
 2001-06-10 Florent Pillet <fpillet@users.sourceforge.net>
 	* Diff mode is now working. When comparing two files, each number column
 	  is doubled to show the current and previous results.

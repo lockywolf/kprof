@@ -104,21 +104,23 @@ QString CProfileViewItem::formatSpeedDiff (float newSpeed, float oldSpeed)
 			oldSpeed *= 10.0;
 		}
 
-		if (newSpeed > oldSpeed)
+		double pct = (double)1.0 / ((double)oldSpeed / (double)newSpeed / (double)100.0);
+
+		if (pct < 100.0)
 		{
-			float diff = 1.0 / (newSpeed / oldSpeed / 100.0);
-			if (diff < 1.0)
-				s = "< 1% slower";
+			pct = (double)100.0 - pct;
+			if (pct < (double)1.0)
+				s = "< 1% faster";
 			else
-				s.sprintf (i18n ("%d%% slower"), (int) rint ((double) diff));
+				s.sprintf (i18n ("%d%% faster"), (int) rint (pct));
 		}
 		else if (newSpeed < oldSpeed)
 		{
-			float diff = 1.0 / (oldSpeed / newSpeed / 100.0);
-			if (diff < 1.0)
-				s = "< 1% faster";
+			pct -= (double)100.0;
+			if (pct < (double)1.0)
+				s = "< 1% slower";
 			else
-				s.sprintf (i18n ("%d%% faster"), (int) rint ((double) diff));
+				s.sprintf (i18n ("%d%% slower"), (int) rint (pct));
 		}
 	}
 	return s;
@@ -213,7 +215,18 @@ QString CProfileViewItem::text (int column) const
 					if (KProfWidget::sLastFileFormat == KProfWidget::FORMAT_GPROF)
 						return formatSpeedDiff (mProfile->custom.gprof.selfMsPerCall, mProfile->previous->custom.gprof.selfMsPerCall);
 					if (mProfile->calls && mProfile->previous->calls)
-						return formatSpeedDiff ((float)((double)mProfile->selfSeconds / (double)mProfile->calls), (float)((double)mProfile->previous->selfSeconds / (double)mProfile->previous->calls));
+					{
+						float n = mProfile->selfSeconds;
+						float o = mProfile->previous->selfSeconds;
+						if (o > 0.0 && n > 0.0)
+						{
+							while (o < 1.0 || n < 1.0) {
+								o *= 10.0;		// get values up a bit to minimize precision loss errors
+								n *= 10.0;
+							}
+							return formatSpeedDiff ((float)((double)n / (double)mProfile->calls), (float)((double)o / (double)mProfile->previous->calls));
+						}
+					}
 					return QString ("");
 				}
 				return mProfile->deleted ? i18n("deleted") : i18n("new");
