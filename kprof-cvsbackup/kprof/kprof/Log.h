@@ -25,97 +25,77 @@
 #define		LOG_HEADER_FILE
 
 #include <qstring.h>
+#include <sstream>
 using namespace std;
 
 
+/* Version 2.4 and later of GCC define a magical variable `__PRETTY_FUNCTION__'
+   which contains the name of the function currently being defined.
+   This is broken in G++ before version 2.6.
+   C9x has a similar variable called __func__, but prefer the GCC one since
+   it demangles C++ function names.  */
+# if defined __cplusplus ? __GNUC_PREREQ (2, 6) : __GNUC_PREREQ (2, 4)
+#   define __LOGFUNC__						__PRETTY_FUNCTION__
+# else                      	
+#  if defined __STDC_VERSION__ && __STDC_VERSION__ >= 199901L
+#   define __LOGFUNC__							__func__
+#  else
+#   define __LOGFUNC__							((__const char *) 0)
+#  endif
+# endif
 
-#define 	LOGPOS	              __FILE__, __LINE__
+#define   HERE                  Log::DbgLog(LOGPOS, Log::ERR, ">>>Here<<<");
 
-#define   HERE                  Log::DbgLog(LOGPOS, Log::ERR, ">>>Hier<<<");
+#define		LOGPOS								__FILE__, __LINE__
 
 #define   SNDSIG(sig,tar)       Log::SndSignal(LOGPOS, sig, tar)
 #define   GETSIG(sig)           Log::GetSignal(LOGPOS, sig)
 
 #ifndef NDEBUG
-	#define   BEGIN(expr)           Log::Begin(LOGPOS, expr)
-	#define   END                   Log::End(LOGPOS); return
+	//the following debug messages are only in debug mode
+	#define   BEGIN           			Log::Begin(LOGPOS, __LOGFUNC__)
+	#define   END                   Log::End(LOGPOS)
+	#define   ENDRES			         	Log::End(LOGPOS,res); 
 
-	#define   TRC(txt)              Log::DbgLog(LOGPOS, Log::TRC, txt)
-	#define   TRC1(txt,par1)        Log::DbgLog(LOGPOS, Log::TRC, txt, par1)
-	#define   TRC2(txt,par1,par2)   Log::DbgLog(LOGPOS, Log::TRC, txt, par1,par2)
+	#define   TRC(txt)                Log::DbgLog(LOGPOS, Log::TRC, txt)
+	#define   TRC1(txt,par1)          Log::DbgLog(LOGPOS, Log::TRC, txt, par1)
+	#define   TRC2(txt,par1,par2)     Log::DbgLog(LOGPOS, Log::TRC, txt, par1,par2)
+	#define   TRC3(txt,par1,par2,par3)Log::DbgLog(LOGPOS, Log::TRC, txt, par1,par2,par3)
 
-	#define   DBG(txt)              Log::DbgLog(LOGPOS, Log::DBG, txt)
-	#define   DBG1(txt,par1)        Log::DbgLog(LOGPOS, Log::DBG, txt, par1)
-	#define   DBG2(txt,par1,par2)   Log::DbgLog(LOGPOS, Log::DBG, txt, par1,par2)
+	#define   DBG(txt)                Log::DbgLog(LOGPOS, Log::DBG, txt)
+	#define   DBG1(txt,par1)          Log::DbgLog(LOGPOS, Log::DBG, txt, par1)
+	#define   DBG2(txt,par1,par2)     Log::DbgLog(LOGPOS, Log::DBG, txt, par1,par2)
+	#define   DBG3(txt,par1,par2,par3)Log::DbgLog(LOGPOS, Log::DBG, txt, par1,par2,par3)
 #else
-	#define   BEGIN(expr)           //Log::Begin(LOGPOS, txt)
-	#define   END                   //Log::End(LOGPOS); return
+	//disable debug messages with -DNDEBUG
+	#define   BEGIN           			//Log::Begin(LOGPOS, __LOGFUNC__)
+	#define   END                   //Log::End(LOGPOS)
+	#define   ENDRES		          	//Log::End(LOGPOS,res)
 
-	#define   TRC(txt)              //Log::DbgLog(LOGPOS, Log::TRC, txt)
-	#define   TRC1(txt,par1)        //Log::DbgLog(LOGPOS, Log::TRC, txt, par1)
-	#define   TRC2(txt,par1,par2)   //Log::DbgLog(LOGPOS, Log::TRC, txt, par1,par2)
+	#define   TRC(txt)                //Log::DbgLog(LOGPOS, Log::TRC, txt)
+	#define   TRC1(txt,par1)          //Log::DbgLog(LOGPOS, Log::TRC, txt, par1)
+	#define   TRC2(txt,par1,par2)     //Log::DbgLog(LOGPOS, Log::TRC, txt, par1,par2)
+	#define   TRC3(txt,par1,par2,par3)//Log::DbgLog(LOGPOS, Log::TRC, txt, par1,par2,par3)
 
-	#define   DBG(txt)              //Log::DbgLog(LOGPOS, Log::DBG, txt)
-	#define   DBG1(txt,par1)        //Log::DbgLog(LOGPOS, Log::DBG, txt, par1)
-	#define   DBG2(txt,par1,par2)   //Log::DbgLog(LOGPOS, Log::DBG, txt, par1,par2)
+	#define   DBG(txt)                //Log::DbgLog(LOGPOS, Log::DBG, txt)
+	#define   DBG1(txt,par1)          //Log::DbgLog(LOGPOS, Log::DBG, txt, par1)
+	#define   DBG2(txt,par1,par2)     //Log::DbgLog(LOGPOS, Log::DBG, txt, par1,par2)
+	#define   DBG3(txt,par1,par2,par3)//Log::DbgLog(LOGPOS, Log::DBG, txt, par1,par2,par3)
 #endif
+
+
 
 #define   RUN(txt)              Log::DbgLog(LOGPOS, Log::RUN, txt)
 #define   RUN1(txt,par1)        Log::DbgLog(LOGPOS, Log::RUN, txt, par1)
 #define   RUN2(txt,par1,par2)   Log::DbgLog(LOGPOS, Log::RUN, txt, par1,par2)
+#define   RUN3(txt,par1,par2,p3)Log::DbgLog(LOGPOS, Log::RUN, txt, par1,par2,p3)
 
 #define   ERR(txt)              Log::DbgLog(LOGPOS, Log::ERR, txt)
 #define   ERR1(txt,par1)        Log::DbgLog(LOGPOS, Log::ERR, txt, par1)
 #define   ERR2(txt,par1,par2)   Log::DbgLog(LOGPOS, Log::ERR, txt, par1,par2)
+#define   ERR3(txt,p1,p2,p3)    Log::DbgLog(LOGPOS, Log::ERR, txt, p1,p2,p3)
 
 
-
-
-namespace Log {
-
-
-    /**@short Return version number
-
-    @result Version as a string*/
-    const QString getVersion(void);
-
-
-    /**@short Logging Level*/
-		enum LogType{	  OFF=0, 		/**< Keine Meldung*/
-							 			ERR=1,		/**< Fehlermeldung	(etwa "Keine Verbindung zu ...")*/
-							 			RUN=2,		/**< Laufzeit-Meldungen (etwa "Nummer 0815 verkauft");*/
-           					SIG=3,		/**< Signale*/
-							 			DBG=4,		/**< Debug-Meldungen*/
-							 			TRC=5			/**< periodische Debug-Meldungen, einschließlich Funktionsein- und austritt*/
-					};
-
-
-		/** @short Begin of a function
-        @param modul filename (use __file__)
-        @param line linenumber (use __line__)
-        @param fmt  string in kind of printf
-        @return 0 anything Ok, -1 Out of Memory, -2 cannot write
-  	*/
-  	const int Begin		 	(	const char * const modul,
-													const int line,
-													const char * const fmt,
-													...);
-
-
-}
-
-
-
-
-
-
-
-
-
-
-
-
-#ifdef LALALALA
 
 /**
 \def HERE
@@ -216,30 +196,35 @@ int main(void){
 
 
 
-  	/**	@short Rückgabe des Dateinamens des DbgLog
 
-    Das DbgLog enthält Daten die für die Fehlersuche relevant sind.
-    Nur für das Syslog sind die LogLevel relevant.
- 	  @return	string mit dem Namen des Logfiles. Ggf leerer String
-   	*/
-   	char const*const GetDbgLog(void);
+namespace Log {
 
 
-    /**@short Rückgabe des Dateinamens des Logfiles für Verkäufe
+    /**@short Return version number
 
-    Das VkLog enthält Daten über verkaufte Seriennummern. Nichts anderes.
-    @result Dateinamens des Logfiles für Verkäufe
-    */
-    char const*const GetVkLog (void);
+    @result Version as a string*/
+    const QString getVersion(void);
 
 
-    /**@short Rückgabe des Dateinamens des Logfiles für Verkäufe
+    /**@short Logging Level*/
+		enum LogType{	  OFF=0, 		/**< Keine Meldung*/
+							 			ERR=1,		/**< Fehlermeldung	(etwa "Keine Verbindung zu ...")*/
+							 			RUN=2,		/**< Laufzeit-Meldungen (etwa "Nummer 0815 verkauft");*/
+           					SIG=3,		/**< Signale*/
+							 			DBG=4,		/**< Debug-Meldungen*/
+							 			TRC=5			/**< periodische Debug-Meldungen, einschließlich Funktionsein- und austritt*/
+					};
 
-    Das Log enthält Daten über kaufmännisch relevante Vorgänge am
-    Automaten. Etwa empfangene und verkaufte Seriennummern, Geldbewegungen.
-    @result Dateinamens des Logfiles für Systemmeldungen
-    */
-    char const*const GetSysLog (void);
+
+		/** @short Begin of a function
+        @param modul filename (use __file__)
+        @param line linenumber (use __line__)
+        @param fmt  string in kind of printf
+        @return 0 anything Ok, -1 Out of Memory, -2 cannot write
+  	*/
+  	const int Begin		 	(	const char * const file,
+													const int line,
+													const char * const func);
 
 
   	/**@short Initialisierung des Log-Moduls
@@ -248,18 +233,9 @@ int main(void){
     (Default-Wert), dann wird lediglich nach stdout (cout) protokolliert.
     @param level	Default-Debuglevel für alle Module. Kann mit AddModul für
       							spezielle Module überschrieben werden.
-    @param Write false(default) es wird nicht in eine Datei geschrieben, sonst true
-    @param DbgLog Dateiname für das DbgLog.
-    @param VkLog Dateiname für das VkLog (verkaufte Seriennummern)
-    @param Log Dateiname für das Log (Informationen über Geld, und Handling von Seriennummern)
     @return Wert ungleich 0 wenn nicht in Datei geschrieben werden konnte
     */
-		const int Init(	const Log::LogType	level,
-                    const bool Write,
-  									const string& DbgLog,
-  									const string& VkLog,
-  									const string& Log
-         					);
+		const int Init(	const Log::LogType	level, const int Number);
 
     /**@short Initialisierung des Log-Moduls
 
@@ -268,18 +244,9 @@ int main(void){
     (Default-Wert), dann wird lediglich nach stderr (cout) protokolliert.
     @param level	Default-Debuglevel für alle Module. Kann mit AddModul für
      							spezielle Module überschrieben werden. Level dabei in der Form ERR, OFF, RUN, ...
-    @param Write false(default) es wird nicht in eine Datei geschrieben, sonst true
-    @param DbgLog Dateiname für das DbgLog.
-    @param VkLog Dateiname für das VkLog (verkaufte Seriennummern)
-    @param Log Dateiname für das Log (Informationen über Geld, und Handling von Seriennummern)
-    @return Wert ungleich 0 wenn nicht in Datei geschrieben werden konnte
+    @return Wert alltimes 0
     */
-		const int Init(	const string& level,	//Loglevel
-                    const bool Write,
-  									const string& DbgLog,
-  									const string& VkLog,
-  									const string& Log
-         					);
+		const int Init(	const QString& level, const int Number);
 
 
 
@@ -293,13 +260,13 @@ int main(void){
     C / C++ File!
     @param level Ausgabelevel für dieses Modul in der Form DBG, OFF, ERR, ...
 	  */
-  	void AddModul(const string& modul, const string& level);
+  	void AddModul(const QString& modul, const QString& level);
 
   	/**@short Löschen eines speziellen Debuglevels für ein spezielles Modul.
 
   	@see AddModul()
 	  */
-		void RemModul(const string& modul);
+		void RemModul(const QString& modul);
 
 
 		/** @short Ausgabe einer Meldung in klassischer printf() Art,
@@ -313,28 +280,11 @@ int main(void){
         @param fmt  String in üblicher printf()-Art mit beliebig vielen weiteren Parametern.
         @return gleich 0 alles Ok, -1 Out of Memory, -2 kann nicht in Datei schreiben.
     */
-		const int DbgLog(const char * const modul,				//Name des Moduls
-										 const int zeile,      					//Zeilennummer
+		const int DbgLog(const char * const file,				//Name des Moduls
+										 const int line,      					//Zeilennummer
 										 const LogType level,						//Meldungstyp
 										 const char * const fmt,		 			//Formatstring
         						 ...);
-
-
-    /** @short Schreibt eine Meldung ins VkLogFile
-
-        @param fmt Formatstring in printf typischer Art
-        @return gleich 0 alles Ok, -1 Out of Memory, -2 kann nicht in Datei schreiben.
-    */
-    const int VkLog (const char * const fmt, ...);
-
-
-    /** @short Schreibt eine Meldung ins System-Logfile
-
-        @param fmt Formatstring in printf typischer Art
-        @return gleich 0 alles Ok, -1 Out of Memory, -2 kann nicht in Datei schreiben.
-    */
-    const int SysLog   (const char * const fmt, ...);
-
 
 
 		/** @short Das gleiche für Objekte die nicht über die printf()-Funktionalität
@@ -351,61 +301,19 @@ int main(void){
         @return gleich 0 alles Ok, -1 Out of Memory, -2 kann nicht in Datei schreiben.
      */
    	template<class T>
-    inline const int DbgLog (const char * const modul,		//Name des Moduls
-													   const int zeile,      		  	//Zeilennummer
+    inline const int DbgLog (const char * const file,		//Name des Moduls
+													   const int line,      		  	//Zeilennummer
 													   const LogType level,					//Meldungstyp
 													   const T& meldung							//Eigentliche Meldung
           								)
    	{
   			std::ostringstream str;
      		str << meldung;;
-       	return DbgLog(modul, zeile, level, str.str().c_str());
+       	return DbgLog(file, line, level, str.str().c_str());
     }
 
 
-    /**@short Übersetzt ein Signal in einen lesbaren String
-
-    Signale aus signal.h bzw. dio.h werden übergeben und in einen lesbaren
-    String übersetzt.
-
-    @param  sig Signal aus signal.h
-    @result String mit dem Namen
-    */
-    char * const GetSignalString(const int sig);
-
-
-		/** @short Meldung "Signal gesendet"
-
-        Level ist immer Log::SIG
-        Die Parameter modul und zeile sind sinnvollerweise durch das Makro LOGPOS ausgefüllt.
-        Das übergebene Signal wird dabei in einen lesbaren Text und teilweise mit
-        Kommentaren ergänzt.
-        @param modul  Name der Sourcendatei
-        @param zeile  Zeilennummer der Sourcendatei
-        @param signal Signal aus signal.h
-        @param Ziel   geplanter Empfänger des Signals
-        @return gleich 0 alles Ok, -1 Out of Memory, -2 kann nicht in Datei schreiben.
-        \see SNDSIG(sig,tar)
-
-  	*/
-    const int SndSignal	(	const char * const modul,				//Name des Moduls
-					      					const int zeile,      					//Zeilennummer
-								      		const int signal, 						  //Signaltyp
-      										const char * const Ziel					//Empfänger
-          				);
-
-		/** Meldung "Signal erhalten" Level ist immer Log::SIG
-  			@see SndSignal
-        \see GETSIG(sig,tar)
-  	*/
-    const int GetSignal	(	const char * const modul,				//Name des Moduls
-					      					const int zeile,      					//Zeilennummer
-								      		const int signal							//Signaltyp
-          				);
-
-
-
-   	/**@short Reduzierung der Einrückungsfunktion
+  	/**@short Reduzierung der Einrückungsfunktion
 
     Funktion ReduceIndentLevel(void) nur zur internen Benutzung, muss aber
     für die folgenden Template-Funktionen hier definiert werden
@@ -419,15 +327,15 @@ int main(void){
         @return gleich 0 alles Ok, -1 Out of Memory, -2 kann nicht in Datei schreiben.
   	*/
    	template<class T>
-    inline const int End (const char * const modul,				//Name des Moduls
-													const int zeile,      					//Zeilennummer
+    inline const int End (const char * const file,				//Name des Moduls
+													const int line,      					//Zeilennummer
 													const T& result									//Return der Funktion
           								)
    	{
 				ReduceIndentLevel();
   			std::ostringstream str;
      		str << "} with res=\"" << result << "\"";
-       	return DbgLog(modul, zeile, TRC, str.str().c_str());
+       	return DbgLog(file, line, TRC, str.str().c_str());
     }
 
 
@@ -435,25 +343,26 @@ int main(void){
 
   			@see int Begin()
   	*/
-    inline const int End (const char * const modul,				//Name des Moduls
-													const int zeile      					//Zeilennummer
+    inline const int End (const char * const file,	//filename
+													const int line      			//linenumber
           								)
    	{
 			ReduceIndentLevel();
-     	return DbgLog(modul, zeile, TRC, "}");
+     	return DbgLog(file, line, TRC, "}");
     }
 
 
-    inline const int End (const char * const modul,				//Name des Moduls
-													const int zeile,      					//Zeilennummer
+    inline const int End (const char * const file,				//Name des Moduls
+													const int line,      					//Zeilennummer
 													const bool result								//Return der Funktion
           								)
    	{
-    		return End(modul, zeile, result?"true":"false");
+			ReduceIndentLevel();
+     	return DbgLog(file, line, TRC, result?"} with res=\"true\"":"} with res=\"false\"");
     }
 
 
-    /**@short Rückgabe des aktuellen Loglevels
+    /**@short Return the current Log Level
 
     @result Level*/
     const LogType GetCurrentLevel(void);
@@ -461,5 +370,4 @@ int main(void){
 
 };
 
-#endif // LALALALA
 #endif		//LOG_HEADER_FILE
