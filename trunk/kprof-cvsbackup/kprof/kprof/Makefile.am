@@ -18,6 +18,10 @@ kprof_SOURCES = \
 	cprofileviewitem.cpp \
 	$(kprof_METASOURCES)
 
+# ui files
+rcdir = $(kde_datadir)/kprof
+rc_DATA = kprofui.rc
+
 # library search path
 kprof_LDFLAGS = $(all_libraries) $(KDE_RPATH)
 
@@ -39,15 +43,17 @@ desktop_DATA = kprof.desktop
 messages:
 	$(XGETTEXT) *.cpp -o $(podir)/kprof.pot
 
+#
+# MOC file handling (doing this manually may not be the best solution...)
+#
+
 # moc file dependencies
 kprof.cpp: kprof.moc
-
 kprof.moc: kprof.h
-
 kprofwidget.moc: kprofwidget.h
-
 kprofwidget.cpp: kprofwidget.moc
 
 # rule to make moc files
 %.moc: %.h
 	$(MOC) $< -o $@
+

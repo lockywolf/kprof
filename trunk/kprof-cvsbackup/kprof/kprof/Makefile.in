@@ -159,6 +159,10 @@ kprof_METASOURCES =  	kprof.moc 	kprofwidget.moc
 kprof_SOURCES =  	main.cpp 	kprof.cpp 	kprofwidget.cpp 	cprofileviewitem.cpp 	$(kprof_METASOURCES)
 
 
+# ui files
+rcdir = $(kde_datadir)/kprof
+rc_DATA = kprofui.rc
+
 # library search path
 kprof_LDFLAGS = $(all_libraries) $(KDE_RPATH)
 
@@ -189,7 +193,7 @@ CXXCOMPILE = $(CXX) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS
 LTCXXCOMPILE = $(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
 CXXLD = $(CXX)
 CXXLINK = $(LIBTOOL) --mode=link $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) $(LDFLAGS) -o $@
-DATA =  $(desktop_DATA)
+DATA =  $(desktop_DATA) $(rc_DATA)
 
 HEADERS =  $(noinst_HEADERS)
 
@@ -298,6 +302,25 @@ uninstall-desktopDATA:
 	@$(NORMAL_UNINSTALL)
 	list='$(desktop_DATA)'; for p in $$list; do \
 	  rm -f $(DESTDIR)$(desktopdir)/$$p; \
+	done
+
+install-rcDATA: $(rc_DATA)
+	@$(NORMAL_INSTALL)
+	$(mkinstalldirs) $(DESTDIR)$(rcdir)
+	@list='$(rc_DATA)'; for p in $$list; do \
+	  if test -f $(srcdir)/$$p; then \
+	    echo " $(INSTALL_DATA) $(srcdir)/$$p $(DESTDIR)$(rcdir)/$$p"; \
+	    $(INSTALL_DATA) $(srcdir)/$$p $(DESTDIR)$(rcdir)/$$p; \
+	  else if test -f $$p; then \
+	    echo " $(INSTALL_DATA) $$p $(DESTDIR)$(rcdir)/$$p"; \
+	    $(INSTALL_DATA) $$p $(DESTDIR)$(rcdir)/$$p; \
+	  fi; fi; \
+	done
+
+uninstall-rcDATA:
+	@$(NORMAL_UNINSTALL)
+	list='$(rc_DATA)'; for p in $$list; do \
+	  rm -f $(DESTDIR)$(rcdir)/$$p; \
 	done
 
 tags: TAGS
@@ -411,20 +434,22 @@ installcheck: installcheck-am
 install-exec-am: install-binPROGRAMS
 install-exec: install-exec-am
 
-install-data-am: install-desktopDATA
+install-data-am: install-desktopDATA install-rcDATA
 install-data: install-data-am
 
 install-am: all-am
 	@$(MAKE) $(AM_MAKEFLAGS) install-exec-am install-data-am
 install: install-am
-uninstall-am: uninstall-binPROGRAMS uninstall-desktopDATA
+uninstall-am: uninstall-binPROGRAMS uninstall-desktopDATA \
+		uninstall-rcDATA
 uninstall: uninstall-am
 all-am: Makefile $(PROGRAMS) $(DATA) $(HEADERS)
 all-redirect: all-am
 install-strip:
 	$(MAKE) $(AM_MAKEFLAGS) AM_INSTALL_PROGRAM_FLAGS=-s install
 installdirs:
-	$(mkinstalldirs)  $(DESTDIR)$(bindir) $(DESTDIR)$(desktopdir)
+	$(mkinstalldirs)  $(DESTDIR)$(bindir) $(DESTDIR)$(desktopdir) \
+		$(DESTDIR)$(rcdir)
 
 
 mostlyclean-generic:
@@ -468,10 +493,11 @@ maintainer-clean-binPROGRAMS uninstall-binPROGRAMS install-binPROGRAMS \
 mostlyclean-compile distclean-compile clean-compile \
 maintainer-clean-compile mostlyclean-libtool distclean-libtool \
 clean-libtool maintainer-clean-libtool uninstall-desktopDATA \
-install-desktopDATA tags mostlyclean-tags distclean-tags clean-tags \
-maintainer-clean-tags distdir mostlyclean-depend distclean-depend \
-clean-depend maintainer-clean-depend info-am info dvi-am dvi check \
-check-am installcheck-am installcheck install-exec-am install-exec \
+install-desktopDATA uninstall-rcDATA install-rcDATA tags \
+mostlyclean-tags distclean-tags clean-tags maintainer-clean-tags \
+distdir mostlyclean-depend distclean-depend clean-depend \
+maintainer-clean-depend info-am info dvi-am dvi check check-am \
+installcheck-am installcheck install-exec-am install-exec \
 install-data-am install-data install-am install uninstall-am uninstall \
 all-redirect all-am all installdirs mostlyclean-generic \
 distclean-generic clean-generic maintainer-clean-generic clean \
@@ -482,13 +508,14 @@ mostlyclean distclean maintainer-clean
 messages:
 	$(XGETTEXT) *.cpp -o $(podir)/kprof.pot
 
+#
+# MOC file handling (doing this manually may not be the best solution...)
+#
+
 # moc file dependencies
 kprof.cpp: kprof.moc
-
 kprof.moc: kprof.h
-
 kprofwidget.moc: kprofwidget.h
-
 kprofwidget.cpp: kprofwidget.moc
 
 # rule to make moc files

@@ -159,27 +159,27 @@ QString CProfileViewItem::key (int column, bool) const
 			break;
 
 		case KProfWidget::col_count:
-			s.sprintf ("%14ld", mProfile->calls);
+			s.sprintf ("%014ld", mProfile->calls);
 			break;
 
    		case KProfWidget::col_total:
-			s.sprintf ("%14.1f", mProfile->cumSeconds);
+			s.sprintf ("%014ld", (long) (mProfile->cumSeconds * 100.0));
 			break;
 
 		case KProfWidget::col_totalPercent:
-			s.sprintf ("%3.2f", mProfile->cumPercent);
+			s.sprintf ("%05ld",  (long) (mProfile->cumPercent * 100.0));
 			break;
 
    		case KProfWidget::col_self:
-			s.sprintf ("%14.1f", mProfile->selfSeconds);
+			s.sprintf ("%014ld", (long) (mProfile->selfSeconds * 100.0));
 			break;
 
 		case KProfWidget::col_totalPerCall:
-			s.sprintf ("%14.1f", mProfile->totalTsPerCall);
+			s.sprintf ("%014ld", (long) (mProfile->totalTsPerCall * 100.0));
 			break;
 
    		case KProfWidget::col_selfPerCall:
-			s.sprintf ("%14.1f", mProfile->selfTsPerCall);
+			s.sprintf ("%014ld", (long) (mProfile->selfTsPerCall * 100.0));
 			break;
 	}
 

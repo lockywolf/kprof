@@ -121,13 +121,19 @@ void KProfWidget::prepareProfileView (KListView *view, bool rootIsDecorated)
 	view->addColumn (i18n("Total (s)"), -1);
 	view->addColumn (i18n("%"), -1);
 	view->addColumn (i18n("Self (s)"), -1);
-	view->addColumn (i18n("Total\nms/call"), -1);
-	view->addColumn (i18n("Self\nms/call"), -1);
+	view->addColumn (i18n("Total\nus/call"), -1);
+	view->addColumn (i18n("Self\nus/call"), -1);
 
 	view->setAllColumnsShowFocus (true);
 	view->setFrameStyle (QFrame::WinPanel + QFrame::Sunken);
 	view->setShowSortIndicator (true);
 	view->setRootIsDecorated (rootIsDecorated);
+}
+
+void KProfWidget::setManualColumnWidths (KListView *view)
+{
+	for (int i = 0; i < view->columns (); i++)
+		view->setColumnWidthMode (i, QListView::Manual);
 }
 
 void KProfWidget::openSettingsDialog ()
@@ -203,11 +209,11 @@ void KProfWidget::parseProfile (QString& filename)
 	QString s;
 
 	// regular expressions we use while parsing
-	QRegExp indexRegExp ("^\\[\\d+\\]$");
+	QRegExp indexRegExp (" *\\[\\d+\\]$");
 	QRegExp floatRegExp ("^[0-9]*\\.[0-9]+$");
 	QRegExp countRegExp ("^[0-9]+[/\\+]?[0-9]*$");
 	QRegExp dashesRegExp ("^\\-+");
-	QRegExp	recurCountRegExp (" *<cycle \\d+>$");
+	QRegExp	recurCountRegExp (" *<cycle \\d+.*>$");
 
 	// while parsing, we temporarily store all entries of a call graph block
 	// in an array
@@ -228,17 +234,24 @@ void KProfWidget::parseProfile (QString& filename)
    		}
 		s = s.simplifyWhiteSpace ();
 
+		// remove <cycle ...> and [n] from the end of the line
+		if (state == PROCESS_FLAT_PROFILE || state == PROCESS_CALL_GRAPH)
+		{
+			int pos = indexRegExp.find (s, 0);
+			if (pos != -1)
+				s = s.left (pos);
+			pos = recurCountRegExp.find (s, 0);
+			if (pos != -1)
+				s = s.left (pos);
+		}
+
 		// split the line in tab-delimited fields
 		QStringList fields = QStringList::split (" ", s, false);
 		if (fields.isEmpty ())
 			continue;
 
-		if (state == 1 || state == 3)
+		if (state == PROCESS_FLAT_PROFILE || state == PROCESS_CALL_GRAPH)
 		{
-			// if the last string is of the form [n], remove it (we don't need it)
-			if (indexRegExp.find (fields[fields.count() - 1], 0) == 0)
-				fields.remove (fields.at (fields.count () - 1));
-
 			// the split did also split the function name & args. restore them so that they
 			// are only one field
 			uint join = fields.count () - 1;
@@ -258,7 +271,7 @@ void KProfWidget::parseProfile (QString& filename)
 			 * look for beginning of flat profile
 			 *
 			 */
-			case 0:
+			case SEARCH_FLAT_PROFILE:
 				for (unsigned int i = 0; i < fields[0].length (); i++)
 				{
 					QChar c = s[i];
@@ -278,7 +291,7 @@ void KProfWidget::parseProfile (QString& filename)
 			 * analyze flat profile entry
 			 *
 			 */
-     		case 1:
+     		case PROCESS_FLAT_PROFILE:
 			{
 				CProfileInfo *p = new CProfileInfo;
 				p->cumPercent		= fields[0].toFloat ();
@@ -314,7 +327,7 @@ void KProfWidget::parseProfile (QString& filename)
 			 * look for call graph
 			 *
 			 */
-   			case 2:
+   			case SEARCH_CALL_GRAPH:
 				if (fields[0]=="index" && fields[1]=="%")
 					state = 3;
 				break;
@@ -323,7 +336,7 @@ void KProfWidget::parseProfile (QString& filename)
 			 * analyze call graph entry
 			 *
 			 */
-    		case 3:
+    		case PROCESS_CALL_GRAPH:
 			{
 				// if we reach a dashes line, we finalize the previous call graph block
 				// by analyzing the block and updating callers, called & recursive
@@ -359,14 +372,16 @@ void KProfWidget::parseProfile (QString& filename)
       				field++;
 				}
 
-				// eliminate the recursivity count from the "name"
+				// if we got a call graph block without a primary function name,
+				// drop it completely.
+				if (e->name == NULL || e->name.length() == 0)
+				{
+					delete e;
+					break;
+				}
+
 				if (e->primary == true && count.find ('+') != -1)
 					e->recursive = true;
-
-     			// eliminate the <cycle n> information from the name
-				int pos = recurCountRegExp.find (e->name, 0);
-				if (pos != -1)
-					e->name = e->name.left (pos);
 
 				if (callGraphBlock.count () == callGraphBlock.size ())
 					callGraphBlock.resize (callGraphBlock.size () + 32);
@@ -454,6 +469,7 @@ void KProfWidget::fillFlatProfileList (const QString& filter)
 			continue;
 		new CProfileViewItem (mFlat, mProfile[i]);
   	}
+	setManualColumnWidths (mFlat);
 	update ();
 }
 
@@ -474,6 +490,7 @@ void KProfWidget::fillHierProfileList ()
 
 		fillHierarchy (item, mProfile[i], addedEntries, count);
   	}
+	setManualColumnWidths (mFlat);
 	update ();
 }
 
@@ -527,6 +544,8 @@ void KProfWidget::fillObjsProfileList ()
 		CProfileViewItem *item = new CProfileViewItem (mObjs, NULL);
 		fillObjsHierarchy (item, classes[i]);
 	}
+	
+	setManualColumnWidths (mFlat);
 }
 
 void KProfWidget::fillObjsHierarchy (CProfileViewItem *parent, QString *className)
