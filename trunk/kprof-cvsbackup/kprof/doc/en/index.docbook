@@ -505,7 +505,7 @@
 	<itemizedlist>
 		<listitem><para>Bernd Gehrman <email>bernd@physik.hu-berlin.de</email>: bugfixes and tweaks</para></listitem>
 		<listitem><para>Carsten Branitzki <email>csb@operamail.com</email>: tweaks</para></listitem>
-		<listitem><para>Ben Burton <email>benb@acm.org</email>: Debian packaging</para></listitem>
+		<listitem><para>Ben Burton <email>bab@debian.org</email>: Debian packaging</para></listitem>
 	</itemizedlist>
 </para>
 
