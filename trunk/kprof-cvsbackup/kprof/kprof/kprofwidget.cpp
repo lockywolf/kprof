@@ -51,15 +51,19 @@
 #include <khtml_part.h>
 #include <khtmlview.h>
 
+#include "config.h"
+
 #include "kprof.h"
 #include "kprofwidget.h"
 #include "cprofileviewitem.h"
 #include "call-graph.h"
 
+#ifdef HAVE_LIBQTREEMAP
 #include <qtreemap.h>
 #include <qtreemapwindow.h>
 #include <qlistviewtreemap.h>
 #include <qlistviewtreemapwindow.h>
+#endif
 
 /*
  * Some globals we need - one of these days I'll have to synthesize this 
@@ -587,8 +591,10 @@ void KProfWidget::openFile (const QString &filename, int format, bool compare)
 	prepareProfileView (mObjs, true);
 	customizeColumns (mObjs, sLastFileFormat);
 
-	QListViewItem *obj_toplevel=new QListViewItem(mObjs,"Objects");
-	QListViewItem *hier_toplevel=new QListViewItem(mHier,"Hierarchy");
+#ifdef HAVE_LIBQTREEMAP
+	QListViewItem *obj_toplevel = new QListViewItem(mObjs,"Objects");
+	QListViewItem *hier_toplevel = new QListViewItem(mHier,"Hierarchy");
+#endif
 
 	// fill lists
 	fillFlatProfileList ();
@@ -603,29 +609,26 @@ void KProfWidget::openFile (const QString &filename, int format, bool compare)
 	// update the current directory
 	mCurDir = finfo.dir ();
 
+#ifdef HAVE_LIBQTREEMAP
 	// create options for the treemap
-
-	treemap_options=new QTreeMapOptions();
-	//treemap_options->path_separator=QString("::");
-	treemap_options->calc_nodesize=CALCNODE_ALWAYS;
+	mTreemapOptions = new QTreeMapOptions ();
+	mTreemapOptions->calc_nodesize = CALCNODE_ALWAYS;
+	
 	// open up the treemap widget
+	mObjTreemap = new QListViewTreeMapWindow (KProfWidget::col_function, KProfWidget::col_totalPercent);
+	mObjTreemap->makeWidgets ();
+	mObjTreemap->makeColumnMenu (mObjs);
+	mObjTreemap->getArea()->setOptions (mTreemapOptions);
+	mObjTreemap->getArea()->setTreeMap ((Object *)mObjs->firstChild ());
+	mObjTreemap->setWindowTitle (i18n ("KProf Object Profile"));
 
-	obj_treemap= new QListViewTreeMapWindow(KProfWidget::col_function,KProfWidget::col_totalPercent);
-	//obj_treemap= new QListViewTreeMapWindow(KProfWidget::col_function,KProfWidget::col_count);
-	obj_treemap->makeWidgets();
-	obj_treemap->makeColumnMenu(mObjs);
-	obj_treemap->getArea()->setOptions(treemap_options);
-	obj_treemap->getArea()->setTreeMap((Object *)mObjs->firstChild());
-	obj_treemap->setWindowTitle("KProf Object Profile");
-
-	hier_treemap= new QListViewTreeMapWindow(KProfWidget::col_function,KProfWidget::col_totalPercent);
-	hier_treemap->makeWidgets();
-	hier_treemap->makeColumnMenu(mHier);
-	hier_treemap->getArea()->setOptions(treemap_options);
-	hier_treemap->getArea()->setTreeMap((Object *)mHier->firstChild());
-	hier_treemap->setWindowTitle("KProf Hierarchy Profile");
-
-
+	mHierTreemap = new QListViewTreeMapWindow (KProfWidget::col_function, KProfWidget::col_totalPercent);
+	mHierTreemap->makeWidgets ();
+	mHierTreemap->makeColumnMenu (mHier);
+	mHierTreemap->getArea()->setOptions (mTreemapOptions);
+	mHierTreemap->getArea()->setTreeMap ((Object *)mHier->firstChild());
+	mHierTreemap->setWindowTitle (i18n ("KProf Hierarchy Profile"));
+#endif
 }
 
 void KProfWidget::gprofStdout (KProcess *, char *buffer, int buflen)

@@ -48,8 +48,10 @@ class QFont;
 class QFile;
 class CProfileViewItem;
 
+#ifdef HAVE_LIBQTREEMAP
 class QListViewTreeMapWindow;
 class QTreeMapOptions;
+#endif
 
 class KProfWidget : public QWidget
 {
@@ -78,6 +80,12 @@ protected:
 	bool					mAbbrevTemplates; // if true, templates are "abbreviates" (i.e. become <...>)
 	QDir					mCurDir;		// current directory
 
+#ifdef HAVE_LIBQTREEMAP
+	QTreeMapOptions*		mTreemapOptions;
+	QListViewTreeMapWindow*	mObjTreemap;
+	QListViewTreeMapWindow*	mHierTreemap;
+#endif
+	
 	typedef struct						// structure is used while parsing the call graph for gprof and Function Check
 	{
 		QString	name;
@@ -116,7 +124,6 @@ public:
 	enum colID							// column IDs
 	{
 		col_function = 0,
-		//col_recursive,
 		col_count,
 		col_total,
 		col_totalPercent,
@@ -138,7 +145,6 @@ public:
 	enum diffColID						// diff mode column IDs
 	{
 		diff_col_function = 0,
-		//diff_col_recursive,
 		diff_col_status,
 		diff_col_count,
 		diff_col_new_count,
@@ -226,12 +232,6 @@ private:
 
 	QString getClassName (const QString& name);
 	QString removeTemplates (const QString& name);
-
-	// for the treemap views
-
-	QListViewTreeMapWindow *obj_treemap;
-	QListViewTreeMapWindow *hier_treemap;
-	QTreeMapOptions *treemap_options;
 };
 
 #endif
