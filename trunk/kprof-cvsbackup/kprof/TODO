@@ -1,5 +1,5 @@
-- comparison of profile results
+TODO:
 - incremental storage of profile results in an XML file for later comparison
 - subselections
 - interface to IDEs
-
+- built-in call-graph display
