@@ -37,6 +37,7 @@
 
 #include <klistview.h>
 #include <ktabctl.h>
+#include <kurl.h>
 
 #include "cprofileinfo.h"
 
@@ -60,9 +61,10 @@ protected:
 	// this structure is used while parsing the call graph
 	typedef struct
 	{
+		QString	name;
+		long	line;
 		bool	primary;
 		bool	recursive;
-		QString	name;
 	} SCallGraphEntry;
 
 	enum								// states while parsing the gprof output
@@ -96,17 +98,24 @@ public slots:
 	void settingsChanged ();
 	void loadSettings ();
 	void applySettings ();
-	void openSettingsDialog ();
 
 	void openResultsFile ();
+	void openRecentFile (const KURL& url);
 	void doPrint ();
 
 	void profileEntryRightClick (QListViewItem *listItem, const QPoint &p, int);
 	void flatProfileFilterChanged (const QString &filter);
 
+protected slots:
+	void selectionChanged (QListViewItem *item);
+
+signals:
+	void addRecentFile (const KURL&);
+
 private:
+	void openFile (const QString &filename);
 	void prepareProfileView (KListView *view, bool rootIsDecorated);
-	void parseProfile (QString& filename);
+	void parseProfile (const QString& filename);
 	void processCallGraphBlock (const QVector<SCallGraphEntry> &data);
 
 	CProfileInfo *locateProfileEntry (const QString& name);
@@ -118,8 +127,7 @@ private:
 	void fillObjsHierarchy (CProfileViewItem *parent, QString *className);
 
 	void selectProfileItem (CProfileInfo *info);
-	void selectItemInView (QListView *view, CProfileInfo *info);
-	void setManualColumnWidths (KListView *view);
+	void selectItemInView (QListView *view, CProfileInfo *info, bool examineSubs);
 };
 
 #endif
