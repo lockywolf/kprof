@@ -57,8 +57,6 @@ public:
 	float		selfSeconds;			// function's own CPU usage
 	float		totalMsPerCall;			// cumulative (+children) CPU usage (average)
 	long		calls;					// number of times this one was called
-	long		selfCycles;				// number of cycles for this entry (when appropriate)
-	long		cumCycles;				// cumulative cycles (self + kids)
 	uint		ind;					// index of this entry in the flat profile table (used to generate call graphs)
 	bool		recursive;
 	bool		multipleSignatures;		// if true, this method name has multiple signatures

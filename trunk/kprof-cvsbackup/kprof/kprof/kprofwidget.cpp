@@ -577,8 +577,8 @@ void KProfWidget::parseProfile_pose (QTextStream& t)
 		p->cumSeconds		+= fields[9].toFloat () / 1000.0;		// value given in milliseconds
 		p->selfSeconds		+= fields[6].toFloat () / 1000.0;		// value given in milliseconds
 		p->calls			+= fields[4].toLong ();
-		p->custom.pose.selfCycles	+= fields[5].toLong ();
-		p->custom.pose.cumCycles	+= fields[8].toLong ();
+		p->custom.pose.selfCycles+= fields[5].toLong ();
+		p->custom.pose.cumCycles += fields[8].toLong ();
 
 		// @@@ TODO: check and fix this
 		float v = fields[11].toFloat ();
