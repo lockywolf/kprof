@@ -172,6 +172,7 @@ public slots:
 	void openResultsFile ();
 	void compareFile ();
 	void openRecentFile (const KURL& url);
+	void openCommandLineFiles ();
 	void doPrint ();
 
 	void profileEntryRightClick (QListViewItem *listItem, const QPoint &p, int);

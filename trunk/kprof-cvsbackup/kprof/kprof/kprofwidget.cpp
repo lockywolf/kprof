@@ -206,23 +206,6 @@ KProfWidget::KProfWidget (QWidget *parent, const char *name)
 
 	mConfigure = new CConfigure(this);
 
-	//Now that the interface has been set up, parse the command line
-	//arguments
-
-	RUN("process command line args");
-	KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
-	QString fileName = "";
-	ProfilerEnumeration prof = FORMAT_GPROF;	
-	bool argsToUse = parseArguments(args, fileName, prof);
-	args->clear();
-
-	//If the file name has been set in the command line arguments
-	//then open the file with the chosen profiler.
-	if (argsToUse && (fileName != ""))
-	{
-		 openFile(fileName, prof, false);
-	}
-
 	END;
 }
 
@@ -605,6 +588,26 @@ void KProfWidget::openResultsFile ()
 
    	//open the file
 		openFile (filename, sLastFileFormat, false);
+	}
+
+	END;
+}
+
+void KProfWidget::openCommandLineFiles ()
+{
+	BEGIN;
+
+	KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
+	QString fileName = "";
+	ProfilerEnumeration prof = FORMAT_GPROF;	
+	bool argsToUse = parseArguments(args, fileName, prof);
+	args->clear();
+
+	//If the file name has been set in the command line arguments
+	//then open the file with the chosen profiler.
+	if (argsToUse && (fileName != ""))
+	{
+		 openFile(fileName, prof, false);
 	}
 
 	END;
