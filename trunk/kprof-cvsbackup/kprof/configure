@@ -856,7 +856,7 @@ fi
 
 PACKAGE=kprof
 
-VERSION=1.1
+VERSION=1.2
 
 if test "`cd $srcdir && pwd`" != "`pwd`" && test -f $srcdir/config.status; then
   { echo "configure: error: source directory already configured; run "make distclean" there first" 1>&2; exit 1; }
@@ -7246,8 +7246,6 @@ trap 'rm -fr `echo "\
 kprof/Makefile \
 kprof/doc/Makefile \
 kprof/doc/kprof/Makefile \
-kprof/pics/Makefile \
-po/Makefile \
  config.h" | sed "s/:[^ ]*//g"` conftest*; exit 1' 1 2 15
 EOF
 cat >> $CONFIG_STATUS <<EOF
@@ -7444,8 +7442,6 @@ CONFIG_FILES=\${CONFIG_FILES-"\
 kprof/Makefile \
 kprof/doc/Makefile \
 kprof/doc/kprof/Makefile \
-kprof/pics/Makefile \
-po/Makefile \
 "}
 EOF
 cat >> $CONFIG_STATUS <<\EOF

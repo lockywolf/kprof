@@ -12,11 +12,31 @@ following profilers:
 - GNU gprof, available on most UNIX systems
 
 - Function Check, a recent and better profiler available
-  from http://www710.univ-lyon1.fr/~yperret/profiler.html
+  from http://sourceforge.net/projects/fnccheck
 
 - Palm OS Emulator, a tool from Palm which lets emulates
   a PalmOS device and can profile the execution of the
   application running in the emulator.
+
+INSTALLING KPROF
+----------------
+To install KProf, simply do:
+
+	$ ./configure
+	$ make
+	$ make install
+
+You must be root to do the 'make install'. In case you
+have problems building the software, do:
+
+	$ make -f Makefile.cvs
+
+prior to the ./configure step. I suggest you specify the
+location where KDE2 is installed (for example, /usr or
+/opt/kde2) using the '--prefix=' directive. Here is how
+I configure KProf on my machine:
+
+	$ ./configure --prefix=/opt/kde2
 
 
 USING KPROF
