@@ -115,7 +115,7 @@ else
 # might cause directories to be created, which would be especially bad 
 # if $src (and thus $dsttmp) contains '*'.
 
-	if [ -f "$src" -o -d "$src" ]
+	if [ -f $src -o -d $src ]
 	then
 		true
 	else
@@ -212,7 +212,7 @@ else
 
 # Move or copy the file name to the temp name
 
-	$doit $instcmd "$src" $dsttmp &&
+	$doit $instcmd $src $dsttmp &&
 
 	trap "rm -f ${dsttmp}" 0 &&
 
