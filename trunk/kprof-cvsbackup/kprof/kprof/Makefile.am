@@ -1,26 +1,72 @@
-####### kdevelop will overwrite this part!!! (begin)##########
+bin_PROGRAMS = kprof
 
-SUBDIRS = po doc kprof 
+## INCLUDES were found outside kdevelop specific part
 
-EXTRA_DIST = AUTHORS COPYING ChangeLog INSTALL README TODO kprof.lsm 
+kprof_SOURCES = cprofileinfo.cpp parseprofile_pose.cpp parseprofile_fnccheck.cpp parseprofile.cpp parseprofile_gprof.cpp clientsidemap.cpp vcgCallGraph.cpp dotCallGraph.cpp kprofwidget.cpp cprofileviewitem.cpp call-graph.ui kprofview.cpp kprofdoc.cpp kprof.cpp main.cpp 
+kprof_LDADD   =  $(LIB_QT) $(LIB_KDECORE) $(LIB_KDEUI) $(LIB_KFILE)  $(LIBSOCKET)
+
+EXTRA_DIST = main.cpp kprof.cpp kprof.h kprofdoc.cpp kprofdoc.h kprofview.cpp kprofview.h kprofui.rc kprof.desktop lo32-app-kprof.png lo16-app-kprof.png cprofileviewitem.h call-graph.h call-graph.ui cprofileinfo.h cprofileviewitem.cpp kprofwidget.cpp kprofwidget.h dotCallGraph.cpp dotCallGraph.h vcgCallGraph.cpp vcgCallGraph.h clientsidemap.h clientsidemap.cpp parseprofile_gprof.h parseprofile_gprof.cpp parseprofile.h parseprofile.cpp parseprofile_fnccheck.h parseprofile_fnccheck.cpp parseprofile_pose.h parseprofile_pose.cpp cprofileinfo.cpp 
+
+install-data-local:
+	$(mkinstalldirs) $(kde_appsdir)/Applications/
+	$(INSTALL_DATA) $(srcdir)/kprof.desktop $(kde_appsdir)/Applications/kprof.desktop
+	$(mkinstalldirs) $(kde_icondir)/locolor/32x32/apps/
+	$(INSTALL_DATA) $(srcdir)/lo32-app-kprof.png $(kde_icondir)/locolor/32x32/apps/kprof.png
+	$(mkinstalldirs) $(kde_icondir)/locolor/16x16/apps/
+	$(INSTALL_DATA) $(srcdir)/lo16-app-kprof.png $(kde_icondir)/locolor/16x16/apps/kprof.png
+
+uninstall-local:
+	-rm -f $(kde_appsdir)/Applications/kprof.desktop
+	-rm -f $(kde_icondir)/locolor/32x32/apps/kprof.png
+	-rm -f $(kde_icondir)/locolor/16x16/apps/kprof.png
 
 ####### kdevelop will overwrite this part!!! (end)############
+## Makefile.am for kprof
 
-$(top_srcdir)/configure.in: configure.in.in $(top_srcdir)/subdirs
-	cd $(top_srcdir) && $(MAKE) -f admin/Makefile.common configure.in ;
+## INCLUDES were found outside kdevelop specific part
 
-$(top_srcdir)/subdirs:
-	cd $(top_srcdir) && $(MAKE) -f admin/Makefile.common subdirs
+kprof_SOURCES = kprofwidget.cpp cprofileviewitem.cpp call-graph.ui kprof.cpp main.cpp 
+kprof_LDADD   =  $(LIB_KFILE) $(LIB_KHTML) $(LIB_KDEUI) $(LIB_KDECORE) $(LIB_QT) $(LIBSOCKET)
 
-$(top_srcdir)/acinclude.m4: $(top_srcdir)/admin/acinclude.m4.in $(top_srcdir)/admin/libtool.m4.in
-	@cd $(top_srcdir) && cat admin/acinclude.m4.in admin/libtool.m4.in > acinclude.m4
 
-MAINTAINERCLEANFILES = subdirs configure.in acinclude.m4 configure.files 
+EXTRA_DIST = main.cpp kprof.cpp kprof.h kprofui.rc kprof.desktop lo32-app-kprof.png lo16-app-kprof.png cprofileviewitem.h call-graph.h call-graph.ui cprofileinfo.h cprofileviewitem.cpp kprofwidget.cpp kprofwidget.h 
 
-package-messages:
-	$(MAKE) -f admin/Makefile.common package-messages
-	$(MAKE) -C po merge
+install-data-local:
+	$(mkinstalldirs) $(kde_appsdir)/Applications/
+	$(INSTALL_DATA) $(srcdir)/kprof.desktop $(kde_appsdir)/Applications/kprof.desktop
+	$(mkinstalldirs) $(kde_icondir)/locolor/32x32/apps/
+	$(INSTALL_DATA) $(srcdir)/lo32-app-kprof.png $(kde_icondir)/locolor/32x32/apps/kprof.png
+	$(mkinstalldirs) $(kde_icondir)/locolor/16x16/apps/
+	$(INSTALL_DATA) $(srcdir)/lo16-app-kprof.png $(kde_icondir)/locolor/16x16/apps/kprof.png
 
-dist-hook:
-	cd $(top_distdir) && perl admin/am_edit -padmin
-	cd $(top_distdir) && $(MAKE) -f admin/Makefile.common subdirs
+# sources 
+kprof_SOURCES = main.cpp kprof.cpp kprofwidget.cpp cprofileviewitem.cpp call-graph.ui clientsidemap.cpp dotCallGraph.cpp \
+								parseprofile.cpp parseprofile_gprof.cpp parseprofile_fnccheck.cpp vcgCallGraph.cpp parseprofile_pose.cpp \
+								cprofileinfo.cpp
+
+####### kdevelop will overwrite this part!!! (end)############
+## Makefile.am for kprof
+# headers (do not install)
+noinst_HEADERS = kprof.h kprofwidget.h cprofileinfo.h cprofileviewitem.h
+
+INCLUDES=$(all_includes)
+kprof_LDFLAGS=$(all_libraries) $(KDE_RPATH)
+
+# let automoc handle all of the meta source files (moc)
+METASOURCES = AUTO
+
+# make messages.po
+messages: rc.cpp
+	$(XGETTEXT) *.cpp -o $(podir)/kprof.pot
+
+# the program icon
+KDE_ICON = kprof
+
+# this is where the kdelnk file will go 
+kdelnkdir   = $(kde_appsdir)/Development
+kdelnk_DATA = kprof.desktop
+
+# this is where the XML-GUI resource file goes
+rcdir = $(kde_datadir)/kprof
+rc_DATA = kprofui.rc
+
