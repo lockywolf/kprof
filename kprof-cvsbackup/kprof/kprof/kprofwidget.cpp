@@ -96,8 +96,6 @@ KProfWidget::KProfWidget (QWidget *parent, const char *name)
 		mFlat (NULL),
 		mHier (NULL),
 		mObjs (NULL),
-		mGraphView(NULL),
-		mMethodView(NULL),
 		mCurPage (0),
 		mAbbrevTemplates (false)
 {
