@@ -41,7 +41,7 @@ CProfileViewItem::CProfileViewItem (QListView *parent, CProfileInfo *profile)
 	:	QListViewItem (parent),
 		mProfile (profile)
 {
-  	setRecursiveIcon ();
+ 	setRecursiveIcon ();
 }
 
 CProfileViewItem::CProfileViewItem (QListViewItem *parent, CProfileInfo *profile)
@@ -63,7 +63,7 @@ CProfileViewItem::CProfileViewItem (QListViewItem *parent, QListViewItem *after,
 	:	QListViewItem (parent, after),
 		mProfile (profile)
 {
-  	setRecursiveIcon ();
+ 	setRecursiveIcon ();
 }
 
 CProfileViewItem::~CProfileViewItem ()
