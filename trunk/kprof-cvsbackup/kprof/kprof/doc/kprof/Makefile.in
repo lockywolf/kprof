@@ -373,7 +373,7 @@ HTML:
 
 HTML/index.html: HTML index.docbook
 	@test -d HTML && rm -r HTML
-	$(MEINPROC) $(srcdir)/index.docbook
+	$(MEINPROC) $(srcdir)/index.docbook -o ../HTML/index.html
 
 install-docs:
 	$(mkinstalldirs) $(DESTDIR)$(kde_htmldir)/$(KDE_LANG)/kprof
