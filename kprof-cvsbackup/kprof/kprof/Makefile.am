@@ -6,7 +6,6 @@ bin_PROGRAMS = kprof
 kprof_SOURCES = kprofwidget.cpp cprofileviewitem.cpp call-graph.ui kprof.cpp main.cpp 
 kprof_LDADD   =  $(LIB_KFILE) $(LIB_KHTML) $(LIB_KDEUI) $(LIB_KDECORE) $(LIB_QT) $(LIBSOCKET)
 
-SUBDIRS = 
 
 EXTRA_DIST = main.cpp kprof.cpp kprof.h kprofui.rc kprof.desktop lo32-app-kprof.png lo16-app-kprof.png cprofileviewitem.h call-graph.h call-graph.ui cprofileinfo.h cprofileviewitem.cpp kprofwidget.cpp kprofwidget.h 
 
