@@ -224,6 +224,7 @@
 		<guimenuitem>Stop</guimenuitem> then select the <guimenuitem>Dump</guimenuitem> item in the
 		<guimenu>Profiling</guimenu> menu to dump the profile results.
 	</para>
+ </sect1>
 </chapter>
 
 <!-- COMMAND REFERENCE -->
