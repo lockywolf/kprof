@@ -106,6 +106,19 @@ Here are the possible ways to use KProf:
   This file is generated automatically by the "profiling" version
   of the emulator (compiled with --enable-palm-profile when you
   ./configure'd it). The file is named "Profile Results.txt".
+  
+SETTING LOCALE
+--------------
+For some reason, KProf only currently works with the locale
+value set to en_EN or en_GB when generating the gmon.out with
+gprof. This means if you use KProf in an environment that 
+is not English you need to set the locale environment variable:
+
+export LC_ALL = en_EN
+gprof -b myprogram > results.txt
+
+then run KProf on the results file.
+[Thanks to friseb123@users.sourceforge.net for this!]
 
 EXTENDED FEATURES
 -----------------
