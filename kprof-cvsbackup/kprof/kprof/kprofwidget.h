@@ -65,6 +65,14 @@ protected:
 		QString	name;
 	} SCallGraphEntry;
 
+	enum								// states while parsing the gprof output
+	{
+		SEARCH_FLAT_PROFILE,
+		PROCESS_FLAT_PROFILE,
+		SEARCH_CALL_GRAPH,
+		PROCESS_CALL_GRAPH
+	};
+
 public:
 	enum colID
 	{
@@ -111,6 +119,7 @@ private:
 
 	void selectProfileItem (CProfileInfo *info);
 	void selectItemInView (QListView *view, CProfileInfo *info);
+	void setManualColumnWidths (KListView *view);
 };
 
 #endif

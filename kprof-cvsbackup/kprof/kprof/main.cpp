@@ -35,16 +35,20 @@
 
 #include "kprof.h"
 
-static const char *description = I18N_NOOP("KDE profiling result examination utility");
-static const char *version = "v1.0.0";
+static const char *description = I18N_NOOP("gprof(1) execution profiling results examination utility");
+static const char *version = "v1.0.1";
 
 int main(int argc, char **argv)
 {
 	KAboutData aboutData(
 			"kprof", I18N_NOOP("KProf"),
 			version, description, KAboutData::License_GPL,
-			"(c) 2000, Florent Pillet");
-			aboutData.addAuthor("Florent Pillet",0, "florent.pillet@wanadoo.fr");
+			"(c) 2000, Florent Pillet",
+			NULL,
+			"http://kprof.sourceforge.net/",
+			"fpillet@users.sourceforge.net");
+
+	aboutData.addAuthor("Florent Pillet",0, "florent.pillet@wanadoo.fr");
 
 	KCmdLineArgs::init (argc, argv, &aboutData);
 

@@ -47,6 +47,10 @@ public:
 
 protected slots:
 	virtual bool queryExit ();
+	void toggleToolBar ();
+
+private:
+	void setupActions ();
 };
 
 #endif

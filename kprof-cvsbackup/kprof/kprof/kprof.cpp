@@ -44,35 +44,26 @@ KProfTopLevel::KProfTopLevel (QWidget *parent, const char *name)
 	mProf = new KProfWidget (this,"kprof");
 	CHECK_PTR(mProf);
 
-	QPopupMenu *file = new QPopupMenu;
-	CHECK_PTR(file);
-
-	KIconLoader *loader = KGlobal::iconLoader ();
-	file->insertItem (	QIconSet (loader->loadIcon ("open", KIcon::Small)),
-						i18n( "&Open..." ), mProf, SLOT(openResultsFile()),
-						KStdAccel::key(KStdAccel::Open));
-	file->insertSeparator();
-	file->insertItem (	QIconSet (loader->loadIcon ("fileprint", KIcon::Small)),
-						i18n( "&Print..."), mProf, SLOT(doPrint()),
-						KStdAccel::key(KStdAccel::Print));
-	file->insertSeparator();
-	file->insertItem (	QIconSet (loader->loadIcon ("exit", KIcon::Small)),
-						i18n( "&Quit" ), this, SLOT(close()),
-						KStdAccel::key(KStdAccel::Quit) );
-
-//	QPopupMenu *option = new QPopupMenu;
-//	CHECK_PTR(option);
-
-//	option->insertItem(i18n("&Configure %1...").arg(kapp->caption()), mProf, SLOT(openSettingsDialog()));
-
-	QPopupMenu *help = helpMenu(i18n("KProf\n\n(C) 2000\nFlorent Pillet (florent.pillet@wanadoo.fr)"));
-
-	menuBar()->insertItem (i18n("&File"), file );
-//	menuBar()->insertItem (i18n("&Options"), option );
-	menuBar()->insertSeparator ();
-	menuBar()->insertItem (i18n("&Help"), help );
-
+	setupActions ();
+	createGUI ("kprofui.rc");
 	setCentralWidget (mProf);
+}
+
+void KProfTopLevel::setupActions ()
+{
+	KStdAction::open (mProf, SLOT(openResultsFile()), actionCollection());
+	KStdAction::print (mProf, SLOT(doPrint()), actionCollection());
+	KStdAction::quit (this, SLOT(close()), actionCollection ());
+
+//	KStdAction::showToolbar (this, SLOT(toggleToolBar()), actionCollection());
+}
+
+void KProfTopLevel::toggleToolBar ()
+{
+	if (toolBar()->isVisible ())
+		toolBar()->hide ();
+	else
+		toolBar()->show ();
 }
 
 KProfTopLevel::~KProfTopLevel ()
