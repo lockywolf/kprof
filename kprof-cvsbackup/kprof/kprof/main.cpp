@@ -52,7 +52,7 @@ int main(int argc, char **argv)
 
 	if( app.isRestored() ) //SessionManagement
 	{
-		for( int n=1; KTMainWindow::canBeRestored(n); n++ )
+		for( int n=1; KMainWindow::canBeRestored(n); n++ )
 		{
 			KProfTopLevel *ktl = new KProfTopLevel();
 			CHECK_PTR(ktl);

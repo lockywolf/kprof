@@ -29,12 +29,12 @@
 #ifndef __KPROF_H__
 #define __KPROF_H__
 
-#include <ktmainwindow.h>
+#include <kmainwindow.h>
 #include <kmenubar.h>
 
 class KProfWidget;
 
-class KProfTopLevel : public KTMainWindow
+class KProfTopLevel : public KMainWindow
 {
 	Q_OBJECT
 

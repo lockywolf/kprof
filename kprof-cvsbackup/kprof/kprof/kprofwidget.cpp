@@ -540,6 +540,9 @@ void KProfWidget::fillObjsHierarchy (CProfileViewItem *parent, QString *classNam
 
 void KProfWidget::profileEntryRightClick (QListViewItem *listItem, const QPoint &p, int)
 {
+	if (!listItem)
+		return;
+
 	CProfileViewItem *item = (CProfileViewItem *) listItem;
 	CProfileInfo *info = item->getProfile();
 
