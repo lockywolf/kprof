@@ -53,6 +53,7 @@ public:
 
 private:
 	void setRecursiveIcon ();
+	static QString formatFloat (float n, int precision);
 };
 
 #endif

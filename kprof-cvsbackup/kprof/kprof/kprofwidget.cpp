@@ -453,7 +453,7 @@ void KProfWidget::parseProfile_pose (QTextStream& t)
 	
 	// because of the way POSE results are shown, we have to keep a dictionnary
 	// of indexes -> CProfileInfo*, and a list of call maps index -> parent index
-	QAsciiDict<CProfileInfo> functions;
+	QAsciiDict<CProfileInfo> functions (17);
 	QIntDict<CProfileInfo> indexes;			// dictionary mapping index value with profile entry
 	QArray<SPoseCallGraph> callGraph;
 

@@ -110,19 +110,19 @@ QString CProfileViewItem::text (int column) const
 			return QString::number (mProfile->calls);
 
    		case KProfWidget::col_total:
-			return QString::number (mProfile->cumSeconds, 'f');
+			return formatFloat (mProfile->cumSeconds, 3);
 
 		case KProfWidget::col_totalPercent:
-			return QString::number (mProfile->cumPercent, 'f');
+			return formatFloat (mProfile->cumPercent, 3);
 
    		case KProfWidget::col_self:
-			return QString::number (mProfile->selfSeconds, 'f');
+			return formatFloat (mProfile->selfSeconds, 3);
 
    		case KProfWidget::col_totalPerCall:
-			return QString::number (mProfile->totalTsPerCall, 'f');
+			return formatFloat (mProfile->totalTsPerCall, 3);
 
    		case KProfWidget::col_selfPerCall:
-			return QString::number (mProfile->selfTsPerCall, 'f');
+			return formatFloat (mProfile->selfTsPerCall, 3);
 
 		case KProfWidget::col_selfCycles:
 			return QString::number (mProfile->selfCycles);
@@ -191,3 +191,13 @@ QString CProfileViewItem::key (int column, bool) const
 
 	return s;
 }
+
+QString CProfileViewItem::formatFloat (float n, int precision)
+{
+	// format a float with parameterized precision
+	char buffer[32], format[16];
+	sprintf (format, "%%.0%df", precision);
+	sprintf (buffer, format, n);
+	return QString (buffer);
+}
+
