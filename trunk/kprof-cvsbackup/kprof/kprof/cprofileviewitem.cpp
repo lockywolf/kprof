@@ -3,13 +3,13 @@
  *
  * $Id$
  *
- * Copyright (c) 2000 Florent Pillet <florent.pillet@wanadoo.fr>
+ * Copyright (c) 2000-2001 Florent Pillet <fpillet@users.sourceforge.net>
  *
  * Requires the Qt widget libraries, available at no cost at
  * http://www.trolltech.com/
  *
- * Requires the K Desktop Environment 2.0 (KDE 2.0) libraries, available
- * at no cost at http://www.kde.org/
+ * Requires the K Desktop Environment 2.0 (KDE 2.0) libraries or later,
+ * available at no cost at http://www.kde.org/
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -34,16 +34,10 @@
 
 #include "cprofileviewitem.h"
 
-QRegExp *CProfileViewItem::sClassRegExp = NULL;
-
-
 CProfileViewItem::CProfileViewItem (QListView *parent, CProfileInfo *profile)
 	:	QListViewItem (parent),
 		mProfile (profile)
 {
-	if (sClassRegExp == NULL)
-		sClassRegExp = new QRegExp ("::[^\\(:]*\\(");
-
   	setRecursiveIcon ();
 }
 
@@ -51,8 +45,6 @@ CProfileViewItem::CProfileViewItem (QListViewItem *parent, CProfileInfo *profile
 	:	QListViewItem (parent),
 		mProfile (profile)
 {
-	if (sClassRegExp == NULL)
-		sClassRegExp = new QRegExp ("::[^\\(:]*\\(");
   	setRecursiveIcon ();
 }
 
@@ -60,8 +52,6 @@ CProfileViewItem::CProfileViewItem (QListView *parent, QListViewItem *after, CPr
 	:	QListViewItem (parent, after),
 		mProfile (profile)
 {
-	if (sClassRegExp == NULL)
-		sClassRegExp = new QRegExp ("::[^\\(:]*\\(");
   	setRecursiveIcon ();
 }
 
@@ -70,8 +60,6 @@ CProfileViewItem::CProfileViewItem (QListViewItem *parent, QListViewItem *after,
 	:	QListViewItem (parent, after),
 		mProfile (profile)
 {
-	if (sClassRegExp == NULL)
-		sClassRegExp = new QRegExp ("::[^\\(:]*\\(");
   	setRecursiveIcon ();
 }
 
@@ -98,7 +86,7 @@ QString CProfileViewItem::text (int column) const
 		if (child == NULL || column != KProfWidget::col_function)
 			return "";
 
-		return child->mProfile->name.left (sClassRegExp->find (child->mProfile->name, 0));
+		return child->mProfile->object;
   	}
 
 	switch (column)
@@ -109,9 +97,9 @@ QString CProfileViewItem::text (int column) const
 			if (p && p->mProfile == NULL)
 			{
 				// we are in a method of an object in the object
-				return mProfile->name.right (mProfile->name.length () - sClassRegExp->find (mProfile->name, 0) - 2);
+				return mProfile->name.right (mProfile->name.length () - mProfile->object.length() - 2);
     		}
-			return mProfile->name;
+			return mProfile->simplifiedName;
    		}
 
    		case KProfWidget::col_count:
@@ -149,7 +137,7 @@ QString CProfileViewItem::key (int column, bool) const
 		if (child == NULL || column != KProfWidget::col_function)
 			return "";
 
-		return child->mProfile->name.left (sClassRegExp->find (child->mProfile->name, 0));
+		return child->mProfile->object;
   	}
 
 	switch (column)
