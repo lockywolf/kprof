@@ -1,5 +1,5 @@
 # KDE tags expanded automatically by am_edit - $Revision$ 
-# Makefile.in generated automatically by automake 1.4 from Makefile.am
+# Makefile.in generated automatically by automake 1.4-p4 from Makefile.am
 
 # Copyright (C) 1994, 1995-8, 1999 Free Software Foundation, Inc.
 # This Makefile.in is free software; the Free Software Foundation
@@ -130,6 +130,7 @@ LIB_KSPELL = @LIB_KSPELL@
 LIB_KSYCOCA = @LIB_KSYCOCA@
 LIB_KWRITE = @LIB_KWRITE@
 LIB_QT = @LIB_QT@
+LIB_QTREEMAP = @LIB_QTREEMAP@
 LIB_SMB = @LIB_SMB@
 LIB_X11 = @LIB_X11@
 LN_S = @LN_S@
@@ -210,12 +211,12 @@ configure configure.in
 
 #>- DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
 #>+ 4
-KDE_DIST=kprof.lsm configure.in.in kprof.spec VERSION Makefile.cvs kprof.studio 
+KDE_DIST=kprof.lsm configure.in.in kprof.spec Makefile.cvs VERSION 
 
 DISTFILES= $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST) $(KDE_DIST)
 
 
-TAR = gtar
+TAR = tar
 GZIP_ENV = --best
 #>- all: all-redirect
 #>+ 1
@@ -234,7 +235,7 @@ Makefile: $(srcdir)/Makefile.in  $(top_builddir)/config.status $(BUILT_SOURCES)
 $(ACLOCAL_M4):  configure.in  acinclude.m4
 	cd $(srcdir) && $(ACLOCAL)
 
-config.status: $(srcdir)/configure $(CONFIG_STATUS_DEPENDENCIES)
+config.status: $(srcdir)/configure.in $(CONFIG_STATUS_DEPENDENCIES)
 	$(SHELL) ./config.status --recheck
 $(srcdir)/configure: $(srcdir)/configure.in $(ACLOCAL_M4) $(CONFIGURE_DEPENDENCIES)
 	cd $(srcdir) && $(AUTOCONF)
@@ -399,17 +400,6 @@ distdir: $(DISTFILES)
 	distdir=`cd $(distdir) && pwd`; \
 	cd $(top_srcdir) \
 	  && $(AUTOMAKE) --include-deps --build-dir=$$here --srcdir-name=$(top_srcdir) --output-dir=$$top_distdir --gnu ./Makefile
-#>- 	@for file in $(DISTFILES); do \
-#>- 	  d=$(srcdir); \
-#>- 	  if test -d $$d/$$file; then \
-#>- 	    cp -pr $$/$$file $(distdir)/$$file; \
-#>- 	  else \
-#>- 	    test -f $(distdir)/$$file \
-#>- 	    || ln $$d/$$file $(distdir)/$$file 2> /dev/null \
-#>- 	    || cp -p $$d/$$file $(distdir)/$$file || :; \
-#>- 	  fi; \
-#>- 	done
-#>+ 10
 	@for file in $(DISTFILES); do \
 	  d=$(srcdir); \
 	  if test -d $$d/$$file; then \
