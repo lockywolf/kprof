@@ -94,6 +94,9 @@ void KProfTopLevel::setupActions ()
 	mToggleTemplateAbbrev = new KToggleAction (i18n ("Abbreviate C++ &Templates"), 0, mProf, SLOT (toggleTemplateAbbrev ()), actionCollection(), "toggle_template_abbreviations");
 	mSelectFont = new KAction (i18n ("Select Font..."), 0, mProf, SLOT (selectListFont ()), actionCollection(), "select_list_font");
 	mGenCallGraphAction = new KAction (i18n ("&Generate Call Graph..."), 0, mProf, SLOT (generateCallGraph ()), actionCollection(), "generate_call_graph");
+#ifdef HAVE_LIBQTREEMAP
+	mDisplayTreeMapAction = new KAction(i18n("&Display TreeMap View"), 0, mProf, SLOT (displayTreeMapView()), actionCollection(), "display_tree_map_view");
+#endif
 }
 
 void KProfTopLevel::toggleToolBar ()
