@@ -64,18 +64,18 @@ public:
 
 protected:
 	KTabCtl*				mTabs;		// the tabbed control
-	KListView*				mFlat;		// the flat profile list widget
-	KListView*				mHier;		// the hierarchical profile widget
-	KListView*				mObjs;		// the object profile widget
+	KListView*			mFlat;		// the flat profile list widget
+	KListView*			mHier;		// the hierarchical profile widget
+	KListView*			mObjs;		// the object profile widget
 
 	QVector<CProfileInfo>	mProfile;	// profile information read from file
 	QVector<CProfileInfo>	mPreviousProfile;	// when comparing, keep previous profile information here
-	QVector<QString>		mClasses;	// list of distinct class names found in the profile information
+	QVector<QString>			mClasses;	// list of distinct class names found in the profile information
 
 	int						mCurPage;		// id of the current page (used to know which to print)
-	QString					mGProfStdout;	// stdout from gprof command
-	QString					mGProfStderr;	// stderr from gprof command
-	QString					mFlatFilter;	// filter string for flat profile view
+	QString				mGProfStdout;	// stdout from gprof command
+	QString				mGProfStderr;	// stderr from gprof command
+	QString				mFlatFilter;	// filter string for flat profile view
 	QFont					mListFont;		// font used to draw the text
 	bool					mAbbrevTemplates; // if true, templates are "abbreviates" (i.e. become <...>)
 	QDir					mCurDir;		// current directory
@@ -193,9 +193,7 @@ public slots:
 	void profileEntryRightClick (QListViewItem *listItem, const QPoint &p, int);
 	void flatProfileFilterChanged (const QString &filter);
 	void generateCallGraph ();
-#ifdef HAVE_LIBQTREEMAP
 	void displayTreeMapView();
-#endif
 
 	void toggleTemplateAbbrev ();
 	void selectListFont ();
