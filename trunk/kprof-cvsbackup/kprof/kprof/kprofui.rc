@@ -1,6 +1,9 @@
 <!DOCTYPE kpartgui SYSTEM "kpartgui.dtd">
 <kpartgui name="kprof" version="1">
 	<MenuBar>
+		<Menu name="file">
+			<Action name="compare_file" />
+		</Menu>
 		<Menu name="tools">
 			<text>&amp;Tools</text>
 			<Action name="generate_call_graph" />

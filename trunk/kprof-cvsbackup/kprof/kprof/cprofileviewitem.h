@@ -46,8 +46,11 @@ public:
 	CProfileViewItem (QListViewItem *parent, QListViewItem *after, CProfileInfo *profile);
 	virtual ~CProfileViewItem ();
 
+#ifdef TEST_DIFF
+	virtual void setup ();
+	virtual void invalidateHeight ();
 	virtual void paintCell (QPainter * p, const QColorGroup & cg, int column, int width, int align);
-
+#endif
 	virtual QString text (int column) const;
 	virtual QString key (int column, bool ascending) const;
 

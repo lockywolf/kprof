@@ -1,3 +1,7 @@
+2001-06-09 Florent Pillet <fpillet@users.sourceforge.net>
+	* Added 'Compare With...' menu entry for file comparison
+	* Save and restore the current directory so ease successive usage
+
 2001-05-08 Florent Pillet <fpillet@users.sourceforge.net>
 	* Added printing support, using KHTML to render & print the table
 	* When opening a file, properly set the window title to "FileName - KProf"

@@ -291,13 +291,25 @@ void KProfWidget::openRecentFile (const KURL& url)
 	openFile (filename, -1);
 }
 
+void KProfWidget::compareFile ()
+{
+	// here we do not customize the file open dialog since the compared
+	// file should be the same type
+	QString f = KFileDialog::getOpenFileName (mCurDir.absPath(), QString::null, this, i18n ("Select a profiling results file to compare..."));
+	if (f.isEmpty ())
+		return;
+	
+	KRecentDocument::add (f);
+	openFile (f, sLastFileFormat, true);
+}
+
 void KProfWidget::openResultsFile ()
 {
 	// customize the Open File dialog: we add
 	// a few widgets at the end which allow the user
 	// to give us a hint at which profiler the results
 	// file comes from (GNU gprof, Function Check, Palm OS Emulator)
-	KFileDialog fd (QString::null, QString::null, this, NULL, i18n ("Select a profiling results file"));
+	KFileDialog fd (mCurDir.absPath(), QString::null, this, NULL, i18n ("Select a profiling results file"));
 
 	QWidget *w = fd.getMainWidget ();
 	QLayout *layout = w->layout ();
@@ -332,7 +344,7 @@ void KProfWidget::openResultsFile ()
 		sLastFileFormat =	fmtGPROF->isChecked () ?		FORMAT_GPROF :
 	                        fmtFNCCHECK->isChecked () ?		FORMAT_FNCCHECK :
     	                   									FORMAT_POSE;
-		openFile (filename, sLastFileFormat);
+		openFile (filename, sLastFileFormat, false);
 	}
 }
 
@@ -454,7 +466,6 @@ void KProfWidget::openFile (const QString &filename, int format, bool compare)
 		mFlat->clear ();
 		mHier->clear ();
 		mObjs->clear ();
-		mProfile.clear ();
 
 		// if we are going to compare results, save the previous results and
 		// remove any previously deleted entry
@@ -502,6 +513,9 @@ void KProfWidget::openFile (const QString &filename, int format, bool compare)
 	url.setProtocol ("file");
 	url.setFileName (filename);
 	emit addRecentFile (url);
+
+	// update the current directory
+	mCurDir = finfo.dir ();
 }
 
 void KProfWidget::gprofStdout (KProcess *, char *buffer, int buflen)
@@ -1244,7 +1258,7 @@ void KProfWidget::postProcessProfile (bool compare)
 		{
 			if (mProfile[j]->output==false && mProfile[i]->name == mProfile[j]->name)
 			{
-				mProfile[i]->previous = mProfile[j];
+				mProfile[i]->previous = mPreviousProfile[j];
 				mProfile[j]->output = true;
 				break;
 			}
