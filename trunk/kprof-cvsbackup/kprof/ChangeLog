@@ -1,3 +1,14 @@
+2002-07-12 Andrey Behrens <Andrey.Behrens@gmx.de>
+	* some small changes for gnu 3.1
+	* using KFontDialog instead QFontDialog
+	* fixing a bug in the function getToggleTemplateAbbrevAction () (it crashs
+	  some times)
+	* fixing a bug in loadSettings / applySettings() (correct storing TTF Fonts)
+	* some comments
+	* some debug messages
+	* some asserts()
+	* KAboutData takes VERSION and PACKAGE from config.h
+
 2002-07-02 Colin Desmond <cdesmond@users.sourceforge.net>
 	* Moved the TreeMap generation to a menu option only visable if the library is installed.
 	*	Allow the user to display the call graphs rather than save to file
