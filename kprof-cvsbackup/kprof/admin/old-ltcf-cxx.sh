@@ -164,7 +164,7 @@ case $host_os in
       if test "$host_cpu" = ia64; then
         shared_flag='${wl}-G'
       else
-        shared_flag='${wl}-bM:SRE'
+        shared_flag='-qmkshrobj'
       fi
     fi
 
