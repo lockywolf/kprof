@@ -223,7 +223,7 @@ noinst_HEADERS = kprof.h kprofwidget.h cprofileinfo.h cprofileviewitem.h
 #>- METASOURCES = AUTO
 
 # the program icon
-KDE_ICON = kprofapp
+KDE_ICON = kprof
 
 # this is where the kdelnk file will go 
 kdelnkdir = $(kde_appsdir)/Development
@@ -273,7 +273,7 @@ DIST_COMMON =  Makefile.am Makefile.in
 
 #>- DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
 #>+ 4
-KDE_DIST=lo32-app-kprof.png kprof kprof.desktop call-graph.ui kprof_meta_unload.cpp kprofui.rc call-graph.h lo16-app-kprof.png 
+KDE_DIST=lo32-app-kprof.png kprofwidget.patch kprof.desktop call-graph.ui kprofui.rc call-graph.h lo16-app-kprof.png 
 
 DISTFILES= $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST) $(KDE_DIST)
 
@@ -611,13 +611,18 @@ installcheck: installcheck-recursive
 install-exec-am: install-binPROGRAMS
 install-exec: install-exec-recursive
 
-install-data-am: install-kdelnkDATA install-rcDATA
+#>- install-data-am: install-kdelnkDATA install-rcDATA
+#>+ 1
+install-data-am: install-kde-icons  install-kdelnkDATA install-rcDATA
 install-data: install-data-recursive
 
 install-am: all-am
 	@$(MAKE) $(AM_MAKEFLAGS) install-exec-am install-data-am
 install: install-recursive
-uninstall-am: uninstall-binPROGRAMS uninstall-kdelnkDATA \
+#>- uninstall-am: uninstall-binPROGRAMS uninstall-kdelnkDATA \
+#>- 		uninstall-rcDATA
+#>+ 2
+uninstall-am: uninstall-kde-icons  uninstall-binPROGRAMS uninstall-kdelnkDATA \
 		uninstall-rcDATA
 uninstall: uninstall-recursive
 all-am: Makefile $(PROGRAMS) $(DATA) $(HEADERS)
@@ -737,6 +742,17 @@ clean-ui:
 #>+ 2
 docs-am:
 
+#>+ 10
+install-kde-icons:
+	$(mkinstalldirs) $(DESTDIR)$(kde_icondir)/locolor/32x32/apps
+	$(INSTALL_DATA) $(srcdir)/lo32-app-kprof.png $(DESTDIR)$(kde_icondir)/locolor/32x32/apps/kprof.png
+	$(mkinstalldirs) $(DESTDIR)$(kde_icondir)/locolor/16x16/apps
+	$(INSTALL_DATA) $(srcdir)/lo16-app-kprof.png $(DESTDIR)$(kde_icondir)/locolor/16x16/apps/kprof.png
+
+uninstall-kde-icons:
+	-rm -f $(DESTDIR)$(kde_icondir)/locolor/32x32/apps/kprof.png
+	-rm -f $(DESTDIR)$(kde_icondir)/locolor/16x16/apps/kprof.png
+
 #>+ 5
 force-reedit:
 		cd $(top_srcdir) && $(AUTOMAKE) --gnu kprof/Makefile
@@ -759,7 +775,7 @@ clean-moc-classes:
 	-rm -f  kprof_meta_unload.cpp
 
 #>+ 11
-kprof.all_cpp.cpp: $(srcdir)/Makefile.in $(srcdir)/main.cpp $(srcdir)/kprof.cpp $(srcdir)/kprofwidget.cpp $(srcdir)/cprofileviewitem.cpp $(srcdir)/call-graph.cpp $(srcdir)/kprof_meta_unload.cpp   call-graph.moc kprof.moc kprofwidget.moc call-graph.moc 
+kprof.all_cpp.cpp: $(srcdir)/Makefile.in $(srcdir)/main.cpp $(srcdir)/kprof.cpp $(srcdir)/kprofwidget.cpp $(srcdir)/cprofileviewitem.cpp $(srcdir)/call-graph.cpp kprof_meta_unload.cpp   call-graph.moc kprof.moc kprofwidget.moc call-graph.moc 
 	@echo 'creating kprof.all_cpp.cpp ...'; \
 	rm -f kprof.all_cpp.files kprof.all_cpp.final; \
 	echo "#define KDE_USE_FINAL 1" >> kprof.all_cpp.final; \
