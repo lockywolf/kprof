@@ -42,20 +42,21 @@ class KProfTopLevel : public KMainWindow
 protected:
 	KProfWidget*	mProf;
 	KToggleAction*	mToggleTemplateAbbrev;
-	KAction*		mSelectFont;
-	KAction*		mGenCallGraphAction;
-	KAction*		mCompareFile;
-	KAction* 	mRunApplication;
-	KAction* 	mDisplayTreeMapAction;
+	KAction*	mSelectFont;
+	KAction*	mGenCallGraphAction;
+	KAction*	mCompareFile;
+	KAction*	mRunApplication;
+	KAction*	mDisplayTreeMapAction;
+	KAction*	mConfigure;
 
 public:
 	KProfTopLevel (QWidget *parent = 0, const char *name = NULL);
 	~KProfTopLevel ();
 
 	inline KToggleAction* getToggleTemplateAbbrevAction ()
-		{
-			return mToggleTemplateAbbrev;
-		}
+	{
+		return mToggleTemplateAbbrev;
+	}
 
 protected slots:
 	virtual bool queryExit ();
