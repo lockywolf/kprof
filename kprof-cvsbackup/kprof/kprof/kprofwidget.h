@@ -43,6 +43,7 @@
 #include <kprocess.h>
 
 #include "cprofileinfo.h"
+#include "cconfigure.h"
 
 class QFont;
 class QFile;
@@ -180,6 +181,7 @@ public slots:
 
 	void toggleTemplateAbbrev ();
 	void selectListFont ();
+	void configure();
 
 protected slots:
 	void selectionChanged (QListViewItem *item);
@@ -217,6 +219,7 @@ private:
 	QString processName;
 	KHTMLPart* mCallTreeHtmlPart;
 	KHTMLPart* mMethodHtmlPart;
+	CConfigure* mConfigure;
 };
 
 #endif
