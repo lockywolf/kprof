@@ -64,6 +64,7 @@
  */
 QFont*	KProfWidget::sListFont = NULL;
 int		KProfWidget::sLastFileFormat = FORMAT_GPROF;
+bool	KProfWidget::sDiffMode = false;
 
 
 KProfWidget::KProfWidget (QWidget *parent, const char *name)
@@ -339,7 +340,7 @@ void KProfWidget::openFile (const QString &filename, int format, bool compare)
 {
 	if (filename.isEmpty ())
 		return;
-
+	
 	// if the file is an executable file, generate the profiling information
 	// directly from gprof and the gmon.out file
 	QFileInfo finfo (filename);
@@ -413,6 +414,7 @@ void KProfWidget::openFile (const QString &filename, int format, bool compare)
 
 		// if we are going to compare results, save the previous results and
 		// remove any previously deleted entry
+		sDiffMode = compare;
 		if (compare)
 		{
 			mPreviousProfile = mProfile;
@@ -452,6 +454,20 @@ void KProfWidget::openFile (const QString &filename, int format, bool compare)
 		mFlat->clear ();
 		mHier->clear ();
 		mObjs->clear ();
+		mProfile.clear ();
+
+		// if we are going to compare results, save the previous results and
+		// remove any previously deleted entry
+		sDiffMode = compare;
+		if (compare)
+		{
+			mPreviousProfile = mProfile;
+			for (uint i=mPreviousProfile.count(); i > 0; )
+			{
+				if (mPreviousProfile[--i]->deleted)
+					mPreviousProfile.remove (i);
+			}
+		}
 		mProfile.clear ();
 
 		// parse profile data
