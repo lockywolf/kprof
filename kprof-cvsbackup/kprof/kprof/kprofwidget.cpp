@@ -27,6 +27,7 @@
  */
 
 #include <qlayout.h>
+#include <qradiobutton.h>
 #include <qvector.h>
 #include <qlabel.h>
 #include <qwhatsthis.h>
@@ -43,7 +44,7 @@
 
 #include "kprofwidget.h"
 #include "cprofileviewitem.h"
-
+#include "call-graph.h"
 
 KProfWidget::KProfWidget (QWidget *parent, const char *name)
 	:	QWidget (parent, name),
@@ -812,10 +813,30 @@ void KProfWidget::doPrint ()
 #endif
 }
 
-void KProfWidget::generateDotCallGraph ()
+void KProfWidget::generateCallGraph ()
+{
+	// Display the call-graph format selection dialog and generate a
+	// call graph
+	CCallGraph dialog (this, "Call-Graph Format", true);
+	if (dialog.exec ())
+	{
+		bool currentSelectionOnly = dialog.mSelectedFunction->isChecked ();
+		if (dialog.mGraphViz->isChecked ())
+			generateDotCallGraph (currentSelectionOnly);
+		else
+			generateVCGCallGraph (currentSelectionOnly);
+	}
+}
+
+void KProfWidget::generateVCGCallGraph (bool currentSelectionOnly)
+{
+	// TODO
+}
+
+void KProfWidget::generateDotCallGraph (bool currentSelectionOnly)
 {
 	// generate a call-graph to a .dot file in a format compatible with
-	// GraphViz, the free graph generator from ATT (http://www.research.att.com/sw/tools/graphviz/)
+	// GraphViz, a free graph generator from ATT (http://www.research.att.com/sw/tools/graphviz/)
 
 	QString dotfile = KFileDialog::getSaveFileName (QString::null, i18n("*.dot|GraphViz DOT files"), this,
 													i18n ("Save call-graph file as..."));
@@ -859,7 +880,6 @@ void KProfWidget::generateDotCallGraph ()
 		{
 			methodName = mProfile[i]->name.mid (classOff, methOff - classOff) + "\\n";
 //			args = mProfile[i]->name.mid (methOff);
-
 		}
 		else
 			methodName = mProfile[i]->name.mid (classOff);

@@ -66,7 +66,7 @@ void KProfTopLevel::setupActions ()
 	KStdAction::showToolbar (this, SLOT(toggleToolBar()), actionCollection());
 	
 	// add the Tools menu
-	mGenCallGraphAction = new KAction (i18n ("&Generate call graph..."), 0, mProf, SLOT (generateDotCallGraph ()), actionCollection(), "generate_call_graph");
+	mGenCallGraphAction = new KAction (i18n ("&Generate Call Graph..."), 0, mProf, SLOT (generateCallGraph ()), actionCollection(), "generate_call_graph");
 }
 
 void KProfTopLevel::toggleToolBar ()

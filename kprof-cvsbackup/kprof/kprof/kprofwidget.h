@@ -110,7 +110,7 @@ public slots:
 
 	void profileEntryRightClick (QListViewItem *listItem, const QPoint &p, int);
 	void flatProfileFilterChanged (const QString &filter);
-	void generateDotCallGraph ();
+	void generateCallGraph ();
 
 protected slots:
 	void selectionChanged (QListViewItem *item);
@@ -136,6 +136,9 @@ private:
 
 	void selectProfileItem (CProfileInfo *info);
 	void selectItemInView (QListView *view, CProfileInfo *info, bool examineSubs);
+
+	void generateDotCallGraph (bool currentSelectionOnly);
+	void generateVCGCallGraph (bool currentSelectionOnly);
 };
 
 #endif
