@@ -3,6 +3,7 @@
 	  (see menu Settings->Abbreviate C++ Templates)
 	* merged a small parser simplification from
 	  Carsten Branitzki <csb@operamail.com>
+	* fixed saving/restoring the KProf window size
 	
 2001-02-13 Florent Pillet <fpillet@users.sourceforge.net>
 	* improved the display of method names: if a method name has multiple signatures,

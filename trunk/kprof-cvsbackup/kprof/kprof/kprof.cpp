@@ -55,8 +55,29 @@ KProfTopLevel::KProfTopLevel (QWidget *parent, const char *name)
 
 	connect (mProf, SIGNAL (addRecentFile(const KURL&)), this, SLOT(addRecentFile(const KURL&)));
 
+	loadSettings ();
+	applySettings ();
+}
+
+void KProfTopLevel::loadSettings ()
+{
+	KConfig &config = *kapp->config ();
+	config.setGroup ("KProfiler");
+	int w = config.readNumEntry ("Width", width ());
+	int h = config.readNumEntry ("Height", height ());
+	resize (w,h);
+
 	mProf->loadSettings ();
+}
+
+void KProfTopLevel::applySettings ()
+{
+	KConfig &config = *kapp->config ();
+	config.setGroup ("KProfiler");
+	config.writeEntry ("Width", width ());
+	config.writeEntry ("Height", height ());
 	mProf->applySettings ();
+	config.sync ();
 }
 
 void KProfTopLevel::setupActions ()
@@ -89,9 +110,7 @@ bool KProfTopLevel::queryExit( void )
 	KConfig *config = kapp->config ();
 	KRecentFilesAction *recent = (KRecentFilesAction *) actionCollection()->action (KStdAction::stdName (KStdAction::OpenRecent));
 	recent->saveEntries (config);
-
-	mProf->applySettings();
-
+	applySettings ();
 	return true;
 }
 

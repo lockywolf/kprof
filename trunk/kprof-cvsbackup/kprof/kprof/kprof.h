@@ -60,6 +60,8 @@ protected slots:
 
 private:
 	void setupActions ();
+	void loadSettings ();
+	void applySettings ();
 };
 
 #endif

@@ -184,27 +184,18 @@ void KProfWidget::settingsChanged ()
 void KProfWidget::applySettings ()
 {
 	KConfig &config = *kapp->config ();
-
 	config.setGroup ("KProfiler");
-	config.writeEntry ("Width", width ());
-	config.writeEntry ("Height", height ());
 	config.writeEntry ("AbbreviateTemplates", mAbbrevTemplates);
 
 	// TODO: save columns widhts here
 
-	config.sync ();
 	update ();
 }
 
 void KProfWidget::loadSettings ()
 {
 	KConfig &config = *kapp->config ();
-
 	config.setGroup ("KProfiler");
-
-	int w = config.readNumEntry ("Width", width ());
-	int h = config.readNumEntry ("Height", height ());
-	resize (w,h);
 
 	mAbbrevTemplates = config.readBoolEntry ("AbbreviateTemplates", true);
 	KToggleAction *action = ((KProfTopLevel *) parent ())->getToggleTemplateAbbrevAction ();
