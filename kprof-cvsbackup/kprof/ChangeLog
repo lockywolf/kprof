@@ -6,6 +6,8 @@
 	* merged a small parser simplification from
 	  Carsten Branitzki <csb@operamail.com>
 	* fixed saving/restoring the KProf window size
+	* disabled printing until the code is written
+	* release 1.1
 	
 2001-02-13 Florent Pillet <fpillet@users.sourceforge.net>
 	* improved the display of method names: if a method name has multiple signatures,
