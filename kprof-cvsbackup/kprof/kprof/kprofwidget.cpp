@@ -26,6 +26,7 @@
  *  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
+#include <qhbuttongroup.h>
 #include <qfontdialog.h>
 #include <qlayout.h>
 #include <qradiobutton.h>
@@ -43,6 +44,7 @@
 #include <kpopupmenu.h>
 #include <kfiledialog.h>
 #include <kiconloader.h>
+#include <krecentdocument.h>
 
 #include "kprof.h"
 #include "kprofwidget.h"
@@ -50,6 +52,15 @@
 #include "call-graph.h"
 
 QFont* KProfWidget::sListFont = NULL;
+
+enum
+{
+	FORMAT_GPROF,
+	FORMAT_FNCCHECK,
+	FORMAT_POSE
+};
+
+
 
 KProfWidget::KProfWidget (QWidget *parent, const char *name)
 	:	QWidget (parent, name),
@@ -244,16 +255,42 @@ void KProfWidget::loadSettings ()
 void KProfWidget::openRecentFile (const KURL& url)
 {
 	QString filename = url.path ();
-	openFile (filename);
+	openFile (filename, -1);
 }
 
 void KProfWidget::openResultsFile ()
 {
-	QString filename = KFileDialog::getOpenFileName (NULL, NULL, this, "Select a gprof-generated file");
-	openFile (filename);
+	KFileDialog fd (QString::null, QString::null, this, NULL, i18n ("Select a profiling results file"));
+
+	QWidget *w = fd.mainWidget ();
+	QLayout *layout = w->layout ();
+
+	QRadioButton *fmtGPROF, *fmtFNCCHECK;
+
+	QHBoxLayout *hl = new QHBoxLayout (layout);
+
+	hl->add (new QLabel (i18n ("Text File Format:"), w));
+	hl->addSpacing (10);
+
+	QButtonGroup *bg = new QHButtonGroup (w);
+	bg->setRadioButtonExclusive (true);
+	fmtGPROF = new QRadioButton (i18n ("GNU gprof  "), bg);
+	fmtFNCCHECK = new QRadioButton (i18n ("Function Check  "), bg);
+	if (!fmtGPROF->isOn ())
+		fmtGPROF->toggle ();
+	hl->add (bg);
+	hl->addStretch ();
+	
+    fd.exec();
+
+    QString filename = fd.selectedFile();
+    if (!filename.isEmpty())
+        KRecentDocument::add (filename);
+
+	openFile (filename, fmtGPROF->isChecked () ? FORMAT_GPROF : FORMAT_FNCCHECK);
 }
 
-void KProfWidget::openFile (const QString &filename)
+void KProfWidget::openFile (const QString &filename, int format)
 {
 	if (filename.isEmpty ())
 		return;
@@ -268,8 +305,9 @@ void KProfWidget::openFile (const QString &filename)
 		QFileInfo gmonfinfo (gmonfilename);
 		if (!gmonfinfo.exists ())
 		{
+			// TODO: prepare the .fncdump filename
 			QString text;
-			text.sprintf (i18n ("Can't find the gprof output file '%s'"), gmonfilename.latin1());
+			text.sprintf (i18n ("Can't find the gprof(1) output file\n'%s'"), gmonfilename.latin1());
 			KMessageBox::error (this, text, i18n ("File not found"));
 			return;
 		}
@@ -321,10 +359,16 @@ void KProfWidget::openFile (const QString &filename)
 	{
 		// if user tried to open gmon.out, have him select the executable instead, then recurse to use
 		// the executable file
-		if (finfo.fileName() == QString ("gmon.out"))
+		if (finfo.fileName() == "gmon.out")
 		{
-			KMessageBox::error (this, i18n ("File 'gmon.out' is the result of the execution of an application\nwith profiling turned on.\nYou can not open it as such: either open the application itself\nor open a text results file generated with 'gprof -b application-name'"),
+			KMessageBox::error (this, i18n ("File 'gmon.out' is the result of the execution of an application\nwith gprof(1) profiling turned on.\nYou can not open it as such: either open the application itself\nor open a text results file generated with 'gprof -b application-name'"),
 								i18n ("Opening gmon.out not allowed"));
+			return;
+		}
+		else if (finfo.fileName() == "fnccheck.out")
+		{
+			KMessageBox::error (this, i18n ("File 'fnccheck.out' is the result of the execution of an application\nwith Function Check profiling turned on.\nYou can not open it as such: either open the application itself\nor open a text results file generated with 'fncdump +calls application-name'"),
+								i18n ("Opening fnccheck.out not allowed"));
 			return;
 		}
 
@@ -339,7 +383,10 @@ void KProfWidget::openFile (const QString &filename)
 			return;
 
 		QTextStream t (&f);
-		parseProfile_gprof (t);
+		if (format == FORMAT_GPROF)
+			parseProfile_gprof (t);
+		else
+			parseProfile_fnccheck (t);
 	}
 
 	// post-process the parsed data
@@ -484,7 +531,6 @@ void KProfWidget::parseProfile_fnccheck (QTextStream& t)
 
     		case PROCESS_CALL_GRAPH:
 			{
-				printf ("PROCESS_CALL_GRAPH: %s\n", s.latin1());
 				if (s.startsWith ("'"))
 				{
 					// found another call-graph entry
