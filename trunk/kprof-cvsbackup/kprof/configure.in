@@ -53,6 +53,4 @@ AC_OUTPUT( \
 kprof/Makefile \
 kprof/doc/Makefile \
 kprof/doc/kprof/Makefile \
-kprof/pics/Makefile \
-po/Makefile \
 )
