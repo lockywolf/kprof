@@ -2,7 +2,7 @@
 Type=Application
 Name=KProf
 Exec=kprof
-Icon=application
+Icon=kprof
 Comment=Profile results analysis utility
 Comment[fr]=Outil d'analyse de résultats de profiling
 Terminal=0
