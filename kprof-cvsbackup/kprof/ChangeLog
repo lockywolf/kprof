@@ -1,5 +1,6 @@
 2002-07-16 Andrey Behrens <Andrey.Behrens@gmx.de>
-	* start to translate the app to german
+	* translate the app to german
+	* made a better libqtreemap recognition
 
 2002-07-12 Andrey Behrens <Andrey.Behrens@gmx.de>
 	* some small changes for gnu 3.1
