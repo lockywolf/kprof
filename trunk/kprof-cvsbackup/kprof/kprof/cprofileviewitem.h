@@ -32,8 +32,7 @@
 #include <qlistview.h>
 #include <qregexp.h>
 
-#include "kprofwidget.h"
-#include "cprofileinfo.h"
+class CProfileInfo;
 
 class Q_EXPORT CProfileViewItem : public QListViewItem
 {

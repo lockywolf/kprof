@@ -43,12 +43,16 @@
 
 #include "cprofileinfo.h"
 
+class QFont;
 class QFile;
 class CProfileViewItem;
 
 class KProfWidget : public QWidget
 {
 	Q_OBJECT
+
+public:
+	static QFont*			sListFont;	// font used to draw list entries
 
 protected:
 	KTabCtl*				mTabs;		// the tabbed control
@@ -67,6 +71,8 @@ protected:
 	QString					mGProfStdout;	// stdout from gprof command
 	QString					mGProfStderr;	// stderr from gprof command
 	QString					mFlatFilter; // filter string for flat profile view
+
+	QFont					mListFont;	// font used to draw the text
 
 	bool					mAbbrevTemplates;	// if true, templates are "abbreviates" (i.e. become <...>)
 
@@ -120,6 +126,7 @@ public slots:
 	void generateCallGraph ();
 
 	void toggleTemplateAbbrev ();
+	void selectListFont ();
 
 protected slots:
 	void selectionChanged (QListViewItem *item);

@@ -27,12 +27,13 @@
  */
 
 #include <stdlib.h>
-
 #include <qstring.h>
-
 #include <kiconloader.h>
 
+#include "kprofwidget.h"
+#include "cprofileinfo.h"
 #include "cprofileviewitem.h"
+
 
 CProfileViewItem::CProfileViewItem (QListView *parent, CProfileInfo *profile)
 	:	QListViewItem (parent),

@@ -42,6 +42,7 @@ class KProfTopLevel : public KMainWindow
 protected:
 	KProfWidget*	mProf;
 	KToggleAction*	mToggleTemplateAbbrev;
+	KAction*		mSelectFont;
 	KAction*		mGenCallGraphAction;
 
 public:
