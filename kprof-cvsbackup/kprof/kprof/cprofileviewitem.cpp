@@ -124,6 +124,12 @@ QString CProfileViewItem::text (int column) const
    		case KProfWidget::col_selfPerCall:
 			return QString::number (mProfile->selfTsPerCall, 'f');
 
+		case KProfWidget::col_selfCycles:
+			return QString::number (mProfile->selfCycles);
+
+		case KProfWidget::col_cumCycles:
+			return QString::number (mProfile->cumCycles);
+
    		default:
 			return "";
    }
@@ -172,6 +178,14 @@ QString CProfileViewItem::key (int column, bool) const
 
    		case KProfWidget::col_selfPerCall:
 			s.sprintf ("%014ld", (long) (mProfile->selfTsPerCall * 100.0));
+			break;
+
+		case KProfWidget::col_selfCycles:
+			s.sprintf ("%014ld", mProfile->selfCycles);
+			break;
+
+		case KProfWidget::col_cumCycles:
+			s.sprintf ("%014ld", mProfile->cumCycles);
 			break;
 	}
 

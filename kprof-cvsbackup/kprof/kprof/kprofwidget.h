@@ -113,7 +113,10 @@ public:
 		col_totalPercent,
 		col_self,
 		col_totalPerCall,
-		col_selfPerCall
+		col_selfPerCall,
+
+		col_selfCycles,
+		col_cumCycles
 	};
 
 public:
