@@ -1,5 +1,5 @@
 # KDE tags expanded automatically by am_edit - $Revision$ 
-# Makefile.in generated automatically by automake 1.4 from Makefile.am
+# Makefile.in generated automatically by automake 1.4-p4 from Makefile.am
 
 # Copyright (C) 1994, 1995-8, 1999 Free Software Foundation, Inc.
 # This Makefile.in is free software; the Free Software Foundation
@@ -133,6 +133,7 @@ LIB_KSPELL = @LIB_KSPELL@
 LIB_KSYCOCA = @LIB_KSYCOCA@
 LIB_KWRITE = @LIB_KWRITE@
 LIB_QT = @LIB_QT@
+LIB_QTREEMAP = @LIB_QTREEMAP@
 LIB_SMB = @LIB_SMB@
 LIB_X11 = @LIB_X11@
 LN_S = @LN_S@
@@ -209,7 +210,7 @@ INCLUDES = $(all_includes)
 kprof_LDFLAGS = $(KDE_RPATH) $(all_libraries)
 
 # libraries to link against
-kprof_LDADD = -lqtreemap $(LIB_KFILE) $(LIB_KHTML)
+kprof_LDADD = $(LIB_QTREEMAP) $(LIB_KFILE) $(LIB_KHTML)
 
 # sources 
 #>- kprof_SOURCES = main.cpp kprof.cpp kprofwidget.cpp cprofileviewitem.cpp call-graph.ui
@@ -278,7 +279,7 @@ KDE_DIST=lo32-app-kprof.png kprof.desktop call-graph.ui kprof_meta_unload.cpp kp
 DISTFILES= $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST) $(KDE_DIST)
 
 
-TAR = gtar
+TAR = tar
 GZIP_ENV = --best
 #>- DEP_FILES =  .deps/cprofileviewitem.P .deps/kprof.P .deps/kprofwidget.P \
 #>- .deps/main.P

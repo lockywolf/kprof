@@ -1,4 +1,4 @@
-/* config.h.in.  Generated automatically from configure.in by autoheader.  */
+/* config.h.in.  Generated automatically from configure.in by autoheader 2.13.  */
 
 /* Define if you have the ANSI C header files.  */
 #undef STDC_HEADERS
@@ -72,4 +72,7 @@
 
 /* Define if you have libjpeg */
 #undef HAVE_LIBJPEG
+
+/* Define if you have libqtreemap */
+#undef HAVE_LIBQTREEMAP
 

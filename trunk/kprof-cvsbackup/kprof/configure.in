@@ -39,7 +39,41 @@ AC_ARG_PROGRAM
 
 dnl PACKAGE set before
 
-dnl These are common macros that you might or might not want to use
+dnl Function to check for libqtreemap
+AC_DEFUN(AC_FIND_QTREEMAP,
+[
+	AC_REQUIRE([KDE_CHECK_EXTRA_LIBS])
+	AC_MSG_CHECKING([for libqtreemap])
+	AC_CACHE_VAL(ac_cv_lib_qtreemap,
+	[
+		kde_save_LIBS="$LIBS"
+		LIBS="$LIBS $all_libraries $USER_LDFLAGS -lqtreemap -lm -lX11 $LIBSOCKET"
+		kde_save_CFLAGS="$CFLAGS"
+		CFLAGS="$CFLAGS $all_includes $USER_INCLUDES"
+		AC_LANG_C
+		AC_TRY_LINK(dnl
+	 	  	[
+		 	  	#include<qtreemap.h>
+		    ],
+			[
+			],
+    		eval "ac_cv_lib_qtreemap='-lqtreemap -lm'",
+		    eval "ac_cv_lib_qtreemap=no"
+		)
+		LIBS="$kde_save_LIBS"
+		CFLAGS="$kde_save_CFLAGS"
+	])
+	if eval "test ! \"`echo $ac_cv_lib_qtreemap`\" = no"; then
+		AC_DEFINE_UNQUOTED(HAVE_LIBQTREEMAP, 1, [Define if you have libqtreemap])
+		LIB_QTREEMAP="$ac_cv_lib_qtreemap"
+		AC_SUBST(LIB_QTREEMAP)
+		AC_MSG_RESULT($ac_cv_lib_qtreemap)
+	else
+		AC_MSG_RESULT(no)
+		LIB_QTREEMAP=""
+		AC_SUBST(LIB_QTREEMAP)
+	fi
+])
 
 dnl Checks for header files.
 AC_HEADER_DIRENT
@@ -47,6 +81,9 @@ AC_HEADER_STDC
 AC_HEADER_TIME
 AC_CHECK_HEADERS(fcntl.h sys/time.h unistd.h stdlib.h paths.h)
 AC_CHECK_FUNCS(usleep)
+
+dnl Checks for libqtreemap and <qtreemap.h>
+AC_FIND_QTREEMAP
 KDE_CREATE_SUBDIRSLIST
 AC_OUTPUT( \
 ./Makefile \

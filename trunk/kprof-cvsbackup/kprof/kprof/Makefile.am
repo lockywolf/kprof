@@ -14,7 +14,7 @@ INCLUDES = $(all_includes)
 kprof_LDFLAGS = $(KDE_RPATH) $(all_libraries)
 
 # libraries to link against
-kprof_LDADD  = -lqtreemap $(LIB_KFILE) $(LIB_KHTML)
+kprof_LDADD  = $(LIB_QTREEMAP) $(LIB_KFILE) $(LIB_KHTML)
 
 # sources 
 kprof_SOURCES = main.cpp kprof.cpp kprofwidget.cpp cprofileviewitem.cpp call-graph.ui
