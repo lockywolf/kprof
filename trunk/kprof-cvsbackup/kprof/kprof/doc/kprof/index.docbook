@@ -96,27 +96,6 @@
 </screenshot>
 </para>
 
-
-<sect1 id="kprof-features">
-<title>More KProf features</title>
-
-<para>It slices! It dices! and it comes with a free toaster!</para>
-<para>
-The Squiggle Tool <guiicon><inlinemediaobject>
-	  <imageobject>
-	    <imagedata fileref="squiggle.png" format="gif">
-	  </imageobject>
-	  <imageobject>
-	    <imagedata fileref="squiggle.eps" format="EPS">
-	  </imageobject>
-	  <textobject>
-	    <phrase>Squiggle</phrase>
-	  </textobject>
-</inlinemediaobject></guiicon> is used to draw squiggly lines all over
-the &kprof; main window. It's not a bug, it's a feature!
-</para>
-
-</sect1>
 </chapter>
 
 <!-- COMMAND REFERENCE -->
@@ -132,74 +111,143 @@ the &kprof; main window. It's not a bug, it's a feature!
 <sect2>
 <title>The File Menu</title>
 <para>
-<variablelist>
-<varlistentry>
-<term>
-<menuchoice>
-<shortcut>
-<keycombo><keycap>Ctrl</keycap><keycap>n</keycap></keycombo>
-</shortcut>
-<guimenu>File</guimenu>
-<guimenuitem>New</guimenuitem>
-</menuchoice>
-</term>
-<listitem><para><action>Creates a new document</action></para></listitem>
-</varlistentry>
-<varlistentry>
-<term><menuchoice>
-<shortcut>
-<keycombo><keycap>Ctrl</keycap><keycap>s</keycap></keycombo>
-</shortcut>
-<guimenu>File</guimenu>
-<guimenuitem>Save</guimenuitem>
-</menuchoice></term>
-<listitem><para><action>Saves the document</action></para></listitem>
-</varlistentry>
-<varlistentry>
-<term><menuchoice>
-<shortcut>
-<keycombo><keycap>Ctrl</keycap><keycap>q</keycap></keycombo>
-</shortcut>
-<guimenu>File</guimenu>
-<guimenuitem>Quit</guimenuitem>
-</menuchoice></term>
-<listitem><para><action>Quits</action> &kprof;</para></listitem>
-</varlistentry>
-</variablelist>
+	<variablelist>
+		<varlistentry>
+			<term>
+				<menuchoice>
+					<shortcut><keycombo><keycap>Ctrl</keycap><keycap>o</keycap></keycombo></shortcut>
+					<guimenu>File</guimenu>
+					<guimenuitem>Open</guimenuitem>
+				</menuchoice>
+			</term>
+			<listitem>
+				<para>
+					<action>Opens a profile results file</action>
+				</para>
+			</listitem>
+		</varlistentry>
+		<varlistentry>
+			<term>
+				<menuchoice>
+					<shortcut><keycombo><keycap>Ctrl</keycap><keycap>r</keycap></keycombo></shortcut>
+					<guimenu>File</guimenu>
+					<guimenuitem>Open Recent</guimenuitem>
+				</menuchoice></term>
+			<listitem>
+				<para>
+					<action>Accesses a recently opened document</action>
+				</para>
+			</listitem>
+		</varlistentry>
+		<varlistentry>
+			<term>
+				<menuchoice>
+					<shortcut><keycombo><keycap>Ctrl</keycap><keycap>q</keycap></keycombo></shortcut>
+					<guimenu>File</guimenu>
+					<guimenuitem>Quit</guimenuitem>
+				</menuchoice>
+			</term>
+			<listitem>
+				<para>
+					<action>Quits</action> &kprof;
+				</para>
+			</listitem>
+		</varlistentry>
+	</variablelist>
 </para>
-
 </sect2>
+
+<sect2>
+<title>The Tools Menu</title>
+<para>
+	<variablelist>
+		<varlistentry>
+			<term>
+				<menuchoice>
+					<shortcut><keycombo><keycap>Ctrl</keycap><keycap>g</keycap></keycombo></shortcut>
+					<guimenu>Tools</guimenu>
+					<guimenuitem>Generate Call Graph</guimenuitem>
+				</menuchoice>
+			</term>
+			<listitem>
+				<para>
+					<action>Opens the call-graph output dialog</action>
+				</para>
+			</listitem>
+		</varlistentry>
+	</variablelist>
+</para>
+</sect2>
+
+<sect2>
+<title>The Settings Menu</title>
+<para>
+	<variablelist>
+		<varlistentry>
+			<term>
+				<menuchoice>
+					<shortcut><keycombo><keycap>Ctrl</keycap><keycap>t</keycap></keycombo></shortcut>
+					<guimenu>Settings</guimenu>
+					<guimenuitem>Show Toolbar</guimenuitem>
+				</menuchoice>
+			</term>
+			<listitem>
+				<para>
+					<action>Show/Hide the toolbar</action>
+				</para>
+			</listitem>
+		</varlistentry>
+		<varlistentry>
+			<term>
+				<menuchoice>
+					<shortcut><keycombo><keycap>Ctrl</keycap><keycap>b</keycap></keycombo></shortcut>
+					<guimenu>Settings</guimenu>
+					<guimenuitem>Abbreviate C++ templates</guimenuitem>
+				</menuchoice>
+			</term>
+			<listitem>
+				<para>
+					<action>Turn C++ template abbreviation ON or OFF. If enabled, C++ template names are shortened</action>	
+				</para>
+			</listitem>
+		</varlistentry>
+		<varlistentry>
+			<term>
+				<menuchoice>
+					<shortcut><keycombo><keycap>Ctrl</keycap><keycap>t</keycap></keycombo></shortcut>
+					<guimenu>Settings</guimenu>
+					<guimenuitem>Select Font</guimenuitem>
+				</menuchoice>
+			</term>
+			<listitem>
+				<para>
+					<action>Opens the font selection dialog to select the font used to display profile entries</action>
+				</para>
+			</listitem>
+		</varlistentry>
+	</variablelist>
+</para>
+</sect2>
+
 
 </sect1>
 </chapter>
 
 
-
 <!-- FAQ -->
-
 <chapter id="faq">
 <title>Questions and Answers</title>
-&reporting.bugs;
 
 <qandaset id="faqlist">
-<qandaentry>
-	<question>
-		<para>My Mouse doesn't work. How do I quit &kprof;?</para>
-	</question>
-	<answer>
-		<para>You silly goose! Check out the <link linkend="commands">Commands
-		Section</link> for the answer.</para>
-	</answer>
-</qandaentry>
-<qandaentry>
-	<question>
-		<para>Why can't I twiddle my documents?</para>
-	</question>
-	<answer>
-		<para>You can only twiddle your documents if you have the foobar.lib
-		installed.</para>
-	</answer>
-</qandaentry>
+	<qandaentry>
+		<question>
+			<para>My Mouse doesn't work. How do I quit &kprof;?</para>
+		</question>
+		<answer>
+			<para>You silly goose! Check out the <link linkend="commands">Commands
+			Section</link> for the answer.</para>
+		</answer>
+	</qandaentry>
 </qandaset>
 </chapter>
 
@@ -209,20 +257,21 @@ the &kprof; main window. It's not a bug, it's a feature!
 <chapter id="credits">
 <title>Credits and License</title>
 <para>
-&kprof;
+	&kprof;
 </para>
 <para>
-Program copyright 2000-2001 Florent Pillet <email>fpillet@users.sourceforge.net</email>
+	Program copyright 2000-2001 Florent Pillet <email>fpillet@users.sourceforge.net</email>
 </para>
 <para>
-Contributors:
-<itemizedlist>
-	<listitem><para>Bernd Gehrman <email>bernd@physik.hu-berlin.de</email></para></listitem>
-</itemizedlist>
+	Contributors:
+	<itemizedlist>
+		<listitem><para>Bernd Gehrman <email>bernd@physik.hu-berlin.de</email></para></listitem>
+		<listitem><para>Carsten Branitzki <email>csb@operamail.com</email></para></listitem>
+	</itemizedlist>
 </para>
 
 <para>
-Documentation copyright 2001 Florent Pillet <email>fpillet@users.sourceforge.net</email>
+	Documentation copyright 2001 Florent Pillet <email>fpillet@users.sourceforge.net</email>
 </para>
 
 &underFDL;	<!-- FDL: do not remove -->
