@@ -194,8 +194,8 @@ type=SOURCE
 
 [kprof/kprof.desktop]
 dist=true
-install=true
-install_location=$$(kde_appsdir)/Applications/kprof.desktop
+install=false
+install_location=
 type=DATA
 
 [kprof/kprof.h]
