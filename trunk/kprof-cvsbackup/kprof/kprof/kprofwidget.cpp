@@ -317,12 +317,12 @@ void KProfWidget::openFile (const QString &filename, int format)
 	if (finfo.isExecutable ())
 	{
 		// prepare the "gmon.out" filename
-		QString binfile = finfo.dirPath() + "/gmon.out";
-		QFileInfo gmonfinfo (binfile);
+		QString outfile = finfo.dirPath() + "/gmon.out";
+		QFileInfo gmonfinfo (outfile);
 		if (!gmonfinfo.exists ())
 		{
-			binfile = finfo.dirPath () + "/fnccheck.out";
-			QFileInfo fnccheckinfo (binfile);
+			outfile = finfo.dirPath () + "/fnccheck.out";
+			QFileInfo fnccheckinfo (outfile);
 			if (!fnccheckinfo.exists ())
 			{
 				KMessageBox::error (this, i18n ("Can't find any profiling output file\n(gmon.out or fnccheck.out)"), i18n ("File not found"));
@@ -338,13 +338,14 @@ void KProfWidget::openFile (const QString &filename, int format)
 		if (format == FORMAT_GPROF)
 		{
 			// GNU gprof analysis of gmon.out file
-			// exec "gprof -b filename"
-			profile_generator << "gprof" << "-b" << filename << binfile;
+			// exec "gprof -b filename gmon.out"
+			profile_generator << "gprof" << "-b" << filename << outfile;
 		}
 		else
 		{
 			// Function Check analysis of fnccheck.out file
-			profile_generator << "fncdump" << "+calls" << filename << binfile;
+			// exec "fncdump +calls filename"
+			profile_generator << "fncdump" << "+calls" << filename;
 		}
 
 		mGProfStdout = "";
