@@ -1,2 +1,5 @@
+*.debhelper
+*.substvars
 debiandirs
+files
 kprof
