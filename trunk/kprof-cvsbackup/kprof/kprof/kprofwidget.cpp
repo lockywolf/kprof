@@ -192,6 +192,8 @@ void KProfWidget::prepareProfileView (KListView *view, bool rootIsDecorated)
 	view->addColumn (i18n("Self (s)"), -1);
 	view->addColumn (i18n("Total\nus/call"), -1);
 	view->addColumn (i18n("Self\nus/call"), -1);
+	view->addColumn (i18n("Self\nCycles"), -1);
+	view->addColumn (i18n("Total\nCycles"), -1);
 
 	view->setColumnAlignment (2, AlignRight);
 	view->setColumnAlignment (3, AlignRight);
@@ -199,6 +201,8 @@ void KProfWidget::prepareProfileView (KListView *view, bool rootIsDecorated)
 	view->setColumnAlignment (5, AlignRight);
 	view->setColumnAlignment (6, AlignRight);
 	view->setColumnAlignment (7, AlignRight);
+	view->setColumnAlignment (8, AlignRight);
+	view->setColumnAlignment (9, AlignRight);
 
 	view->setAllColumnsShowFocus (true);
 	view->setFrameStyle (QFrame::WinPanel + QFrame::Sunken);
@@ -550,11 +554,16 @@ void KProfWidget::parseProfile_pose (QTextStream& t)
 			CProfileInfo *pFather = indexes [father];
 			CProfileInfo *pChild  = indexes [child];
 
-			pFather->called.resize (pFather->called.count () + 1);
-			pFather->called [pFather->called.count () - 1] = pChild;
+			if (pFather == pChild)
+				pFather->recursive = true;
+			else
+			{
+				pFather->called.resize (pFather->called.count () + 1);
+				pFather->called [pFather->called.count () - 1] = pChild;
 
-			pChild->callers.resize (pChild->callers.count () + 1);
-			pChild->callers [pChild->callers.count () - 1] = pFather;
+				pChild->callers.resize (pChild->callers.count () + 1);
+				pChild->callers [pChild->callers.count () - 1] = pFather;
+			}
 		}
 	}
 }
