@@ -21,11 +21,6 @@ ifeq ($(ARCH),alpha)
   COMPILER_FLAGS=CFLAGS="-O0 -mieee" CXXFLAGS="-O0 -mieee"
 endif
 
-# GCC 3.2 defines
-export CC=gcc-3.2
-export CXX=g++-3.2
-export CPP=cpp-3.2
-
 -include debian/debiandirs
 
 debian/debiandirs: admin/debianrules
