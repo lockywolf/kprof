@@ -32,8 +32,18 @@
 #include <kaboutdata.h>
 #include "../config.h"
 #include "kprof.h"
+#include "Log.h"
+
 
 static const char *description = I18N_NOOP("Execution profile results analysis utility");
+
+static KCmdLineOptions options[] =
+{
+  { "+[File]", I18N_NOOP("file to open"), 0 },
+  { 0, 0, 0 }
+  // INSERT YOUR COMMANDLINE OPTIONS HERE
+};
+
 
 int main(int argc, char **argv)
 {
@@ -48,27 +58,40 @@ int main(int argc, char **argv)
 	aboutData.addAuthor("Florent Pillet",0, "florent.pillet@wanadoo.fr");
 
 	KCmdLineArgs::init (argc, argv, &aboutData);
+	KCmdLineArgs::addCmdLineOptions( options ); // Add our own options.
 
 	KApplication app;
 
+	Log::Init("TRC",80000);
+	RUN("create the application");
 	if( app.isRestored() ) //SessionManagement
 	{
-		for( int n=1; KMainWindow::canBeRestored(n); n++ )
-		{
-			KProfTopLevel *ktl = new KProfTopLevel();
-			CHECK_PTR(ktl);
-
-			app.setMainWidget(ktl);
-			ktl->restore(n);
-		}
-	}
-	else
-	{
-		KProfTopLevel *ktl = new KProfTopLevel();
+		RUN("restore the top level widget");
+		RESTORE(KProfTopLevel);
+	}	else {
+		RUN("create the top level widget");
+		KProfTopLevel *ktl = new KProfTopLevel(0,"KProf main");
 		CHECK_PTR(ktl);
-
+		RUN("show the top level widget");
 		ktl->show();
+		RUN("process command line args");
+    KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
+    /*
+		if (args->count())
+		{
+        ktl->openDocumentFile(args->arg(0));
+		}
+		else
+		{
+		  ktl->openDocumentFile();
+		}*/
+		args->clear();
+    
+
 	}
 
-	return app.exec();
+	RUN("start the application");
+	int i = app.exec();
+	RUN("finish the application");
+	return i;
 }

@@ -218,7 +218,8 @@ const int Log::DbgLog(const char * const file,
 
   //add filename and line number
   char pos[30];
-  snprintf(pos, sizeof(pos)-1, "%14s(%4d) ", file, line);
+  snprintf(pos, sizeof(pos)-1, "%15s(%4d) ", file, line);
+  pos[sizeof(pos)]=0;
   result = result + " " + pos;
 
   //add kind of message

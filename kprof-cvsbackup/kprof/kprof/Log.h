@@ -53,9 +53,9 @@ using namespace std;
 
 #ifndef NDEBUG
 	//the following debug messages are only in debug mode
-	#define   BEGIN           			Log::Begin(LOGPOS, __LOGFUNC__)
-	#define   END                   Log::End(LOGPOS)
-	#define   ENDRES			         	Log::End(LOGPOS,res); 
+	#define   BEGIN           				Log::Begin(LOGPOS, __LOGFUNC__)
+	#define   END                   	Log::End(LOGPOS)
+	#define   ENDRES			         		Log::End(LOGPOS,res); 
 
 	#define   TRC(txt)                Log::DbgLog(LOGPOS, Log::TRC, txt)
 	#define   TRC1(txt,par1)          Log::DbgLog(LOGPOS, Log::TRC, txt, par1)
@@ -68,9 +68,9 @@ using namespace std;
 	#define   DBG3(txt,par1,par2,par3)Log::DbgLog(LOGPOS, Log::DBG, txt, par1,par2,par3)
 #else
 	//disable debug messages with -DNDEBUG
-	#define   BEGIN           			//Log::Begin(LOGPOS, __LOGFUNC__)
-	#define   END                   //Log::End(LOGPOS)
-	#define   ENDRES		          	//Log::End(LOGPOS,res)
+	#define   BEGIN           				//Log::Begin(LOGPOS, __LOGFUNC__)
+	#define   END                   	//Log::End(LOGPOS)
+	#define   ENDRES		          		//Log::End(LOGPOS,res)
 
 	#define   TRC(txt)                //Log::DbgLog(LOGPOS, Log::TRC, txt)
 	#define   TRC1(txt,par1)          //Log::DbgLog(LOGPOS, Log::TRC, txt, par1)
