@@ -24,7 +24,7 @@ class QString;
 class ClientSideMap
 {
 public:
-	ClientSideMap(QTextStream& serverSideMap, QFile& file);
+	ClientSideMap(QTextStream& serverSideMap, QFile& file, const QString& tempDir);
 	~ClientSideMap(){};
 
 private:
