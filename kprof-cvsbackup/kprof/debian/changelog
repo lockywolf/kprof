@@ -1,6 +1,7 @@
 kprof (1.4.2-1) unstable; urgency=low
 
   * New upstream release.
+  * Updated standards-version to 3.5.8.
 
  -- Ben Burton <bab@debian.org>  Thu, 21 Nov 2002 08:25:29 +1100
 
