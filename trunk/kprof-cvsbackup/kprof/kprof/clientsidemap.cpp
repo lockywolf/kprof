@@ -21,17 +21,21 @@
 
 #include <qstring.h>
 #include <qfile.h>
+#include <qregexp.h>
 #include <qtextstream.h>
+
+#include <iostream>
+using namespace std;
 
 //This class maps a Server Side Image Map onto a
 //Client Side Image Map
-ClientSideMap::ClientSideMap(QTextStream& serverSideMap, QFile& file)
+ClientSideMap::ClientSideMap(QTextStream& serverSideMap, QFile& file, const QString& tempDir)
 {
 	QByteArray map;
 	QTextOStream stream (map);
 
 	stream << "<HTML><BODY>" << endl;
-	stream << "<IMG SRC=\"" << "/tmp/graphViz.jpg" <<"\" USEMAP=\"#kprof\">" << endl;
+	stream << "<IMG SRC=\"" << tempDir << "graphViz.jpg" <<"\" USEMAP=\"#kprof\">" << endl;
 
 	stream << "<MAP NAME=\"kprof\">" << endl;
 
@@ -56,14 +60,22 @@ ClientSideMap::ClientSideMap(QTextStream& serverSideMap, QFile& file)
 		line = serverSideMap.readLine();
 		if (line.length() && line[0] != 35)
 		{
+			
+			
+			line = line.replace( QRegExp(" \\["), "[" );
+			line = line.replace( QRegExp(" del"), "_del");
+			line = line.replace( QRegExp(", "), ",");
+			line = line.replace( QRegExp("( "), "(");
+			line = line.replace( QRegExp(") "), ")");
+			
 			shape = line.section(' ', 0,0);        //First element is the shape of the object
 			name = line. section(' ',1,1);        //Second is the name of the file to be referenced
 			coordOne = line.section(' ',2,2);  //Third is the first coordinate
 			coordTwo = line.section(' ',3,3); //Fourth is the last coordinate
 			N = coordOne.section(',',0,0);
-			E = coordOne.section(',',1,1);
+			W = coordOne.section(',',1,1);
 			S = coordTwo.section(',',0,0);
-			W = coordTwo.section(',',1,1);
+			E = coordTwo.section(',',1,1);
 			stream << "<AREA SHAPE=\"RECT\" COORDS = \"" << N << "," << W << "," << S << "," << E << "\" HREF = \"" << name << "\" />" << endl;
 		}
 	}
