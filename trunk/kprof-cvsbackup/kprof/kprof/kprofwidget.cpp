@@ -289,6 +289,9 @@ void KProfWidget::openFile (const QString &filename)
 		parseProfile (t);
 	}
 
+	// post-process the parsed data
+	postProcessProfile ();
+
 	// fill lists
 	QString noFilter;
 	fillFlatProfileList (noFilter);
@@ -432,9 +435,22 @@ void KProfWidget::parseProfile (QTextStream& t)
 					p->totalTsPerCall	= 0;
 					p->name				= fields[3];
      			}
-				p->simplifiedName	= removeTemplates (p->name);
+				// p->simplifiedName will be updated in postProcessProfile()7
 				p->recursive		= false;
 				p->object			= getClassName (p->name);
+				p->multipleSignatures = false;				// will be updated in postProcessProfile()
+
+				int argsoff = p->name.find ('(');
+				if (argsoff != -1)
+				{
+					p->method = p->name.mid (p->object.length(), argsoff - p->object.length());
+					p->arguments  = p->name.right (p->name.length() - argsoff);
+				}
+				else
+					p->method = p->name.right (p->name.length() - p->object.length());
+
+				if (p->method.startsWith ("::"))
+					p->method.remove (0,2);
 
 				int j = mProfile.size ();
 				mProfile.resize (j + 1);
@@ -570,6 +586,56 @@ void KProfWidget::processCallGraphBlock (const QVector<SCallGraphEntry> &data)
 	}
 }
 
+void KProfWidget::postProcessProfile ()
+{
+	// once we have read a profile information file, we can post-process
+	// the data. First, we need to create the list of classes that were
+	// found.
+	// After that, we check every function/method to see if it
+	// has multiple signatures. We mark entries with multiple signatures
+	// so that we can display the arguments only when needed
+	mClasses.resize (0);
+	for (uint i = 0; i < mProfile.count (); i++)
+	{
+		// fill the class list
+		if (!mProfile[i]->object.isEmpty ())
+		{
+			uint k;
+			for (k = 0; k < mClasses.count (); k++)
+			{
+				if (mClasses[k]->compare (mProfile[i]->object) == 0)
+					break;
+     		}
+			if (k == mClasses.count ())
+			{
+				mClasses.resize (mClasses.count () + 1);
+				mClasses.insert (mClasses.count (), &mProfile[i]->object);
+    		}
+		}
+
+		// check for multiple signatures
+		for (uint j = i + 1; j < mProfile.count(); j++)
+		{
+			if (mProfile[i]->multipleSignatures)
+				continue;
+
+			if (mProfile[j]->multipleSignatures==false &&
+				mProfile[j]->object==mProfile[i]->object &&
+				mProfile[j]->method==mProfile[i]->method)
+			{
+				mProfile[i]->multipleSignatures = true;
+				mProfile[j]->multipleSignatures = true;
+			}
+		}
+
+		// construct the function/method's simplified name
+		if (mProfile[i]->multipleSignatures)
+			mProfile[i]->simplifiedName	= removeTemplates (mProfile[i]->name);
+		else
+			mProfile[i]->simplifiedName = removeTemplates (mProfile[i]->object) + "::" + removeTemplates (mProfile[i]->method);
+  	}
+}
+
 CProfileInfo *KProfWidget::locateProfileEntry (const QString& name)
 {
 	// find an entry in our profile table based on function name
@@ -635,42 +701,18 @@ void KProfWidget::fillHierarchy (
 
 void KProfWidget::fillObjsProfileList ()
 {
-	QVector<QString> classes;
-	for (uint i = 0; i < mProfile.count (); i++)
-	{
-		if (!mProfile[i]->object.isEmpty ())
-		{
-			uint k;
-			for (k = 0; k < classes.count (); k++)
-			{
-				if (classes[k]->compare (mProfile[i]->object) == 0)
-					break;
-     		}
-			if (k == classes.count ())
-			{
-				classes.resize (classes.count () + 1);
-				classes.insert (classes.count (), &mProfile[i]->object);
-    		}
-		}
-  	}
-
 	// create all toplevel elements and their descendants
-	for (uint i = 0; i < classes.count (); i++)
+	for (uint i = 0; i < mClasses.count (); i++)
 	{
-		CProfileViewItem *item = new CProfileViewItem (mObjs, NULL);
-		fillObjsHierarchy (item, classes[i]);
+		CProfileViewItem *parent = new CProfileViewItem (mObjs, NULL);
+		for (uint j = 0; j < mProfile.count (); j++)
+		{
+			if (mProfile[j]->object == *mClasses[i])
+				new CProfileViewItem (parent, mProfile[j]);
+		}
 	}
 	
 	mObjs->setColumnWidthMode (0, QListView::Manual);
-}
-
-void KProfWidget::fillObjsHierarchy (CProfileViewItem *parent, QString *className)
-{
-	for (uint i = 0; i < mProfile.count (); i++)
-	{
-		if (mProfile[i]->object == *className)
-			new CProfileViewItem (parent, mProfile[i]);
-	}
 }
 
 void KProfWidget::profileEntryRightClick (QListViewItem *listItem, const QPoint &p, int)
@@ -839,9 +881,8 @@ void KProfWidget::generateDotCallGraph (bool currentSelectionOnly)
 	// generate a call-graph to a .dot file in a format compatible with
 	// GraphViz, a free graph generator from ATT (http://www.research.att.com/sw/tools/graphviz/)
 
-	QString dotfile = KFileDialog::getSaveFileName (QString::null, i18n("*.dot|GraphViz DOT files"), this,
-													i18n ("Save call-graph file as..."));
-
+	QString dotfile = KFileDialog::getSaveFileName (QString::null, i18n("*.dot|GraphViz files"), this,
+													i18n ("Save call-graph as..."));
 	if (dotfile.isEmpty ())
 		return;
 
@@ -855,42 +896,25 @@ void KProfWidget::generateDotCallGraph (bool currentSelectionOnly)
 	QByteArray graph;
 	QTextOStream stream (graph);
 
-	stream << "Digraph \"kprof-call-graph\" {\n";
+	stream << "Digraph \"kprof-call-graph\" {\nratio=fill\n";
 
 	// first create all the nodes
-	// TODO: take templates into account in classReg
-	QRegExp classReg ("::[^\\(:]*");			// regexp to collect class names
-
 	for (uint i = 0; i < mProfile.count (); i++)
 	{
-		QString className, methodName, args;
+		QString className = mProfile[i]->object;
+		if (className.length ())
+			className += "\\n";
 
-		// extract class name if any
-		int classOff = classReg.find (mProfile[i]->name, 0);
-		if (classOff > 0)
-		{
-			className = mProfile[i]->name.left (classOff) + "\\n";
-			classOff += 2;						// skip ::
-		}
-		else
-			classOff = 0;
-
-		// extract method name and args
-		int methOff = mProfile[i]->name.find ('(', classOff);
-		if (methOff > 0)
-		{
-			methodName = mProfile[i]->name.mid (classOff, methOff - classOff) + "\\n";
-//			args = mProfile[i]->name.mid (methOff);
-		}
-		else
-			methodName = mProfile[i]->name.mid (classOff);
-
-		stream << i << " [label=\"" << className << methodName << args << "\"";
+		stream << i << " [label=\"" << className << mProfile[i]->method;
+		if (mProfile[i]->multipleSignatures)
+			stream << "\\n" << mProfile[i]->arguments;
+		stream << "\"";
 		if (mProfile[i]->callers.count()==0 || mProfile[i]->called.count()==0)
 			stream << ", shape=box";
 		stream << "];\n";
 	}
 
+	// then output the nodes relationships
 	for (uint i = 0; i < mProfile.count (); i++)
 	{
 		if (mProfile[i]->recursive)
@@ -979,7 +1003,7 @@ QString KProfWidget::removeTemplates (const QString &name)
 	QString s (name);
 	int tmpl = -1;
 	int depth = 0;
-	for (int i=0; i < s.length(); i++)
+	for (uint i=0; i < s.length(); i++)
 	{
 		if (s[i]=='<')
 		{

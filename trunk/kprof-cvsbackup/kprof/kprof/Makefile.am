@@ -25,9 +25,6 @@ noinst_HEADERS = kprof.h kprofwidget.h cprofileinfo.h cprofileviewitem.h
 # let automoc handle all of the meta source files (moc)
 METASOURCES = AUTO
 
-# UI files (Qt Designer)
-#kprof_UIFILES = call-graph.ui
-
 # make messages.po
 messages: rc.cpp
 	$(XGETTEXT) *.cpp -o $(podir)/kprof.pot
