@@ -1,3 +1,9 @@
+kprof (1.3-9) unstable; urgency=low
+
+  * Build-depends: autoconf2.13 (closes: Bug#159129).
+
+ -- Ben Burton <benb@acm.org>  Mon,  2 Sep 2002 10:04:23 +1000
+
 kprof (1.3-8) unstable; urgency=low
 
   * Updated parameters for alpha build.
