@@ -42,7 +42,8 @@
    <demanglenames>true</demanglenames>  </display> </kdevdebugger>
  <workspace>
 <openfiles>
-<file url="file:/home/colin/Kprof/kprof/kprof/ctidyup.cpp" />  </openfiles> </workspace>
+<file url="file:/home/colin/Kprof/kprof/kprof/CConfigure.cpp" />
+   <file url="file:/home/colin/Kprof/kprof/kprof/CConfigure.h" />  </openfiles> </workspace>
  <kdevautoproject>
 <run>
 <mainprogram>./kprof/kprof</mainprogram>
