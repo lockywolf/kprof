@@ -156,8 +156,7 @@ QString CProfileViewItem::text (int column) const
 				return "";
 	   }
 	} else {
-		// @@@ TODO: finish this!
-		// mDiff {
+		// if diff-mode
 		switch (column)
 		{
 			case KProfWidget::diff_col_function:
@@ -175,38 +174,63 @@ QString CProfileViewItem::text (int column) const
 
 			case KProfWidget::diff_col_new_count:
 				return QString::number (mProfile->calls);
+			
+			case KProfWidget::diff_col_count:
+				return mProfile->previous ? QString::number (mProfile->previous->calls) : "";
 
 			case KProfWidget::diff_col_new_total:
 				return formatFloat (mProfile->cumSeconds, 3);
 
+			case KProfWidget::diff_col_total:
+				return mProfile->previous ? formatFloat (mProfile->previous->cumSeconds, 3) : "";
+
 			case KProfWidget::diff_col_new_totalPercent:
 				return formatFloat (mProfile->cumPercent, 3);
+
+			case KProfWidget::diff_col_totalPercent:
+				return mProfile->previous ? formatFloat (mProfile->previous->cumPercent, 3) : "";
 
 			case KProfWidget::diff_col_new_self:
 				return formatFloat (mProfile->selfSeconds, 3);
 
+			case KProfWidget::diff_col_self:
+				return mProfile->previous ? formatFloat (mProfile->previous->selfSeconds, 3) : "";
+
 			case KProfWidget::diff_col_new_totalMsPerCall:
 				return formatFloat (mProfile->totalMsPerCall, 3);
+
+			case KProfWidget::diff_col_totalMsPerCall:
+				return mProfile->previous ? formatFloat (mProfile->previous->totalMsPerCall, 3) : "";
 
 			default:
 				if (KProfWidget::sLastFileFormat == KProfWidget::FORMAT_GPROF)
 				{
 					if (column == KProfWidget::diff_col_new_selfMsPerCall)
 						return formatFloat (mProfile->custom.gprof.selfMsPerCall, 3);
+					if (column == KProfWidget::diff_col_selfMsPerCall)
+						return mProfile->previous ? formatFloat (mProfile->previous->custom.gprof.selfMsPerCall, 3) : "";
 				}
 				else if (KProfWidget::sLastFileFormat == KProfWidget::FORMAT_FNCCHECK)
 				{
 					if (column == KProfWidget::diff_col_new_minMsPerCall)
 						return formatFloat (mProfile->custom.fnccheck.minMsPerCall, 3);
+					if (column == KProfWidget::diff_col_minMsPerCall)
+						return mProfile->previous ? formatFloat (mProfile->previous->custom.fnccheck.minMsPerCall, 3) : "";
 					if (column == KProfWidget::diff_col_new_maxMsPerCall)
 						return formatFloat (mProfile->custom.fnccheck.maxMsPerCall, 3);
+					if (column == KProfWidget::diff_col_maxMsPerCall)
+						return mProfile->previous ? formatFloat (mProfile->previous->custom.fnccheck.maxMsPerCall, 3) : "";
 				}
 				else if (KProfWidget::sLastFileFormat == KProfWidget::FORMAT_POSE)
 				{
 					if (column == KProfWidget::diff_col_new_selfCycles)
 						return QString::number (mProfile->custom.pose.selfCycles);
+					if (column == KProfWidget::diff_col_selfCycles)
+						return mProfile->previous ? QString::number (mProfile->previous->custom.pose.selfCycles) : "";
 					if (column == KProfWidget::diff_col_new_cumCycles)
 						return QString::number (mProfile->custom.pose.cumCycles);
+					if (column == KProfWidget::diff_col_cumCycles)
+						return mProfile->previous ? QString::number (mProfile->previous->custom.pose.cumCycles) : "";
 				}
 				return "";
 		}

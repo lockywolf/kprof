@@ -197,6 +197,9 @@ void KProfWidget::prepareProfileView (KListView *view, bool rootIsDecorated)
 	bool diff = mPreviousProfile.count() > 0;
 	KIconLoader *loader = KGlobal::iconLoader ();
 
+	for (int i = view->columns(); i > 0; )
+		view->removeColumn (--i);
+
 	if (diff)
 		view->addColumn (i18n("Status"));
 	view->addColumn (i18n("Function/Method"), -1);
@@ -225,15 +228,15 @@ void KProfWidget::prepareProfileView (KListView *view, bool rootIsDecorated)
 		view->setColumnAlignment (col_totalMsPerCall, AlignRight);
 	} else {
 		view->setColumnAlignment (diff_col_count, AlignRight);
-		view->setColumnAlignment (diff_col_count, AlignRight);
+		view->setColumnAlignment (diff_col_new_count, AlignRight);
 		view->setColumnAlignment (diff_col_total, AlignRight);
-		view->setColumnAlignment (diff_col_total, AlignRight);
+		view->setColumnAlignment (diff_col_new_total, AlignRight);
 		view->setColumnAlignment (diff_col_totalPercent,	AlignRight);
-		view->setColumnAlignment (diff_col_totalPercent,	AlignRight);
+		view->setColumnAlignment (diff_col_new_totalPercent,	AlignRight);
 		view->setColumnAlignment (diff_col_self, AlignRight);
-		view->setColumnAlignment (diff_col_self, AlignRight);
+		view->setColumnAlignment (diff_col_new_self, AlignRight);
 		view->setColumnAlignment (diff_col_totalMsPerCall, AlignRight);
-		view->setColumnAlignment (diff_col_totalMsPerCall, AlignRight);
+		view->setColumnAlignment (diff_col_new_totalMsPerCall, AlignRight);
 	}
 	
 
@@ -241,6 +244,7 @@ void KProfWidget::prepareProfileView (KListView *view, bool rootIsDecorated)
 	view->setFrameStyle (QFrame::WinPanel + QFrame::Sunken);
 	view->setShowSortIndicator (true);
 	view->setRootIsDecorated (rootIsDecorated);
+	view->setItemMargin (2);
 }
 
 void KProfWidget::customizeColumns (KListView *view, int profiler)
@@ -555,8 +559,11 @@ void KProfWidget::openFile (const QString &filename, int format, bool compare)
 	postProcessProfile (compare);
 
 	// customize the on-screen columns
+	prepareProfileView (mFlat, false);
 	customizeColumns (mFlat, sLastFileFormat);
+	prepareProfileView (mHier, true);
 	customizeColumns (mHier, sLastFileFormat);
+	prepareProfileView (mObjs, true);
 	customizeColumns (mObjs, sLastFileFormat);
 
 	// fill lists
