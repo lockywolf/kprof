@@ -2351,6 +2351,24 @@ LIBTOOL_SHELL="/bin/sh ./libtool"
 #  LIBTOOL="$LIBTOOL --silent"
 KDE_PLUGIN="-avoid-version -module -no-undefined"
 AC_SUBST(KDE_PLUGIN)
+
+  AC_ARG_ENABLE(objprelink, [  --enable-objprelink     prelink apps (experimental, needs objprelink in path)],
+	kde_use_objprelink=$enableval, kde_use_objprelink=no)
+  if test "x$kde_use_objprelink" = "xyes"; then 
+      echo Patching libtool to run objprelink.
+      mv libtool libtool.orig
+      cat > libtool <<\EOF
+#! /bin/sh
+for n ; do case $n in
+  *.o)  test -r $n && echo objprelink $n && objprelink $n ;;
+  *.lo) m=`basename $n .lo`".o" && test -r $m && echo objprelink $m && objprelink $m 
+        m=".libs/$m" && test -r $m && echo objprelink $m && objprelink $m ;;
+esac; done
+EOF
+      cat >> libtool libtool.orig
+      rm libtool.orig
+      chmod a+x libtool
+  fi
 ])
 
 AC_DEFUN(KDE_CHECK_TYPES,
