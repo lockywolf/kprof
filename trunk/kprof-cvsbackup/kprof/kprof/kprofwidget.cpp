@@ -390,7 +390,7 @@ void KProfWidget::openResultsFile ()
 	// file comes from (GNU gprof, Function Check, Palm OS Emulator)
 	KFileDialog fd (mCurDir.absPath(), QString::null, this, NULL, i18n ("Select a profiling results file"));
 
-	QWidget *w = fd.getMainWidget ();
+	QWidget *w = fd.mainWidget ();
 	QLayout *layout = w->layout ();
 
 	QHBoxLayout *hl = new QHBoxLayout (layout);
@@ -1086,10 +1086,10 @@ void KProfWidget::parseProfile_gprof (QTextStream& t)
 		// remove <cycle ...> and [n] from the end of the line
 		if (state == PROCESS_FLAT_PROFILE || state == PROCESS_CALL_GRAPH)
 		{
-			int pos = indexRegExp.find (s, 0);
+			int pos = indexRegExp.search (s, 0);
 			if (pos != -1)
 				s = s.left (pos);
-			pos = recurCountRegExp.find (s, 0);
+			pos = recurCountRegExp.search (s, 0);
 			if (pos != -1)
 				s = s.left (pos);
 		}
@@ -1196,7 +1196,7 @@ void KProfWidget::parseProfile_gprof (QTextStream& t)
 				// if we reach a dashes line, we finalize the previous call graph block
 				// by analyzing the block and updating callers, called & recursive
 				// information
-				if (dashesRegExp.find (fields[0], 0) == 0)
+				if (dashesRegExp.search (fields[0], 0) == 0)
 				{
 					processCallGraphBlock (callGraphBlock);
 					callGraphBlock.resize (0);
@@ -1212,7 +1212,7 @@ void KProfWidget::parseProfile_gprof (QTextStream& t)
 				e->recursive = false;
 
 				// detect the primary line in the call graph
-				if (indexRegExp.find (fields[0], 0) == 0)
+				if (indexRegExp.search (fields[0], 0) == 0)
 				{
 					e->primary = true;
 					field++;
@@ -1221,9 +1221,9 @@ void KProfWidget::parseProfile_gprof (QTextStream& t)
 				// gather other values (we have to do some guessing to get them right)
 				while (field < fields.count ())
 				{
-					if (countRegExp.find (fields[field], 0) == 0)
+					if (countRegExp.search (fields[field], 0) == 0)
 						e->recursive = fields[field].find ('+') != -1;
-      				else if (floatRegExp.find (fields[field], 0) == -1)
+      				else if (floatRegExp.search (fields[field], 0) == -1)
 						e->name = fields[field];
       				field++;
 				}
