@@ -1,5 +1,5 @@
-kprof 1.0.2
------------
+kprof 1.1
+---------
 
 KProf is a tool that lets you examine the output of gprof(1),
 a command which allows you to profile a program and dump
