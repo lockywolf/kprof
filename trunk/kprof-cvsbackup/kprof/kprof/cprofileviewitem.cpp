@@ -36,31 +36,35 @@
 
 static bool blockInval = false;
 
-CProfileViewItem::CProfileViewItem (QListView *parent, CProfileInfo *profile)
+CProfileViewItem::CProfileViewItem (QListView *parent, CProfileInfo *profile, bool diff)
 	:	QListViewItem (parent),
-		mProfile (profile)
+		mProfile (profile),
+		mDiff (diff)
 {
   	setRecursiveIcon ();
 }
 
-CProfileViewItem::CProfileViewItem (QListViewItem *parent, CProfileInfo *profile)
+CProfileViewItem::CProfileViewItem (QListViewItem *parent, CProfileInfo *profile, bool diff)
 	:	QListViewItem (parent),
-		mProfile (profile)
+		mProfile (profile),
+		mDiff (diff)
 {
   	setRecursiveIcon ();
 }
 
-CProfileViewItem::CProfileViewItem (QListView *parent, QListViewItem *after, CProfileInfo *profile)
+CProfileViewItem::CProfileViewItem (QListView *parent, QListViewItem *after, CProfileInfo *profile, bool diff)
 	:	QListViewItem (parent, after),
-		mProfile (profile)
+		mProfile (profile),
+		mDiff (diff)
 {
   	setRecursiveIcon ();
 }
 
 
-CProfileViewItem::CProfileViewItem (QListViewItem *parent, QListViewItem *after, CProfileInfo *profile)
+CProfileViewItem::CProfileViewItem (QListViewItem *parent, QListViewItem *after, CProfileInfo *profile, bool diff)
 	:	QListViewItem (parent, after),
-		mProfile (profile)
+		mProfile (profile),
+		mDiff (diff)
 {
   	setRecursiveIcon ();
 }
@@ -97,58 +101,116 @@ QString CProfileViewItem::text (int column) const
 		return (child == NULL || column != KProfWidget::col_function) ? QString("") : child->mProfile->object;
   	}
 
-	switch (column)
+	if (mDiff == false)
 	{
-		case KProfWidget::col_function:
+		switch (column)
 		{
-			CProfileViewItem *p = dynamic_cast<CProfileViewItem *> (parent ());
-			if (p && p->mProfile == NULL)
+			case KProfWidget::col_function:
 			{
-				// we are in a method of an object in the object
-				if (mProfile->multipleSignatures)
-					return mProfile->name.right (mProfile->name.length () - mProfile->object.length() - 2);
-				return mProfile->method;
-    		}
-			return mProfile->simplifiedName;
-   		}
-
-   		case KProfWidget::col_count:
-			return QString::number (mProfile->calls);
-
-   		case KProfWidget::col_total:
-			return formatFloat (mProfile->cumSeconds, 3);
-
-		case KProfWidget::col_totalPercent:
-			return formatFloat (mProfile->cumPercent, 3);
-
-   		case KProfWidget::col_self:
-			return formatFloat (mProfile->selfSeconds, 3);
-
-   		case KProfWidget::col_totalMsPerCall:
-			return formatFloat (mProfile->totalMsPerCall, 3);
-
-		default:
-			if (KProfWidget::sLastFileFormat == KProfWidget::FORMAT_GPROF)
-			{
-				if (column == KProfWidget::col_selfMsPerCall)
-					return formatFloat (mProfile->custom.gprof.selfMsPerCall, 3);
+				CProfileViewItem *p = dynamic_cast<CProfileViewItem *> (parent ());
+				if (p && p->mProfile == NULL)
+				{
+					// we are in a method of an object in the object
+					if (mProfile->multipleSignatures)
+						return mProfile->name.right (mProfile->name.length () - mProfile->object.length() - 2);
+					return mProfile->method;
+				}
+				return mProfile->simplifiedName;
 			}
-			else if (KProfWidget::sLastFileFormat == KProfWidget::FORMAT_FNCCHECK)
+
+			case KProfWidget::col_count:
+				return QString::number (mProfile->calls);
+
+			case KProfWidget::col_total:
+				return formatFloat (mProfile->cumSeconds, 3);
+
+			case KProfWidget::col_totalPercent:
+				return formatFloat (mProfile->cumPercent, 3);
+
+			case KProfWidget::col_self:
+				return formatFloat (mProfile->selfSeconds, 3);
+
+			case KProfWidget::col_totalMsPerCall:
+				return formatFloat (mProfile->totalMsPerCall, 3);
+
+			default:
+				if (KProfWidget::sLastFileFormat == KProfWidget::FORMAT_GPROF)
+				{
+					if (column == KProfWidget::col_selfMsPerCall)
+						return formatFloat (mProfile->custom.gprof.selfMsPerCall, 3);
+				}
+				else if (KProfWidget::sLastFileFormat == KProfWidget::FORMAT_FNCCHECK)
+				{
+					if (column == KProfWidget::col_minMsPerCall)
+						return formatFloat (mProfile->custom.fnccheck.minMsPerCall, 3);
+					if (column == KProfWidget::col_maxMsPerCall)
+						return formatFloat (mProfile->custom.fnccheck.maxMsPerCall, 3);
+				}
+				else if (KProfWidget::sLastFileFormat == KProfWidget::FORMAT_POSE)
+				{
+					if (column == KProfWidget::col_selfCycles)
+						return QString::number (mProfile->custom.pose.selfCycles);
+					if (column == KProfWidget::col_cumCycles)
+						return QString::number (mProfile->custom.pose.cumCycles);
+				}
+				return "";
+	   }
+	} else {
+		// @@@ TODO: finish this!
+		// mDiff {
+		switch (column)
+		{
+			case KProfWidget::diff_col_function:
 			{
-				if (column == KProfWidget::col_minMsPerCall)
-					return formatFloat (mProfile->custom.fnccheck.minMsPerCall, 3);
-				if (column == KProfWidget::col_maxMsPerCall)
-					return formatFloat (mProfile->custom.fnccheck.maxMsPerCall, 3);
+				CProfileViewItem *p = dynamic_cast<CProfileViewItem *> (parent ());
+				if (p && p->mProfile == NULL)
+				{
+					// we are in a method of an object in the object
+					if (mProfile->multipleSignatures)
+						return mProfile->name.right (mProfile->name.length () - mProfile->object.length() - 2);
+					return mProfile->method;
+				}
+				return mProfile->simplifiedName;
 			}
-			else if (KProfWidget::sLastFileFormat == KProfWidget::FORMAT_POSE)
-			{
-				if (column == KProfWidget::col_selfCycles)
-					return QString::number (mProfile->custom.pose.selfCycles);
-				if (column == KProfWidget::col_cumCycles)
-					return QString::number (mProfile->custom.pose.cumCycles);
-			}
-			return "";
-   }
+
+			case KProfWidget::diff_col_new_count:
+				return QString::number (mProfile->calls);
+
+			case KProfWidget::diff_col_new_total:
+				return formatFloat (mProfile->cumSeconds, 3);
+
+			case KProfWidget::diff_col_new_totalPercent:
+				return formatFloat (mProfile->cumPercent, 3);
+
+			case KProfWidget::diff_col_new_self:
+				return formatFloat (mProfile->selfSeconds, 3);
+
+			case KProfWidget::diff_col_new_totalMsPerCall:
+				return formatFloat (mProfile->totalMsPerCall, 3);
+
+			default:
+				if (KProfWidget::sLastFileFormat == KProfWidget::FORMAT_GPROF)
+				{
+					if (column == KProfWidget::diff_col_new_selfMsPerCall)
+						return formatFloat (mProfile->custom.gprof.selfMsPerCall, 3);
+				}
+				else if (KProfWidget::sLastFileFormat == KProfWidget::FORMAT_FNCCHECK)
+				{
+					if (column == KProfWidget::diff_col_new_minMsPerCall)
+						return formatFloat (mProfile->custom.fnccheck.minMsPerCall, 3);
+					if (column == KProfWidget::diff_col_new_maxMsPerCall)
+						return formatFloat (mProfile->custom.fnccheck.maxMsPerCall, 3);
+				}
+				else if (KProfWidget::sLastFileFormat == KProfWidget::FORMAT_POSE)
+				{
+					if (column == KProfWidget::diff_col_new_selfCycles)
+						return QString::number (mProfile->custom.pose.selfCycles);
+					if (column == KProfWidget::diff_col_new_cumCycles)
+						return QString::number (mProfile->custom.pose.cumCycles);
+				}
+				return "";
+		}
+	}
 }
 
 QString CProfileViewItem::key (int column, bool) const

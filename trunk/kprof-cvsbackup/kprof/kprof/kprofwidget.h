@@ -131,6 +131,39 @@ public:
 		col_selfCycles = col_totalMsPerCall + 1,
 		col_cumCycles
 	};
+	
+	enum diffColID						// diff mode column IDs
+	{
+		diff_col_status = 0,
+		diff_col_function,
+		diff_col_recursive,
+		diff_col_count,
+		diff_col_new_count,
+		diff_col_total,
+		diff_col_new_total,
+		diff_col_totalPercent,
+		diff_col_new_totalPercent,
+		diff_col_self,
+		diff_col_new_self,
+		diff_col_totalMsPerCall,
+		diff_col_new_totalMsPerCall,	// last column common to all formats
+
+		// gprof specific columns
+		diff_col_selfMsPerCall,
+		diff_col_new_selfMsPerCall,
+
+		// Function Check specific columns
+		diff_col_minMsPerCall = diff_col_new_totalMsPerCall + 1,
+		diff_col_new_minMsPerCall,
+		diff_col_maxMsPerCall,
+		diff_col_new_maxMsPerCall,
+
+		// POSE specific columns
+		diff_col_selfCycles = diff_col_new_totalMsPerCall + 1,
+		diff_col_new_selfCycles,
+		diff_col_cumCycles,
+		diff_col_new_cumCycles
+	};
 
 public:
 	KProfWidget (QWidget *parent=NULL, const char *name=NULL);
