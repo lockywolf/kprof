@@ -1,7 +1,8 @@
 # KDE tags expanded automatically by am_edit - $Revision$ 
-# Makefile.in generated automatically by automake 1.4-p5 from Makefile.am
+# Makefile.in generated automatically by automake 1.5 from Makefile.am.
 
-# Copyright (C) 1994, 1995-8, 1999, 2001 Free Software Foundation, Inc.
+# Copyright 1994, 1995, 1996, 1997, 1998, 1999, 2000, 2001
+# Free Software Foundation, Inc.
 # This Makefile.in is free software; the Free Software Foundation
 # gives unlimited permission to copy and/or distribute it,
 # with or without modifications, as long as this notice is preserved.
@@ -11,8 +12,9 @@
 # even the implied warranty of MERCHANTABILITY or FITNESS FOR A
 # PARTICULAR PURPOSE.
 
-####### kdevelop will overwrite this part!!! (begin)##########
+@SET_MAKE@
 
+####### kdevelop will overwrite this part!!! (begin)##########
 
 SHELL = @SHELL@
 
@@ -21,10 +23,6 @@ top_srcdir = @top_srcdir@
 VPATH = @srcdir@
 prefix = @prefix@
 exec_prefix = @exec_prefix@
-#>- 
-bindir = @bindir@
-#>+ 3
-DEPDIR = .deps
 
 bindir = @bindir@
 sbindir = @sbindir@
@@ -38,13 +36,9 @@ infodir = @infodir@
 mandir = @mandir@
 includedir = @includedir@
 oldincludedir = /usr/include
-
-DESTDIR =
-
 pkgdatadir = $(datadir)/@PACKAGE@
 pkglibdir = $(libdir)/@PACKAGE@
 pkgincludedir = $(includedir)/@PACKAGE@
-
 top_builddir = ../../..
 
 ACLOCAL = @ACLOCAL@
@@ -53,11 +47,11 @@ AUTOMAKE = @AUTOMAKE@
 AUTOHEADER = @AUTOHEADER@
 
 INSTALL = @INSTALL@
-INSTALL_PROGRAM = @INSTALL_PROGRAM@ $(AM_INSTALL_PROGRAM_FLAGS)
+INSTALL_PROGRAM = @INSTALL_PROGRAM@
 INSTALL_DATA = @INSTALL_DATA@
 INSTALL_SCRIPT = @INSTALL_SCRIPT@
+INSTALL_HEADER = $(INSTALL_DATA)
 transform = @program_transform_name@
-
 NORMAL_INSTALL = :
 PRE_INSTALL = :
 POST_INSTALL = :
@@ -70,9 +64,11 @@ host_alias = @host_alias@
 host_triplet = @host@
 target_alias = @target_alias@
 target_triplet = @target@
+AMTAR = @AMTAR@
 ARTSCCONFIG = @ARTSCCONFIG@
 AS = @AS@
 AUTODIRS = @AUTODIRS@
+AWK = @AWK@
 CC = @CC@
 CONF_FILES = @CONF_FILES@
 CPP = @CPP@
@@ -81,12 +77,11 @@ CXXCPP = @CXXCPP@
 DCOPIDL = @DCOPIDL@
 DCOPIDL2CPP = @DCOPIDL2CPP@
 DCOP_DEPENDENCIES = @DCOP_DEPENDENCIES@
+DEPDIR = @DEPDIR@
 DLLTOOL = @DLLTOOL@
-DOXYGEN = @DOXYGEN@
-DOXYGEN_PROJECT_NAME = @DOXYGEN_PROJECT_NAME@
-DOXYGEN_PROJECT_NUMBER = @DOXYGEN_PROJECT_NUMBER@
 DPMSINC = @DPMSINC@
 DPMSLIB = @DPMSLIB@
+ECHO = @ECHO@
 EXEEXT = @EXEEXT@
 GCJ = @GCJ@
 GCJFLAGS = @GCJFLAGS@
@@ -95,14 +90,14 @@ GLLIB = @GLLIB@
 GMSGFMT = @GMSGFMT@
 IDL = @IDL@
 IDL_DEPENDENCIES = @IDL_DEPENDENCIES@
+INSTALL_STRIP_PROGRAM = @INSTALL_STRIP_PROGRAM@
 JAR = @JAR@
 JAVAC = @JAVAC@
 JAVAH = @JAVAH@
 JVMLIBS = @JVMLIBS@
 KDECONFIG = @KDECONFIG@
+KDE_CXXFLAGS = @KDE_CXXFLAGS@
 KDE_EXTRA_RPATH = @KDE_EXTRA_RPATH@
-KDE_HAS_DOXYGEN = @KDE_HAS_DOXYGEN@
-KDE_HAVE_DOT = @KDE_HAVE_DOT@
 KDE_INCLUDES = @KDE_INCLUDES@
 KDE_LDFLAGS = @KDE_LDFLAGS@
 KDE_MT_LDFLAGS = @KDE_MT_LDFLAGS@
@@ -157,7 +152,6 @@ LIB_SMB = @LIB_SMB@
 LIB_X11 = @LIB_X11@
 LIB_XEXT = @LIB_XEXT@
 LN_S = @LN_S@
-MAKEINFO = @MAKEINFO@
 MCOPIDL = @MCOPIDL@
 MEINPROC = @MEINPROC@
 MICO_INCLUDES = @MICO_INCLUDES@
@@ -175,12 +169,12 @@ PASSWDLIBS = @PASSWDLIBS@
 PYTHONINC = @PYTHONINC@
 PYTHONLIB = @PYTHONLIB@
 PYTHONMODDIR = @PYTHONMODDIR@
-QTDOCDIR = @QTDOCDIR@
 QTE_NORTTI = @QTE_NORTTI@
 QTOPIA_INCLUDES = @QTOPIA_INCLUDES@
 QT_INCLUDES = @QT_INCLUDES@
 QT_LDFLAGS = @QT_LDFLAGS@
 RANLIB = @RANLIB@
+RC = @RC@
 REPO = @REPO@
 SETUIDFLAGS = @SETUIDFLAGS@
 STRIP = @STRIP@
@@ -203,7 +197,10 @@ X_LDFLAGS = @X_LDFLAGS@
 X_PRE_LIBS = @X_PRE_LIBS@
 all_includes = @all_includes@
 all_libraries = @all_libraries@
+am__include = @am__include@
+am__quote = @am__quote@
 idldir = @idldir@
+install_sh = @install_sh@
 jni_includes = @jni_includes@
 kde_appsdir = @kde_appsdir@
 kde_bindir = @kde_bindir@
@@ -234,184 +231,206 @@ x_libraries = @x_libraries@
 
 EXTRA_DIST = index.docbook 
 
-####### kdevelop will overwrite this part!!! (end)############
 
+####### kdevelop will overwrite this part!!! (end)############
 KDE_DOCS = kprof
 KDE_LANG = en
+subdir = kprof/doc/kprof
 mkinstalldirs = $(SHELL) $(top_srcdir)/admin/mkinstalldirs
-CONFIG_HEADER = ../../../config.h
-CONFIG_CLEAN_FILES = 
-DIST_COMMON =  Makefile.am Makefile.in
-
-
-#>- DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
-#>+ 4
-KDE_DIST=file-menu.html commands.html compilation.html requirements.html using-with-fnccheck.html settings-menu.html installation.html introduction.html index.html credits.html tools-menu.html using-kprof.html redo.png faq.html available-profilers.html using-with-POSE.html introduction-to-profiling.html 
-
-DISTFILES= $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST) $(KDE_DIST)
-
-
-TAR = gtar
-GZIP_ENV = --best
-#>- all: all-redirect
+CONFIG_HEADER = $(top_builddir)/config.h
+CONFIG_CLEAN_FILES =
+DIST_SOURCES =
+DIST_COMMON = Makefile.am Makefile.in
+#>- all: all-am
 #>+ 1
-all: docs-am  all-redirect
+all: docs-am  all-am
+
 .SUFFIXES:
-$(srcdir)/Makefile.in: Makefile.am $(top_srcdir)/configure.in $(ACLOCAL_M4) 
-#>- 	cd $(top_srcdir) && $(AUTOMAKE) --gnu kprof/doc/kprof/Makefile
-#>+ 2
-	cd $(top_srcdir) && $(AUTOMAKE) --gnu kprof/doc/kprof/Makefile
+
+mostlyclean-libtool:
+	-rm -f *.lo
+
+clean-libtool:
+	-rm -rf .libs _libs
+
+distclean-libtool:
+	-rm -f libtool
+$(srcdir)/Makefile.in:  Makefile.am  $(top_srcdir)/configure.in $(ACLOCAL_M4)
+#>- 	cd $(top_srcdir) && \
+#>- $(AUTOMAKE) --gnu  kprof/doc/kprof/Makefile
+#>+ 3
+	cd $(top_srcdir) && \
+	$(AUTOMAKE) --gnu  kprof/doc/kprof/Makefile
 	cd $(top_srcdir) && perl admin/am_edit kprof/doc/kprof/Makefile.in
-
-Makefile: $(srcdir)/Makefile.in  $(top_builddir)/config.status $(BUILT_SOURCES)
-	cd $(top_builddir) \
-	  && CONFIG_FILES=$(subdir)/$@ CONFIG_HEADERS= $(SHELL) ./config.status
-
+Makefile:  $(srcdir)/Makefile.in  $(top_builddir)/config.status
+	cd $(top_builddir) && \
+	CONFIG_HEADERS= CONFIG_LINKS= \
+	CONFIG_FILES=$(subdir)/$@ $(SHELL) ./config.status
+uninstall-info-am:
 tags: TAGS
 TAGS:
 
 
-distdir = $(top_builddir)/$(PACKAGE)-$(VERSION)/$(subdir)
+#>- DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
+#>+ 4
+KDE_DIST=redo.png index.cache.bz2 
 
-subdir = kprof/doc/kprof
+DISTFILES= $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST) $(KDE_DIST)
+
+
+top_distdir = ../../..
+distdir = $(top_distdir)/$(PACKAGE)-$(VERSION)
 
 #>- distdir: $(DISTFILES)
 #>+ 1
 distdir: distdir-nls  $(DISTFILES)
-	here=`cd $(top_builddir) && pwd`; \
-	top_distdir=`cd $(top_distdir) && pwd`; \
-	distdir=`cd $(distdir) && pwd`; \
-	cd $(top_srcdir) \
-	  && $(AUTOMAKE) --include-deps --build-dir=$$here --srcdir-name=$(top_srcdir) --output-dir=$$top_distdir --gnu kprof/doc/kprof/Makefile
 	@for file in $(DISTFILES); do \
-	  d=$(srcdir); \
-	  if test -d $$d/$$file; then \
-	    cp -pr $$d/$$file $(distdir)/$$file; \
-	  else \
-	    test -f $(distdir)/$$file \
-	    || ln $$d/$$file $(distdir)/$$file 2> /dev/null \
-	    || cp -p $$d/$$file $(distdir)/$$file || :; \
-	  fi; \
+	if test -f $$file; then d=.; else d=$(srcdir); fi; \
+	dir=`echo "$$file" | sed -e 's,/[^/]*$$,,'`; \
+	if test "$$dir" != "$$file" && test "$$dir" != "."; then \
+	$(mkinstalldirs) "$(distdir)/$$dir"; \
+	fi; \
+	if test -d $$d/$$file; then \
+	cp -pR $$d/$$file $(distdir) \
+	|| exit 1; \
+	else \
+	test -f $(distdir)/$$file \
+	|| cp -p $$d/$$file $(distdir)/$$file \
+	|| exit 1; \
+	fi; \
 	done
-info-am:
-info: info-am
-dvi-am:
-dvi: dvi-am
 check-am: all-am
 check: check-am
-installcheck-am:
-installcheck: installcheck-am
-install-exec-am:
-install-exec: install-exec-am
+all-am: Makefile
 
-#>- install-data-am:
-#>+ 1
-install-data-am: install-docs install-nls
-install-data: install-data-am
+installdirs:
 
-install-am: all-am
-	@$(MAKE) $(AM_MAKEFLAGS) install-exec-am install-data-am
 install: install-am
-uninstall-am:
+install-exec: install-exec-am
+install-data: install-data-am
 #>- uninstall: uninstall-am
 #>+ 1
 uninstall: uninstall-docs uninstall-nls  uninstall-am
-all-am: Makefile
-all-redirect: all-am
+
+install-am: all-am
+	@$(MAKE) $(AM_MAKEFLAGS) install-exec-am install-data-am
+
+installcheck: installcheck-am
 install-strip:
-	$(MAKE) $(AM_MAKEFLAGS) AM_INSTALL_PROGRAM_FLAGS=-s install
-installdirs:
-
-
+	$(MAKE) $(AM_MAKEFLAGS) INSTALL_PROGRAM="$(INSTALL_STRIP_PROGRAM)" \
+	`test -z '$(STRIP)' || \
+	echo "INSTALL_PROGRAM_ENV=STRIPPROG='$(STRIP)'"` install
 mostlyclean-generic:
 
 clean-generic:
 
 distclean-generic:
-	-rm -f Makefile $(CONFIG_CLEAN_FILES)
-	-rm -f config.cache config.log stamp-h stamp-h[0-9]*
+	-rm -f Makefile $(CONFIG_CLEAN_FILES) stamp-h stamp-h[0-9]*
 
 maintainer-clean-generic:
-mostlyclean-am:  mostlyclean-generic
-
-mostlyclean: mostlyclean-am
-
-clean-am:  clean-generic mostlyclean-am
-
+	@echo "This command is intended for maintainers to use"
+	@echo "it deletes files that may require special tools to rebuild."
 #>- clean: clean-am
 #>+ 1
 clean: kde-rpo-clean  clean-am
 
-distclean-am:  distclean-generic clean-am
-	-rm -f libtool
+#>- clean-am: clean-generic clean-libtool mostlyclean-am
+#>+ 1
+clean-am: clean-docs  clean-generic clean-libtool mostlyclean-am
 
 distclean: distclean-am
 
-maintainer-clean-am:  maintainer-clean-generic distclean-am
-	@echo "This command is intended for maintainers to use;"
-	@echo "it deletes files that may require special tools to rebuild."
+distclean-am: clean-am distclean-generic distclean-libtool
+
+dvi: dvi-am
+
+dvi-am:
+
+info: info-am
+
+info-am:
+
+#>- install-data-am:
+#>+ 1
+install-data-am: install-docs install-nls
+
+install-exec-am:
+
+install-info: install-info-am
+
+install-man:
+
+installcheck-am:
 
 maintainer-clean: maintainer-clean-am
 
-.PHONY: tags distdir info-am info dvi-am dvi check check-am \
-installcheck-am installcheck install-exec-am install-exec \
-install-data-am install-data install-am install uninstall-am uninstall \
-all-redirect all-am all installdirs mostlyclean-generic \
-distclean-generic clean-generic maintainer-clean-generic clean \
-mostlyclean distclean maintainer-clean
+maintainer-clean-am: distclean-am maintainer-clean-generic
 
+mostlyclean: mostlyclean-am
+
+mostlyclean-am: mostlyclean-generic mostlyclean-libtool
+
+uninstall-am: uninstall-info-am
+
+.PHONY: all all-am check check-am clean clean-generic clean-libtool \
+	distclean distclean-generic distclean-libtool distdir dvi \
+	dvi-am info info-am install install-am install-data \
+	install-data-am install-exec install-exec-am install-info \
+	install-info-am install-man install-strip installcheck \
+	installcheck-am installdirs maintainer-clean \
+	maintainer-clean-generic mostlyclean mostlyclean-generic \
+	mostlyclean-libtool uninstall uninstall-am uninstall-info-am
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
 .NOEXPORT:
 
-#>+ 23
-docs-am: HTML HTML/index.html
+#>+ 21
+index.cache.bz2: $(srcdir)/index.docbook $(KDE_XSL_STYLESHEET) index.cache.bz2 index.docbook redo.png 
+	-@if test -n "$(MEINPROC)"; then echo $(MEINPROC) --check --cache index.cache.bz2 $(srcdir)/index.docbook; $(MEINPROC) --check --cache index.cache.bz2 $(srcdir)/index.docbook; fi
 
-HTML:
-	test -d HTML || mkdir HTML
+docs-am: index.cache.bz2
 
-HTML/index.html: HTML index.docbook
-	@test -d HTML && rm -r HTML
-	$(MEINPROC) $(srcdir)/index.docbook -o ../HTML/index.html
-
-install-docs:
+install-docs: docs-am install-nls
 	$(mkinstalldirs) $(DESTDIR)$(kde_htmldir)/$(KDE_LANG)/kprof
-	-@if test -d HTML; then \
-	filelist=`(cd HTML && ls -1 * .anchors 2> /dev/null)`; for file in $$filelist; do if test -f HTML/$$file; then \
-	echo $(INSTALL_DATA) HTML/$$file $(DESTDIR)$(kde_htmldir)/$(KDE_LANG)/kprof/$$file ;\
-	$(INSTALL_DATA) HTML/$$file $(DESTDIR)$(kde_htmldir)/$(KDE_LANG)/kprof/$$file; \
-	fi; done; fi
+	@if test -f index.cache.bz2; then \
+	echo $(INSTALL_DATA) index.cache.bz2 $(DESTDIR)$(kde_htmldir)/$(KDE_LANG)/kprof/; \
+	$(INSTALL_DATA) index.cache.bz2 $(DESTDIR)$(kde_htmldir)/$(KDE_LANG)/kprof/; \
+	fi
 	-rm -f $(DESTDIR)$(kde_htmldir)/$(KDE_LANG)/kprof/common
-	$(LN_S) /$(kde_htmldir)/$(KDE_LANG)/common $(DESTDIR)$(kde_htmldir)/$(KDE_LANG)/kprof/common
+	$(LN_S) $(kde_libs_htmldir)/$(KDE_LANG)/common $(DESTDIR)$(kde_htmldir)/$(KDE_LANG)/kprof/common
 
 uninstall-docs:
 	-rm -rf $(kde_htmldir)/$(KDE_LANG)/kprof
+
+clean-docs:
+	-rm -f index.cache.bz2
 
 
 #>+ 13
 install-nls:
 	$(mkinstalldirs) $(DESTDIR)$(kde_htmldir)/$(KDE_LANG)/kprof
-	@for base in index.docbook redo.png index.html introduction.html introduction-to-profiling.html available-profilers.html using-kprof.html using-with-fnccheck.html using-with-POSE.html commands.html file-menu.html tools-menu.html settings-menu.html faq.html credits.html installation.html requirements.html compilation.html ; do \
+	@for base in index.cache.bz2 index.docbook redo.png ; do \
 	  echo $(INSTALL_DATA) $$base $(DESTDIR)$(kde_htmldir)/$(KDE_LANG)/kprof/$$base ;\
 	  $(INSTALL_DATA) $(srcdir)/$$base $(DESTDIR)$(kde_htmldir)/$(KDE_LANG)/kprof/$$base ;\
 	done
 
 uninstall-nls:
-	for base in index.docbook redo.png index.html introduction.html introduction-to-profiling.html available-profilers.html using-kprof.html using-with-fnccheck.html using-with-POSE.html commands.html file-menu.html tools-menu.html settings-menu.html faq.html credits.html installation.html requirements.html compilation.html ; do \
+	for base in index.cache.bz2 index.docbook redo.png ; do \
 	  rm -f $(DESTDIR)$(kde_htmldir)/$(KDE_LANG)/kprof/$$base ;\
 	done
 
 
 #>+ 5
 distdir-nls:
-	for file in index.docbook redo.png index.html introduction.html introduction-to-profiling.html available-profilers.html using-kprof.html using-with-fnccheck.html using-with-POSE.html commands.html file-menu.html tools-menu.html settings-menu.html faq.html credits.html installation.html requirements.html compilation.html ; do \
+	for file in index.cache.bz2 index.docbook redo.png ; do \
 	  cp $(srcdir)/$$file $(distdir); \
 	done
 
-#>+ 5
+#>+ 6
 force-reedit:
-		cd $(top_srcdir) && $(AUTOMAKE) --gnu kprof/doc/kprof/Makefile
+		cd $(top_srcdir) && \
+	$(AUTOMAKE) --gnu  kprof/doc/kprof/Makefile
 	cd $(top_srcdir) && perl admin/am_edit kprof/doc/kprof/Makefile.in
 
 
@@ -419,8 +438,14 @@ force-reedit:
 final:
 	$(MAKE) all-am
 #>+ 2
+final-install:
+	$(MAKE) install-am
+#>+ 2
 no-final:
 	$(MAKE) all-am
+#>+ 2
+no-final-install:
+	$(MAKE) install-am
 #>+ 3
 cvs-clean:
 	$(MAKE) -f $(top_srcdir)/admin/Makefile.common cvs-clean

@@ -1,3 +1,29 @@
+####### kdevelop will overwrite this part!!! (begin)##########
+bin_PROGRAMS = kprof
+
+## INCLUDES were found outside kdevelop specific part
+
+kprof_SOURCES = kprofwidget.cpp cprofileviewitem.cpp call-graph.ui kprofview.cpp kprofdoc.cpp kprof.cpp main.cpp 
+kprof_LDADD   =  $(LIB_KFILE) $(LIB_KDEUI) $(LIB_KDECORE) $(LIB_QT) $(LIBSOCKET)
+
+SUBDIRS = doc 
+
+EXTRA_DIST = main.cpp kprof.cpp kprof.h kprofdoc.cpp kprofdoc.h kprofview.cpp kprofview.h kprofui.rc kprof.desktop lo32-app-kprof.png lo16-app-kprof.png cprofileviewitem.h call-graph.h call-graph.ui cprofileinfo.h cprofileviewitem.cpp kprofwidget.cpp kprofwidget.h 
+
+install-data-local:
+	$(mkinstalldirs) $(kde_appsdir)/Applications/
+	$(INSTALL_DATA) $(srcdir)/kprof.desktop $(kde_appsdir)/Applications/kprof.desktop
+	$(mkinstalldirs) $(kde_icondir)/locolor/32x32/apps/
+	$(INSTALL_DATA) $(srcdir)/lo32-app-kprof.png $(kde_icondir)/locolor/32x32/apps/kprof.png
+	$(mkinstalldirs) $(kde_icondir)/locolor/16x16/apps/
+	$(INSTALL_DATA) $(srcdir)/lo16-app-kprof.png $(kde_icondir)/locolor/16x16/apps/kprof.png
+
+uninstall-local:
+	-rm -f $(kde_appsdir)/Applications/kprof.desktop
+	-rm -f $(kde_icondir)/locolor/32x32/apps/kprof.png
+	-rm -f $(kde_icondir)/locolor/16x16/apps/kprof.png
+
+####### kdevelop will overwrite this part!!! (end)############
 ## Makefile.am for kprof
 
 # this has all of the subdirectories that make will recurse into.  if
