@@ -1,6 +1,8 @@
 2001-02-14 Florent Pillet <fpillet@users.sourceforge.net>
 	* added an option to turn C++ template abbreviation ON/OFF
 	  (see menu Settings->Abbreviate C++ Templates)
+	* merged a small parser simplification from
+	  Carsten Branitzki <csb@operamail.com>
 	
 2001-02-13 Florent Pillet <fpillet@users.sourceforge.net>
 	* improved the display of method names: if a method name has multiple signatures,
