@@ -1,3 +1,21 @@
+2001-01-23 Florent Pillet <florent.pillet@wanadoo.fr>
+	* added the documentation template
+	* added the call-graph generation UI, with provisions for VCG and GraphViz support.
+
+2001-01-16 Florent Pillet <florent.pillet@wanadoo.fr>
+
+	* new build system again (admin/ scripts are back, they
+	  are more tailored for the actual build settings in KDE).
+	* binary programs can now be opened. In this case, KProf
+	  requires that the result of program execution
+	  (the `gmon.out' file) be located in either the current
+	  directory or the binary program's directory.
+	* new call graph generator: KProf can now generate call
+	  graphs for visualization in external graphing programs.
+	  Supported output formats are GraphViz, an excellent
+	  open source graph visualization program from ATT
+	  (http://www.graphviz.org/) and XVCG.
+
 2000-09-10 Florent Pillet <florent.pillet@wanadoo.fr>
 
 	* added Open Recent... menu item
