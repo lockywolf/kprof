@@ -35,6 +35,7 @@
 #include <qlineedit.h>
 #include <qprinter.h>
 #include <qtextstream.h>
+#include <qdir.h>
 
 #include <klistview.h>
 #include <ktabctl.h>
@@ -72,6 +73,7 @@ protected:
 	QString					mFlatFilter;	// filter string for flat profile view
 	QFont					mListFont;		// font used to draw the text
 	bool					mAbbrevTemplates; // if true, templates are "abbreviates" (i.e. become <...>)
+	QDir					mCurDir;		// current directory
 
 	typedef struct						// structure is used while parsing the call graph for gprof and Function Check
 	{
@@ -142,6 +144,7 @@ public slots:
 	void applySettings ();
 
 	void openResultsFile ();
+	void compareFile ();
 	void openRecentFile (const KURL& url);
 	void doPrint ();
 

@@ -44,6 +44,7 @@ protected:
 	KToggleAction*	mToggleTemplateAbbrev;
 	KAction*		mSelectFont;
 	KAction*		mGenCallGraphAction;
+	KAction*		mCompareFile;
 
 public:
 	KProfTopLevel (QWidget *parent = 0, const char *name = NULL);

@@ -273,7 +273,7 @@ DIST_COMMON =  Makefile.am Makefile.in
 
 #>- DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
 #>+ 4
-KDE_DIST=lo32-app-kprof.png kprof.desktop call-graph.ui kprof_meta_unload.cpp kprofui.rc call-graph.h lo16-app-kprof.png 
+KDE_DIST=lo32-app-kprof.png kprof cpreviousprofileviewitem.cpp kprof.desktop test.ps call-graph.ui kprof_meta_unload.cpp kprofui.rc cpreviousprofileviewitem.h call-graph.h lo16-app-kprof.png 
 
 DISTFILES= $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST) $(KDE_DIST)
 

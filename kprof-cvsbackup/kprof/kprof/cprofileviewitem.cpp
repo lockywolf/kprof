@@ -34,6 +34,7 @@
 #include "cprofileinfo.h"
 #include "cprofileviewitem.h"
 
+static bool blockInval = false;
 
 CProfileViewItem::CProfileViewItem (QListView *parent, CProfileInfo *profile)
 	:	QListViewItem (parent),
@@ -67,6 +68,15 @@ CProfileViewItem::CProfileViewItem (QListViewItem *parent, QListViewItem *after,
 CProfileViewItem::~CProfileViewItem ()
 {
 }
+
+#ifdef TEST_DIFF
+void CProfileViewItem::setup ()
+{
+	QListViewItem::setup ();
+	if (mProfile->previous)
+		setHeight (2 * height ());
+}
+#endif
 
 void CProfileViewItem::setRecursiveIcon ()
 {
@@ -217,31 +227,58 @@ QString CProfileViewItem::formatFloat (float n, int precision)
 	return QString (buffer);
 }
 
+#ifdef TEST_DIFF
+void CProfileViewItem::invalidateHeight ()
+{
+	if (blockInval == false)
+		QListViewItem::invalidateHeight ();
+}
+
 void CProfileViewItem::paintCell (QPainter * p, const QColorGroup & cg, int column, int width, int align)
 {
-	// pre-change font attributes to take "diff" values into account
-	if (mProfile->previous || KProfWidget::sDiffMode)
+	if (p == NULL)
+		return;
+	
+	// no diff: paint the cell normally
+	if (mProfile==NULL || mProfile->previous==NULL)
 	{
-		if (column == KProfWidget::col_function)
-		{
-			if (!mProfile->previous)
-			{
-				// new function: display name in BOLD
-				QFont f = p->font ();
-				f.setBold (true);
-				p->setFont (f);
-			}
-		}
+		QListViewItem::paintCell (p, cg, column, width, align);
+		return;
 	}
 
-	// paint the cell "regularly"
+	// paint the cell once, normally (current profile)
+	blockInval = true;
+	QFont f = p->font ();
+	int h = height ();
+	int h1 = h / 2;
+	int h2 = h - h1;
+	setHeight (h1);
+	if (column != KProfWidget::col_function)
+	{
+		f.setBold (true);
+		p->setFont (f);
+	}
+	
 	QListViewItem::paintCell (p, cg, column, width, align);
 
-	// post-paint the cell: draw a line accross the cell if the entry is "deleted"
-	if (mProfile->deleted)
+	// paint the cell a second time, below, with different attribute (previous profile)
+	if (column != KProfWidget::col_function && column != KProfWidget::col_recursive)
 	{
-		int y = height() / 2;
-		p->moveTo (0, y);
-		p->lineTo (width-1, y);
+		f.setBold (false);
+		p->setFont (f);
 	}
+	p->translate (0, h1);
+	setHeight (h2);
+
+	CProfileInfo *current = mProfile;			// dirty trick...
+	mProfile = mProfile->previous;
+	
+	QListViewItem::paintCell (p, cg, (column==KProfWidget::col_function || column==KProfWidget::col_recursive) ? -1 : column, width, align);
+	
+	mProfile = current;
+	p->translate (0, -h1);
+	setHeight (h);
+	blockInval = false;
 }
+
+#endif // TEST_DIFF

@@ -84,6 +84,8 @@ void KProfTopLevel::setupActions ()
 {
 	KStdAction::open (mProf, SLOT(openResultsFile()), actionCollection());
 	KStdAction::openRecent (mProf, SLOT(openRecentFile(const KURL&)), actionCollection());
+	mCompareFile = new KAction (i18n ("Compare With..."), 0, mProf, SLOT (compareFile ()), actionCollection(), "compare_file");
+	mCompareFile->setEnabled (false);
 	KStdAction::print (mProf, SLOT(doPrint()), actionCollection());
 	KStdAction::quit (this, SLOT(close()), actionCollection ());
 
@@ -123,6 +125,7 @@ void KProfTopLevel::addRecentFile (const KURL& url)
 	recent->addURL (url);
 
 	setCaption (url.fileName ());
+	mCompareFile->setEnabled (true);
 }
 
 #include "kprof.moc"
