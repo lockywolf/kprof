@@ -54,6 +54,9 @@ KProfTopLevel::KProfTopLevel (QWidget *parent, const char *name)
 	recent->loadEntries (config);
 
 	connect (mProf, SIGNAL (addRecentFile(const KURL&)), this, SLOT(addRecentFile(const KURL&)));
+
+	mProf->loadSettings ();
+	mProf->applySettings ();
 }
 
 void KProfTopLevel::setupActions ()
@@ -64,7 +67,8 @@ void KProfTopLevel::setupActions ()
 	KStdAction::quit (this, SLOT(close()), actionCollection ());
 
 	KStdAction::showToolbar (this, SLOT(toggleToolBar()), actionCollection());
-	
+
+	mToggleTemplateAbbrev = new KToggleAction (i18n ("Abbreviate C++ &Templates"), 0, mProf, SLOT (toggleTemplateAbbrev ()), actionCollection(), "toggle_template_abbreviations");
 	mGenCallGraphAction = new KAction (i18n ("&Generate Call Graph..."), 0, mProf, SLOT (generateCallGraph ()), actionCollection(), "generate_call_graph");
 }
 

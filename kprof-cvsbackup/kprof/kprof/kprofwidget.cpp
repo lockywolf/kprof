@@ -33,6 +33,7 @@
 #include <qwhatsthis.h>
 
 #include <kapp.h>
+#include <kaction.h>
 #include <kconfig.h>
 #include <klocale.h>
 #include <kcmenumngr.h>
@@ -42,6 +43,7 @@
 #include <kfiledialog.h>
 #include <kiconloader.h>
 
+#include "kprof.h"
 #include "kprofwidget.h"
 #include "cprofileviewitem.h"
 #include "call-graph.h"
@@ -52,7 +54,8 @@ KProfWidget::KProfWidget (QWidget *parent, const char *name)
 		mFlat (NULL),
 		mHier (NULL),
 		mObjs (NULL),
-		mCurPage (0)
+		mCurPage (0),
+		mAbbrevTemplates (false)
 {
 	QVBoxLayout *topLayout = new QVBoxLayout (this, 0, 0);
 
@@ -123,9 +126,6 @@ KProfWidget::KProfWidget (QWidget *parent, const char *name)
 	QWhatsThis::add (mObjs,
 		i18n (	"This is the <I>object view</I>.\n\n"
 				"It displays C++ methods grouped by object name."));
-
-	loadSettings ();
-	applySettings ();
 }
 
 KProfWidget::~KProfWidget ()
@@ -135,6 +135,26 @@ KProfWidget::~KProfWidget ()
 void KProfWidget::tabSelected (int page)
 {
 	mCurPage = page;
+}
+
+void KProfWidget::toggleTemplateAbbrev ()
+{
+	mAbbrevTemplates = mAbbrevTemplates ? false : true;
+
+	KToggleAction *action = ((KProfTopLevel *) parent ())->getToggleTemplateAbbrevAction ();
+	if (action)
+		action->setChecked (mAbbrevTemplates);
+
+	if (mProfile.count ())
+	{
+		postProcessProfile ();		// regenerate simplified names
+		mFlat->clear ();			// rebuild lists to make sure refresh is done
+		mHier->clear ();
+		mObjs->clear ();
+		fillFlatProfileList ();
+		fillHierProfileList ();
+		fillObjsProfileList ();
+	}
 }
 
 void KProfWidget::prepareProfileView (KListView *view, bool rootIsDecorated)
@@ -168,6 +188,7 @@ void KProfWidget::applySettings ()
 	config.setGroup ("KProfiler");
 	config.writeEntry ("Width", width ());
 	config.writeEntry ("Height", height ());
+	config.writeEntry ("AbbreviateTemplates", mAbbrevTemplates);
 
 	// TODO: save columns widhts here
 
@@ -184,6 +205,11 @@ void KProfWidget::loadSettings ()
 	int w = config.readNumEntry ("Width", width ());
 	int h = config.readNumEntry ("Height", height ());
 	resize (w,h);
+
+	mAbbrevTemplates = config.readBoolEntry ("AbbreviateTemplates", true);
+	KToggleAction *action = ((KProfTopLevel *) parent ())->getToggleTemplateAbbrevAction ();
+	if (action)
+		action->setChecked (mAbbrevTemplates);
 
 	// TODO: reload columns widths here
 }
@@ -293,8 +319,7 @@ void KProfWidget::openFile (const QString &filename)
 	postProcessProfile ();
 
 	// fill lists
-	QString noFilter;
-	fillFlatProfileList (noFilter);
+	fillFlatProfileList ();
 	fillHierProfileList ();
 	fillObjsProfileList ();
 
@@ -393,20 +418,9 @@ void KProfWidget::parseProfile (QTextStream& t)
 			 *
 			 */
 			case SEARCH_FLAT_PROFILE:
-				for (unsigned int i = 0; i < fields[0].length (); i++)
-				{
-					QChar c = s[i];
-					if (c != ' ')
-					{
-	      				if (c.isNumber())
-		      				state = 1;
-						break;
-           			}
-              	}
-				if (state == 0)
-					break;
-
-     			// fall through
+				if (fields[0]=="time" && fields[1]=="seconds" && fields[2]=="seconds")
+					state = PROCESS_FLAT_PROFILE;
+				break;
 
 			/*
 			 * analyze flat profile entry
@@ -435,7 +449,7 @@ void KProfWidget::parseProfile (QTextStream& t)
 					p->totalTsPerCall	= 0;
 					p->name				= fields[3];
      			}
-				// p->simplifiedName will be updated in postProcessProfile()7
+				// p->simplifiedName will be updated in postProcessProfile()
 				p->recursive		= false;
 				p->object			= getClassName (p->name);
 				p->multipleSignatures = false;				// will be updated in postProcessProfile()
@@ -648,11 +662,12 @@ CProfileInfo *KProfWidget::locateProfileEntry (const QString& name)
 	return NULL;
 }
 
-void KProfWidget::fillFlatProfileList (const QString& filter)
+void KProfWidget::fillFlatProfileList ()
 {
+	bool filter = mFlatFilter.isEmpty()==false && mFlatFilter.length() > 0;
 	for (unsigned int i = 0; i < mProfile.size (); i++)
 	{
-		if (filter.length () && !mProfile[i]->name.contains (filter))
+		if (filter && !mProfile[i]->name.contains (mFlatFilter))
 			continue;
 		new CProfileViewItem (mFlat, mProfile[i]);
   	}
@@ -839,7 +854,8 @@ void KProfWidget::selectItemInView (QListView *view, CProfileInfo *info, bool ex
 void KProfWidget::flatProfileFilterChanged (const QString &filter)
 {
 	mFlat->clear ();
-	fillFlatProfileList (filter);
+	mFlatFilter = filter;
+	fillFlatProfileList ();
 }
 
 void KProfWidget::doPrint ()
@@ -850,9 +866,8 @@ void KProfWidget::doPrint ()
 #ifndef QT_NO_PRINTER
 	if (mPrinter.setup(view))
 	{
-        QPainter paint (&mPrinter);
-        // @@@ TODO: finish printing code
-    }
+		QPainter paint (&mPrinter);
+	}
 #endif
 }
 
@@ -954,7 +969,7 @@ void KProfWidget::generateVCGCallGraph (QFile& file, bool currentSelectionOnly)
 
 	stream << "graph: {\n";
 	stream << "spreadlevel: 1\n";
-	stream << "treefactor: 0.500000\n";
+	stream << "treefactor: 0.5\n";
 	stream << "splines: yes\n";
 	stream << "node_alignment: bottom\n";
 	stream << "orientation: left_to_right\n";
@@ -1115,6 +1130,9 @@ QString KProfWidget::getClassName (const QString &name)
 
 QString KProfWidget::removeTemplates (const QString &name)
 {
+	if (mAbbrevTemplates == false)
+		return name;
+
 	// remove the templates from inside a name, leaving only
 	// the <...> and return the converted name
 	QString s (name);
