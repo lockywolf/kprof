@@ -1,3 +1,8 @@
+2002-07-02 Colin Desmond <cdesmond@users.sourceforge.net>
+	* Moved the TreeMap generation to a menu option only visable if the library is installed.
+	*	Allow the user to display the call graphs rather than save to file
+	*	Moved from kdb2html to meinproc for the production of the HTML from the index.docbook file
+
 2002-06-08 Colin Desmond <cdesmond@users.sourceforge.net>
 	* Ported to KDE 3.0 for v1.3.1
 
