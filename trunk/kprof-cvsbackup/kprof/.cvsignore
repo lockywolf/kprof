@@ -6,3 +6,9 @@ configure.files
 *~
 *.bak
 *.m4
+config.h
+stamp*
+config.log
+libtool
+config.status
+
