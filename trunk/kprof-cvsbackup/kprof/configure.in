@@ -1,0 +1,25 @@
+
+dnl without this order in this file, autoconf will not work!
+dnl the argument is a source file out of your sources. But
+dnl acinclude.m4 makes the job for all programs ;-)
+AC_INIT(acinclude.m4)
+
+dnl without this order in this file, automake will be confused!
+dnl the argument 
+AM_CONFIG_HEADER(config.h)
+
+dnl insert here your program name and version number
+KDE_USE_QT(2)
+KDE_DO_IT_ALL(kprof, 1.0.1)
+
+dnl in this space add everything you want to check for
+dnl examples are specific headers, libraries, etc.
+dnl everything to compile and run a KDE program is already checked
+
+dnl Checks for header files.
+AC_LANG_C dnl switch to C
+AC_HEADER_STDC dnl check for other stdc headers. More traditional ;)
+
+dnl add here all your Makefiles. These are created by configure
+AC_OUTPUT(Makefile \
+	kprof/Makefile)
