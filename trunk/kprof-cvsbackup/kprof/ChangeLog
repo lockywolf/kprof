@@ -1,3 +1,7 @@
+2001-08-18 Alexander Rawass <alexannika@users.sourceforge.net>
+	* added basic support for libqtreemap
+	* two QTreeMapWindows are opened, the profiles shown
+
 2001-06-29 Florent Pillet <fpillet@users.sourceforge.net>
 	* Cleaned up diff mode code
 	* All diff mode number columns are now prefixed with 'new' or 'old'

@@ -56,6 +56,10 @@
 #include "cprofileviewitem.h"
 #include "call-graph.h"
 
+#include <qtreemap.h>
+#include <qtreemapwindow.h>
+#include <qlistviewtreemap.h>
+#include <qlistviewtreemapwindow.h>
 
 /*
  * Some globals we need - one of these days I'll have to synthesize this 
@@ -498,6 +502,7 @@ void KProfWidget::openFile (const QString &filename, int format, bool compare)
 		mHier->clear ();
 		mObjs->clear ();
 
+
 		// if we are going to compare results, save the previous results and
 		// remove any previously deleted entry
 		sDiffMode = compare;
@@ -582,6 +587,9 @@ void KProfWidget::openFile (const QString &filename, int format, bool compare)
 	prepareProfileView (mObjs, true);
 	customizeColumns (mObjs, sLastFileFormat);
 
+	QListViewItem *obj_toplevel=new QListViewItem(mObjs,"Objects");
+	QListViewItem *hier_toplevel=new QListViewItem(mHier,"Hierarchy");
+
 	// fill lists
 	fillFlatProfileList ();
 	fillHierProfileList ();
@@ -594,6 +602,30 @@ void KProfWidget::openFile (const QString &filename, int format, bool compare)
 
 	// update the current directory
 	mCurDir = finfo.dir ();
+
+	// create options for the treemap
+
+	treemap_options=new QTreeMapOptions();
+	//treemap_options->path_separator=QString("::");
+	treemap_options->calc_nodesize=CALCNODE_ALWAYS;
+	// open up the treemap widget
+
+	obj_treemap= new QListViewTreeMapWindow(KProfWidget::col_function,KProfWidget::col_totalPercent);
+	//obj_treemap= new QListViewTreeMapWindow(KProfWidget::col_function,KProfWidget::col_count);
+	obj_treemap->makeWidgets();
+	obj_treemap->makeColumnMenu(mObjs);
+	obj_treemap->getArea()->setOptions(treemap_options);
+	obj_treemap->getArea()->setTreeMap((Object *)mObjs->firstChild());
+	obj_treemap->setWindowTitle("KProf Object Profile");
+
+	hier_treemap= new QListViewTreeMapWindow(KProfWidget::col_function,KProfWidget::col_totalPercent);
+	hier_treemap->makeWidgets();
+	hier_treemap->makeColumnMenu(mHier);
+	hier_treemap->getArea()->setOptions(treemap_options);
+	hier_treemap->getArea()->setTreeMap((Object *)mHier->firstChild());
+	hier_treemap->setWindowTitle("KProf Hierarchy Profile");
+
+
 }
 
 void KProfWidget::gprofStdout (KProcess *, char *buffer, int buflen)
@@ -1391,7 +1423,7 @@ void KProfWidget::fillHierProfileList ()
 {
 	for (unsigned int i = 0; i < mProfile.size (); i++)
 	{
-		CProfileViewItem *item = new CProfileViewItem (mHier, mProfile[i]);
+		CProfileViewItem *item = new CProfileViewItem (mHier->firstChild(), mProfile[i]);
 
 		QArray<CProfileInfo *> addedEntries (mProfile.size ());
 
@@ -1430,7 +1462,7 @@ void KProfWidget::fillObjsProfileList ()
 	// create all toplevel elements and their descendants
 	for (uint i = 0; i < mClasses.count (); i++)
 	{
-		CProfileViewItem *parent = new CProfileViewItem (mObjs, NULL);
+		CProfileViewItem *parent = new CProfileViewItem (mObjs->firstChild(), NULL);
 		for (uint j = 0; j < mProfile.count (); j++)
 		{
 			if (mProfile[j]->object == *mClasses[i])
