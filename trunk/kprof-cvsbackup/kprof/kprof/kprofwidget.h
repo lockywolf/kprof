@@ -90,7 +90,8 @@ protected:
 		SEARCH_FLAT_PROFILE = 0,
 		PROCESS_FLAT_PROFILE,
 		SEARCH_CALL_GRAPH,
-		PROCESS_CALL_GRAPH
+		PROCESS_CALL_GRAPH,
+		DISCARD_CALL_GRAPH_ENTRY
 	};
 
 public:
@@ -139,7 +140,8 @@ signals:
 private:
 	void openFile (const QString &filename);
 	void prepareProfileView (KListView *view, bool rootIsDecorated);
-	void parseProfile (QTextStream &t);
+	void parseProfile_fnccheck (QTextStream &t);
+	void parseProfile_gprof (QTextStream &t);
 	void processCallGraphBlock (const QVector<SCallGraphEntry> &data);
 	void postProcessProfile ();
 

@@ -110,19 +110,19 @@ QString CProfileViewItem::text (int column) const
 			return QString::number (mProfile->calls);
 
    		case KProfWidget::col_total:
-			return QString::number (mProfile->cumSeconds);
+			return QString::number (mProfile->cumSeconds, 'f');
 
 		case KProfWidget::col_totalPercent:
-			return QString::number (mProfile->cumPercent);
+			return QString::number (mProfile->cumPercent, 'f');
 
    		case KProfWidget::col_self:
-			return QString::number (mProfile->selfSeconds);
+			return QString::number (mProfile->selfSeconds, 'f');
 
    		case KProfWidget::col_totalPerCall:
-			return QString::number (mProfile->totalTsPerCall);
+			return QString::number (mProfile->totalTsPerCall, 'f');
 
    		case KProfWidget::col_selfPerCall:
-			return QString::number (mProfile->selfTsPerCall);
+			return QString::number (mProfile->selfTsPerCall, 'f');
 
    		default:
 			return "";

@@ -1,3 +1,9 @@
+2001-02-16 Florent Pillet <fpillet@users.sourceforge.net>
+	* added Function Check output parser
+	* fixed display of values < 1.0 (was using scientific notation)
+	* display number columns right-aligned
+	* removed "::" before C function names
+
 2001-02-14 Florent Pillet <fpillet@users.sourceforge.net>
 	* added an option to turn C++ template abbreviation ON/OFF
 	  (see menu Settings->Abbreviate C++ Templates)
