@@ -26,6 +26,8 @@
  *  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
+#include <stdlib.h>
+
 #include <qhbuttongroup.h>
 #include <qfontdialog.h>
 #include <qlayout.h>
@@ -453,11 +455,20 @@ void KProfWidget::parseProfile_pose (QTextStream& t)
 	
 	// because of the way POSE results are shown, we have to keep a dictionnary
 	// of indexes -> CProfileInfo*, and a list of call maps index -> parent index
-	QAsciiDict<CProfileInfo> functions (17);
-	QIntDict<CProfileInfo> indexes;			// dictionary mapping index value with profile entry
-	QArray<SPoseCallGraph> callGraph;
+	QAsciiDict<CProfileInfo> functions (257);
+	SPoseCallGraph* callGraph = (SPoseCallGraph *) malloc (256 * sizeof (SPoseCallGraph));
+	
+	// mapping between indexes and profile ptrs. because of the number of indexes
+	// one typically encounters in a profile results file, use of a dictionnary
+	// leads to very slow parsing. This is why I use the array below...
+	int indexes = 8192; 
+	CProfileInfo **indexToProfile = (CProfileInfo **) malloc (indexes * sizeof (CProfileInfo *));
+	for (int i=0; i < indexes; i++)
+		indexToProfile[i] = NULL;
 
 	int line = 0;
+	int numEntries = 0;
+	int cgCount = 0;
 	QString s;
 
 	t.setEncoding (QTextStream::Latin1);
@@ -484,6 +495,15 @@ void KProfWidget::parseProfile_pose (QTextStream& t)
 			continue;
 		}
 
+		// gather the index of this entry
+		int ind = fields[0].toInt();
+		if (ind > 512000)
+		{
+			// uh ? this is probably a parsing problem!
+			line--;
+			continue;
+		}
+
 		// first look if we have a dictionnary entry for this function
 		bool created = false;
 		CProfileInfo *p = functions.find (fields[3].latin1());
@@ -492,19 +512,29 @@ void KProfWidget::parseProfile_pose (QTextStream& t)
 			// nope: create a new one
 			p = new CProfileInfo;
 			functions.insert (fields[3].latin1(), p);
-			p->ind  = mProfile.count ();
+			p->ind  = numEntries;
 			p->name = fields[3];
 			created = true;
 		}
 
 		// add entry to the indexes dictionary
-		indexes.insert (fields[0].toInt(), p);
+		if (ind >= indexes)
+		{
+			int n = ((ind / 8192) + 1) * 8192;
+			indexToProfile = (CProfileInfo **) realloc (indexToProfile, n * sizeof (CProfileInfo *));
+			// TODO: test and report memory error here
+			for (int i = indexes; i < n; i++)
+				indexToProfile[i] = NULL;
+			indexes = n;
+		}
+		indexToProfile[ind] = p;
 
 		// add caller to the callers list
-		if (((line-1) & 0xff) == 0)
-			callGraph.resize (line + 255);
-		callGraph[line-1].index = fields[0].toInt ();
-		callGraph[line-1].parent = fields[1].toInt ();
+		if (cgCount && (cgCount & 0xff)==0)
+			callGraph = (SPoseCallGraph *) realloc (callGraph, (cgCount + 256) * sizeof (SPoseCallGraph));
+
+		callGraph[cgCount].index = ind;
+		callGraph[cgCount++].parent = fields[1].toInt ();
 
 		p->cumPercent		+= fields[10].toFloat ();
 		p->cumSeconds		+= fields[9].toFloat () / 1000.0;		// value given in milliseconds
@@ -538,34 +568,54 @@ void KProfWidget::parseProfile_pose (QTextStream& t)
 			if (p->method.startsWith ("::"))
 				p->method.remove (0,2);
 
-			int j = mProfile.size ();
-			mProfile.resize (j + 1);
-			mProfile.insert (j, p);
+			mProfile.resize (numEntries + 1);
+			mProfile.insert (numEntries++, p);
 		}
 	}
 
 	// post-process call-graph data
-	for (int i=0; i < line; i++)
+	for (int i=0; i < cgCount; i++)
 	{
 		int father = callGraph[i].parent;
 		int child  = callGraph[i].index;
 		if (father != -1)
 		{
-			CProfileInfo *pFather = indexes [father];
-			CProfileInfo *pChild  = indexes [child];
+			CProfileInfo *pFather = indexToProfile [father];
+			CProfileInfo *pChild  = indexToProfile [child];
+
+			// these errors should not happen in a well-formed profile result,
+			// but who knows...
+			if (pFather == NULL) {
+				fprintf (stderr, "pFather==NULL: No profile entry for index %d!\n", father);
+				continue;
+			}
+			if (pChild == NULL) {
+				fprintf (stderr, "pChild==NULL: No profile entry for index %d!\n", child);
+				continue;
+			}
 
 			if (pFather == pChild)
 				pFather->recursive = true;
 			else
 			{
-				pFather->called.resize (pFather->called.count () + 1);
-				pFather->called [pFather->called.count () - 1] = pChild;
-
-				pChild->callers.resize (pChild->callers.count () + 1);
-				pChild->callers [pChild->callers.count () - 1] = pFather;
+				if (pFather->called.count()==0 || pFather->called.find (pChild) == -1)
+				{
+					int n = pFather->called.count ();
+					pFather->called.resize (n + 1);
+					pFather->called [n] = pChild;
+				}
+				if (pChild->callers.count()==0 || pChild->callers.find (pFather) == -1)
+				{
+					int n = pChild->callers.count ();
+					pChild->callers.resize (n + 1);
+					pChild->callers [n] = pFather;
+				}
 			}
 		}
 	}
+
+	free (indexToProfile);
+	free (callGraph);
 }
 
 void KProfWidget::parseProfile_fnccheck (QTextStream& t)
