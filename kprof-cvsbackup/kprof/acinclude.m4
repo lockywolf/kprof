@@ -720,7 +720,7 @@ fi
 if test -z "$2"; then
   if test $kde_qtver = 2; then
     if test $kde_qtsubver -gt 0; then
-      kde_qt_minversion=">= Qt 2.2.2"
+      kde_qt_minversion=">= Qt 2.2.1"
     else
       kde_qt_minversion=">= Qt 2.0.2"
     fi
@@ -734,7 +734,7 @@ fi
 if test -z "$3"; then
    if test $kde_qtver = 2; then
     if test $kde_qtsubver -gt 0; then
-      kde_qt_verstring="QT_VERSION >= 222"
+      kde_qt_verstring="QT_VERSION >= 221"
     else
       kde_qt_verstring="QT_VERSION >= 200"
     fi

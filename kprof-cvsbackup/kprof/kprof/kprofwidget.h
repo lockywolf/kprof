@@ -139,6 +139,9 @@ private:
 
 	void generateDotCallGraph (bool currentSelectionOnly);
 	void generateVCGCallGraph (bool currentSelectionOnly);
+
+	QString getClassName (const QString& name);
+	QString removeTemplates (const QString& name);
 };
 
 #endif

@@ -4781,7 +4781,7 @@ fi
 if test -z ""; then
   if test $kde_qtver = 2; then
     if test $kde_qtsubver -gt 0; then
-      kde_qt_minversion=">= Qt 2.2.2"
+      kde_qt_minversion=">= Qt 2.2.1"
     else
       kde_qt_minversion=">= Qt 2.0.2"
     fi
@@ -4795,7 +4795,7 @@ fi
 if test -z ""; then
    if test $kde_qtver = 2; then
     if test $kde_qtsubver -gt 0; then
-      kde_qt_verstring="QT_VERSION >= 222"
+      kde_qt_verstring="QT_VERSION >= 221"
     else
       kde_qt_verstring="QT_VERSION >= 200"
     fi
@@ -7246,8 +7246,6 @@ trap 'rm -fr `echo "\
 kprof/Makefile \
 kprof/doc/Makefile \
 kprof/doc/kprof/Makefile \
-kprof/pics/Makefile \
-po/Makefile \
  config.h" | sed "s/:[^ ]*//g"` conftest*; exit 1' 1 2 15
 EOF
 cat >> $CONFIG_STATUS <<EOF
@@ -7444,8 +7442,6 @@ CONFIG_FILES=\${CONFIG_FILES-"\
 kprof/Makefile \
 kprof/doc/Makefile \
 kprof/doc/kprof/Makefile \
-kprof/pics/Makefile \
-po/Makefile \
 "}
 EOF
 cat >> $CONFIG_STATUS <<\EOF
