@@ -1,4 +1,10 @@
-SUBDIRS = $(TOPSUBDIRS)
+####### kdevelop will overwrite this part!!! (begin)##########
+
+SUBDIRS = kprof po doc 
+
+EXTRA_DIST = AUTHORS COPYING ChangeLog INSTALL README TODO kprof.lsm 
+
+####### kdevelop will overwrite this part!!! (end)############
 
 $(top_srcdir)/configure.in: configure.in.in $(top_srcdir)/subdirs
 	cd $(top_srcdir) && $(MAKE) -f admin/Makefile.common configure.in ;
@@ -14,8 +20,6 @@ MAINTAINERCLEANFILES = subdirs configure.in acinclude.m4 configure.files
 package-messages:
 	$(MAKE) -f admin/Makefile.common package-messages
 	$(MAKE) -C po merge
-
-EXTRA_DIST = admin 
 
 dist-hook:
 	cd $(top_distdir) && perl admin/am_edit -padmin

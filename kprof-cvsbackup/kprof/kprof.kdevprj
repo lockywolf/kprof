@@ -17,25 +17,30 @@ install_location=
 type=DATA
 
 [Config for BinMakefileAm]
+addcxxflags=
 bin_program=kprof
-cxxflags=-O0 -g3 -Wall
-ldadd=\s$(LIB_QT) $(LIB_KDECORE) $(LIB_KDEUI) $(LIB_KFILE)\s
-ldflags=\s
+cflags=
+cppflags=
+cxxflags=\s-O0 -pg -g3 -Wall
+ldadd=\s$(LIB_KFILE) $(LIB_KHTML) $(LIB_KDEUI) $(LIB_KDECORE) $(LIB_QT)
+ldflags=\s\s
 
 [General]
-AMChanged=false
+AMChanged=true
 author=Colin Desmond
-configure_args=
+configure_args=\s--build=i386-linux --host=i386-linux --target=i386-linux\s
 email=colin@localhost.localdomain
 kdevprj_version=1.3
 lfv_open_groups=
-make_options=-j1
-makefiles=Makefile.am,kprof/Makefile.am,doc/Makefile.am,doc/en/Makefile.am,po/Makefile.am,kprof/doc/kprof/Makefile.am,kprof/doc/Makefile.am
+make_options=\s-j1
+makefiles=Makefile.am,kprof/Makefile.am,doc/Makefile.am,doc/en/Makefile.am,po/Makefile.am
+modifyMakefiles=true
 project_name=Kprof
 project_type=normal_kde2
 sgml_file=/home/colin/downloads/kprof/doc/en/index.docbook
+short_info=
 sub_dir=kprof/
-version=0.1
+version=1.3.2
 version_control=None
 workspace=1
 
@@ -55,8 +60,8 @@ User Interface=*.kdevdlg,*.ui,*.rc,*.dlg
 groups=Headers,Sources,User Interface,Translations,GNU,Others
 
 [Makefile.am]
-files=kprof.kdevprj,admin,AUTHORS,COPYING,ChangeLog,INSTALL,README,TODO,kprof.lsm
-sub_dirs=kprof,po,doc
+files=AUTHORS,COPYING,ChangeLog,INSTALL,README,TODO,kprof.lsm
+sub_dirs=po,doc,kprof
 type=normal
 
 [README]
@@ -71,32 +76,14 @@ install=false
 install_location=
 type=DATA
 
-[admin]
-dist=true
-install=false
-install_location=
-type=DATA
-
 [doc/Makefile.am]
 sub_dirs=en
 type=normal
 
 [doc/en/Makefile.am]
-files=doc/en/index.docbook
+files=
 sub_dirs=
 type=normal
-
-[doc/en/index.docbook]
-dist=true
-install=false
-install_location=$$(kde_icondir)/locolor/16x16/apps/kprof.png
-type=DATA
-
-[kprof.kdevprj]
-dist=true
-install=false
-install_location=
-type=DATA
 
 [kprof.lsm]
 dist=true
@@ -105,8 +92,8 @@ install_location=
 type=DATA
 
 [kprof/Makefile.am]
-files=kprof/main.cpp,kprof/kprof.cpp,kprof/kprof.h,kprof/kprofdoc.cpp,kprof/kprofdoc.h,kprof/kprofview.cpp,kprof/kprofview.h,kprof/kprofui.rc,kprof/kprof.desktop,kprof/lo32-app-kprof.png,kprof/lo16-app-kprof.png,kprof/cprofileviewitem.h,kprof/call-graph.h,kprof/call-graph.ui,kprof/cprofileinfo.h,kprof/cprofileviewitem.cpp,kprof/kprofwidget.cpp,kprof/kprofwidget.h
-sub_dirs=doc
+files=kprof/main.cpp,kprof/kprof.cpp,kprof/kprof.h,kprof/kprofui.rc,kprof/kprof.desktop,kprof/lo32-app-kprof.png,kprof/lo16-app-kprof.png,kprof/cprofileviewitem.h,kprof/call-graph.h,kprof/call-graph.ui,kprof/cprofileinfo.h,kprof/cprofileviewitem.cpp,kprof/kprofwidget.cpp,kprof/kprofwidget.h
+sub_dirs=
 type=prog_main
 
 [kprof/call-graph.h]
@@ -139,21 +126,6 @@ install=false
 install_location=
 type=HEADER
 
-[kprof/doc/Makefile.am]
-sub_dirs=kprof
-type=normal
-
-[kprof/doc/kprof/Makefile.am]
-files=kprof/doc/kprof/index.docbook
-sub_dirs=
-type=normal
-
-[kprof/doc/kprof/index.docbook]
-dist=true
-install=false
-install_location=
-type=DATA
-
 [kprof/kprof.cpp]
 dist=true
 install=false
@@ -172,35 +144,11 @@ install=false
 install_location=
 type=HEADER
 
-[kprof/kprofdoc.cpp]
-dist=true
-install=false
-install_location=
-type=SOURCE
-
-[kprof/kprofdoc.h]
-dist=true
-install=false
-install_location=
-type=HEADER
-
 [kprof/kprofui.rc]
 dist=true
 install=false
 install_location=
 type=DATA
-
-[kprof/kprofview.cpp]
-dist=true
-install=false
-install_location=
-type=SOURCE
-
-[kprof/kprofview.h]
-dist=true
-install=false
-install_location=
-type=HEADER
 
 [kprof/kprofwidget.cpp]
 dist=true

@@ -3,12 +3,12 @@ bin_PROGRAMS = kprof
 
 ## INCLUDES were found outside kdevelop specific part
 
-kprof_SOURCES = kprofwidget.cpp cprofileviewitem.cpp call-graph.ui kprofview.cpp kprofdoc.cpp kprof.cpp main.cpp 
-kprof_LDADD   =  $(LIB_KFILE) $(LIB_KDEUI) $(LIB_KDECORE) $(LIB_QT) $(LIBSOCKET)
+kprof_SOURCES = kprofwidget.cpp cprofileviewitem.cpp call-graph.ui kprof.cpp main.cpp 
+kprof_LDADD   =  $(LIB_KFILE) $(LIB_KHTML) $(LIB_KDEUI) $(LIB_KDECORE) $(LIB_QT) $(LIBSOCKET)
 
-SUBDIRS = doc 
+SUBDIRS = 
 
-EXTRA_DIST = main.cpp kprof.cpp kprof.h kprofdoc.cpp kprofdoc.h kprofview.cpp kprofview.h kprofui.rc kprof.desktop lo32-app-kprof.png lo16-app-kprof.png cprofileviewitem.h call-graph.h call-graph.ui cprofileinfo.h cprofileviewitem.cpp kprofwidget.cpp kprofwidget.h 
+EXTRA_DIST = main.cpp kprof.cpp kprof.h kprofui.rc kprof.desktop lo32-app-kprof.png lo16-app-kprof.png cprofileviewitem.h call-graph.h call-graph.ui cprofileinfo.h cprofileviewitem.cpp kprofwidget.cpp kprofwidget.h 
 
 install-data-local:
 	$(mkinstalldirs) $(kde_appsdir)/Applications/
@@ -25,28 +25,11 @@ uninstall-local:
 
 ####### kdevelop will overwrite this part!!! (end)############
 ## Makefile.am for kprof
-
-# this has all of the subdirectories that make will recurse into.  if
-# there are none, comment this out
-SUBDIRS = . doc
-
-# the program to be generated
-bin_PROGRAMS = kprof
-
-# set the include path for X, qt and KDE
-INCLUDES = $(all_includes)
-
-# library search path
-kprof_LDFLAGS = $(KDE_RPATH) $(all_libraries)
-
-# libraries to link against
-kprof_LDADD  = $(LIB_QTREEMAP) $(LIB_KFILE) $(LIB_KHTML)
-
-# sources 
-kprof_SOURCES = main.cpp kprof.cpp kprofwidget.cpp cprofileviewitem.cpp call-graph.ui
-
 # headers (do not install)
 noinst_HEADERS = kprof.h kprofwidget.h cprofileinfo.h cprofileviewitem.h
+
+INCLUDES=$(all_includes)
+kprof_LDFLAGS=$(all_libraries) $(KDE_RPATH)
 
 # let automoc handle all of the meta source files (moc)
 METASOURCES = AUTO

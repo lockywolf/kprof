@@ -1,0 +1,8 @@
+Makefile
+Makefile.in
+configure
+configure.in
+configure.files
+*~
+*.bak
+*.m4
