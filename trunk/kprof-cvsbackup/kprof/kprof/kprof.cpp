@@ -38,8 +38,8 @@
 #include "kprof.h"
 #include "kprofwidget.h"
 
-KProfTopLevel::KProfTopLevel (QWidget *, const char *name)
-	:	KTMainWindow (name)
+KProfTopLevel::KProfTopLevel (QWidget *parent, const char *name)
+	:	KMainWindow (parent, name)
 {
 	mProf = new KProfWidget (this,"kprof");
 	CHECK_PTR(mProf);
@@ -72,8 +72,7 @@ KProfTopLevel::KProfTopLevel (QWidget *, const char *name)
 	menuBar()->insertSeparator ();
 	menuBar()->insertItem (i18n("&Help"), help );
 
-	setView (mProf);
-	resize (mProf->width(), mProf->height() + menuBar()->height());
+	setCentralWidget (mProf);
 }
 
 KProfTopLevel::~KProfTopLevel ()
