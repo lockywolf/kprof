@@ -202,7 +202,7 @@ void KProfWidget::prepareProfileView (KListView *view, bool rootIsDecorated)
 	view->addColumn (i18n("Function/Method"), -1);
 	view->addColumn (QIconSet (loader->loadIcon ("redo", KIcon::Small)), "", -1);
 	if (sDiffMode)
-		view->addColumn (i18n("Status"));
+		view->addColumn (i18n("Remarks"));
 	view->addColumn (i18n("Count"), -1);
 	if (sDiffMode)
 		view->addColumn (i18n("New Count"), -1);
@@ -340,7 +340,15 @@ void KProfWidget::loadSettings ()
 void KProfWidget::openRecentFile (const KURL& url)
 {
 	QString filename = url.path ();
-	openFile (filename, -1);
+	QString protocol = url.protocol ();
+	if (protocol == "file-gprof")
+		openFile (filename, FORMAT_GPROF, false);
+	else if (protocol == "file-fnccheck")
+		openFile (filename, FORMAT_FNCCHECK, false);
+	else if (protocol == "file-pose")
+		openFile (filename, FORMAT_POSE, false);
+	else
+		openFile (filename, -1);
 }
 
 void KProfWidget::compareFile ()
@@ -350,8 +358,6 @@ void KProfWidget::compareFile ()
 	QString f = KFileDialog::getOpenFileName (mCurDir.absPath(), QString::null, this, i18n ("Select a profiling results file to compare..."));
 	if (f.isEmpty ())
 		return;
-	
-	KRecentDocument::add (f);
 	openFile (f, sLastFileFormat, true);
 }
 
@@ -392,7 +398,6 @@ void KProfWidget::openResultsFile ()
     QString filename = fd.selectedFile();
     if (!filename.isEmpty())
     {
-	    KRecentDocument::add (filename);
 		sLastFileFormat =	fmtGPROF->isChecked () ?		FORMAT_GPROF :
 	                        fmtFNCCHECK->isChecked () ?		FORMAT_FNCCHECK :
     	                   									FORMAT_POSE;
@@ -402,6 +407,8 @@ void KProfWidget::openResultsFile ()
 
 void KProfWidget::openFile (const QString &filename, int format, bool compare)
 {
+	bool isExec = false;
+
 	if (filename.isEmpty ())
 		return;
 	
@@ -410,6 +417,8 @@ void KProfWidget::openFile (const QString &filename, int format, bool compare)
 	QFileInfo finfo (filename);
 	if (finfo.isExecutable ())
 	{
+		isExec = true;
+
 		// prepare the "gmon.out" filename
 		QString outfile = finfo.dirPath() + "/gmon.out";
 		QFileInfo gmonfinfo (outfile);
@@ -565,10 +574,9 @@ void KProfWidget::openFile (const QString &filename, int format, bool compare)
 	fillHierProfileList ();
 	fillObjsProfileList ();
 
-	// make sure we add the recent file
-	KURL url;
-	url.setProtocol ("file");
-	url.setFileName (filename);
+	// make sure we add the recent file (this also changes the window title)
+	KURL url (filename);
+	url.setProtocol (isExec ? "file" : sLastFileFormat==FORMAT_GPROF ? "file-gprof" : sLastFileFormat==FORMAT_FNCCHECK ? "file-fnccheck" : "file-pose");
 	emit addRecentFile (url);
 
 	// update the current directory
