@@ -770,13 +770,21 @@ void KProfWidget::parseProfile_fnccheck (QTextStream& t)
 					p->recursive = true;
 				else if (processingCallers)
 				{
-					p->callers.resize (p->callers.count () + 1);
-					p->callers [p->callers.count () - 1] = mProfile[pos];
+					CProfileInfo *pi = mProfile[pos];
+					if (p->callers.count()==0 || p->callers.find(pi)==-1)
+					{
+						p->callers.resize (p->callers.count () + 1);
+						p->callers [p->callers.count () - 1] = pi;
+					}
 				}
 				else
 				{
-					p->called.resize (p->called.count () + 1);
-					p->called [p->called.count () - 1] = mProfile[pos];
+					CProfileInfo *pi = mProfile[pos];
+					if (p->called.count()==0 || p->called.find(pi)==-1)
+					{
+						p->called.resize (p->called.count () + 1);
+						p->called [p->called.count () - 1] = pi;
+					}
 				}
     		}
    		}
@@ -1031,13 +1039,19 @@ void KProfWidget::processCallGraphBlock (const QVector<SCallGraphEntry> &data)
 		{
 			if (beforePrimary)
 			{
-				primary->callers.resize (primary->callers.count () + 1);
-				primary->callers [primary->callers.count () - 1] = p;
+				if (primary->callers.count()==0 || primary->callers.find(p)==-1)
+				{
+					primary->callers.resize (primary->callers.count () + 1);
+					primary->callers [primary->callers.count () - 1] = p;
+				}
     		}
 			else
 			{
-				primary->called.resize (primary->called.count () + 1);
-				primary->called [primary->called.count () - 1] = p;
+				if (primary->called.count()==0 || primary->called.find(p)==-1)
+				{
+					primary->called.resize (primary->called.count () + 1);
+					primary->called [primary->called.count () - 1] = p;
+				}
     		}
       	}
 	}
