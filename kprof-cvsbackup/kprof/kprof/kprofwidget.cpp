@@ -3,13 +3,13 @@
  *
  * $Id$
  *
- * Copyright (c) 2000 Florent Pillet <florent.pillet@wanadoo.fr>
+ * Copyright (c) 2000-2001 Florent Pillet <fpillet@users.sourceforge.net>
  *
  * Requires the Qt widget libraries, available at no cost at
  * http://www.trolltech.com/
  *
- * Requires the K Desktop Environment 2.0 (KDE 2.0) libraries, available
- * at no cost at http://www.kde.org/
+ * Requires the K Desktop Environment 2.0 (KDE 2.0) libraries or later,
+ * available at no cost at http://www.kde.org/
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -432,6 +432,7 @@ void KProfWidget::parseProfile (QTextStream& t)
 					p->totalTsPerCall	= 0;
 					p->name				= fields[3];
      			}
+				p->simplifiedName	= removeTemplates (p->name);
 				p->recursive		= false;
 				p->object			= getClassName (p->name);
 
@@ -974,26 +975,28 @@ QString KProfWidget::getClassName (const QString &name)
 QString KProfWidget::removeTemplates (const QString &name)
 {
 	// remove the templates from inside a name, leaving only
-	// the <> and return the converted name
+	// the <...> and return the converted name
 	QString s (name);
-	for (;;)
+	int tmpl = -1;
+	int depth = 0;
+	for (int i=0; i < s.length(); i++)
 	{
-		int i = name.find ('<');
-		if (!(i > 0 && i < ((int)s.length() - 1)))
-			break;
-		int j, depth = 1;
-		do {
-			j = name.find ("<>", i+1);
-			if (j == -1)
-				break;
-			if (name[j] == '<')
-				depth++;
-			else
-				depth--;
-		} while (depth);
-
-		if (depth == 0)
-			s.remove (i+1, j-i-1);
+		if (s[i]=='<')
+		{
+			if (depth++ == 0)
+				tmpl = i;
+		}
+		else if (s[i] == '>')
+		{
+			if (depth == 0)
+				continue;
+			if (--depth == 0)
+			{
+				s = s.replace (tmpl+1, i-tmpl-1, "...");
+				i = tmpl + 4;
+				tmpl = -1;
+			}
+		}
 	}
 	return s;
 }
