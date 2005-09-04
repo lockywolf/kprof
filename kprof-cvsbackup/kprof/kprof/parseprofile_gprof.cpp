@@ -119,8 +119,6 @@ CParseProfile_gprof::CParseProfile_gprof (QTextStream& t, QVector<CProfileInfo>&
 			{
 				CProfileInfo *p = new CProfileInfo;
 				p->ind				= profile.count ();
-				p->cumPercent		= fields[0].toFloat ();
-				p->cumSeconds		= fields[1].toFloat ();
 				p->selfSeconds		= fields[2].toFloat ();
 				if (fields[3][0].isDigit ())
 				{
@@ -221,6 +219,17 @@ CParseProfile_gprof::CParseProfile_gprof (QTextStream& t, QVector<CProfileInfo>&
 
 				if (e->primary == true && count.find ('+') != -1)
 					e->recursive = true;
+				
+				// if this is a primary entry, get the total time and percentage
+				if (e->primary == true)
+				{
+					CProfileInfo *tPrimary = locateProfileEntry (e->name, profile);
+					if (tPrimary != NULL)
+					{
+						tPrimary->cumPercent		= fields[1].toFloat ();
+						tPrimary->cumSeconds		= tPrimary->selfSeconds + fields[3].toFloat ();
+					}
+				}
 
 				if (callGraphBlock.count () == callGraphBlock.size ())
 					callGraphBlock.resize (callGraphBlock.size () + 32);
