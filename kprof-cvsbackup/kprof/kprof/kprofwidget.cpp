@@ -834,15 +834,7 @@ void KProfWidget::openFile (const QString &filename, ProfilerEnumeration format,
 void KProfWidget::gprofStdout (KProcess *, char *buffer, int buflen)
 {
 	BEGIN;
-	
-	char* newbuf = new char[buflen];
-	strncpy(newbuf, buffer, buflen);
-	newbuf[buflen] = '\0';
-
-	mGProfStdout += QString::fromLocal8Bit (newbuf, buflen);
-
-	delete [] newbuf;
-
+	mGProfStdout += QString::fromLocal8Bit (buffer, buflen);
 	END;
 }
 
