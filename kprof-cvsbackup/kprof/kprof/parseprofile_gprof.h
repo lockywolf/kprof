@@ -23,6 +23,7 @@
 #endif
 
 class CProfileInfo;
+class QTextStream;
 
 class CParseProfile_gprof : public CParseProfile
 {

@@ -22,7 +22,7 @@
 #endif
 
 class CProfileInfo;
-class QString;
+class QTextStream;
 
 class CParseProfile_fnccheck : public CParseProfile
 {
