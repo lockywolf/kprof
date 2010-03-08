@@ -1,9 +1,0 @@
-[Desktop Entry]
-Type=Application
-Name=KProf
-Exec=kprof
-Icon=kprof
-Comment=Profile results analysis utility
-Comment[fr]=Outil d'analyse de résultats de profiling
-Terminal=0
-DocPath=kprof/index.html

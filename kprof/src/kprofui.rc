@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gui name="kprof"
+     version="1"
+     xmlns="http://www.kde.org/standards/kxmlgui/1.0"
+     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+     xsi:schemaLocation="http://www.kde.org/standards/kxmlgui/1.0
+                         http://www.kde.org/standards/kxmlgui/1.0/kxmlgui.xsd" >
+ 
+  <MenuBar>
+    <Menu name="file">
+      <Action name="compareFile" />
+    </Menu>
+    <Menu name="view">
+      <text>&amp;View</text>
+      <Action name="onlyA" />
+      <Action name="onlyB" />
+      <Action name="subAB" />
+      <Action name="subBA" />
+      <Action name="divAB" />
+      <Action name="divBA" />
+      <Separator />
+      <Action name="shortNames" />
+      <Action name="singular" />
+    </Menu>
+    <Menu name="tools">
+      <text>&amp;Tools</text>
+      <Action name="generate_call_graph" />
+      <Action name="display_tree_map_view"/>
+      
+<!--       <Separator /> -->
+    </Menu>
+    <Menu name="settings">
+      <Action name="toggle_template_abbreviations" />
+      <Action name="select_list_font" />
+      <Action name="configure_kprof" />
+    </Menu>
+  </MenuBar>
+</gui>
