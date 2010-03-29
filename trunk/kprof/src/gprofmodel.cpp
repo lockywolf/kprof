@@ -227,7 +227,7 @@ void GProfModel::ProfileInfo::splitName(void)
   QStringList parts;
   int pos = 0, mark = 0;
   
-  if (name.startsWith("global constructors")) {
+  if (name.startsWith("global constructors") || name.startsWith("non-virtual thunk to")) {
     parts << name;
     pos = mark = name.length();
   }
@@ -504,7 +504,7 @@ bool GProfModel::loadFile(QTextStream &stream)
   
   // flat profile regexp
   QRegExp flatProfExp(QString(
-    "^\\s*%1\\s+%2\\s+%3\\s{1,%4}%5?\\s{1,%6}%7?\\s{1,%8}%9?\\s+(\\w.*)\\s*$").arg(
+    "^\\s*%1\\s+%2\\s+%3\\s{1,%4}%5?\\s{1,%6}%7?\\s{1,%8}%9?\\s+([\\w\\(].*)\\s*$").arg(
     floatPat, floatPat, floatPat,
     QString::number(callsPadding), intPat,
     QString::number(selfPadding), floatPat,
@@ -543,10 +543,10 @@ bool GProfModel::loadFile(QTextStream &stream)
   // call graph regexps
   QRegExp spontaneousExp("^\\s*<spontaneous>\\s*$");
   QRegExp primaryExp(QString(
-    "^\\s*\\[\\d+\\]\\s+%1\\s+%2\\s+%3\\s+(%4(\\+%6)?)?\\s+(\\w.*)$").arg(
+    "^\\s*\\[\\d+\\]\\s+%1\\s+%2\\s+%3\\s+(%4(\\+%6)?)?\\s+([\\w\\(].*)$").arg(
     floatPat, floatPat, floatPat, intPat, intPat));
   QRegExp cgEntryExp(QString(
-    "^\\s*%1?\\s+%2?\\s+%3(/%4)?\\s+(\\w.*)$").arg(
+    "^\\s*%1?\\s+%2?\\s+%3(/%4)?\\s+([\\w\\(].*)$").arg(
     floatPat, floatPat, intPat, intPat));
   QRegExp cycleExp("<cycle \\d+ as a whole>");
   QRegExp dashExp("^-+$");
