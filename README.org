@@ -1,0 +1,7 @@
+* kprof
+
+This is an import of an old KDE3-based GUI for Gprof from SourceForge to Github.
+
+Does not actually work on modern systems. 
+
+Make it compile with Qt6, I challenge you to a pull request!
